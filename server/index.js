@@ -1,49 +1,61 @@
 const express = require('express')
-const path = require('path')
-const {createServer} = require('node:http')
-const {Server} = require('socket.io')
-
+const cors = require('cors')
 const app = express()
-const server = createServer(app)
 
-const io = new Server(server, {
-    connectionStateRecovery: {}
+// MIDDLEWARES
+const corsOptions = {
+    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    methods: ['GET'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}
+app.use(cors(corsOptions))
+app.use(express.json())
+
+// REST API
+app.get('/api/register', (req, res) => {
+    res.json({message: 'register'})
 })
 
-var qtd = 0;
+app.get('/api/login', (req, res) => {
+    res.json({message: 'login'})
+})
 
-// When accessed, send static files from /client/build to user
-app.use(express.static(path.resolve(__dirname, '../client/dist')))
+app.get('', (req, res) => {
+    res.json({message: 'not found'})
+})
+
+
+// WEBSOCKET
+const http = require('node:http')
+const socketIO = require('socket.io')
+
+const httpServer = http.createServer(app)
+const io = new socketIO.Server(httpServer, {
+    cors: {
+        origin: ['http://localhost:3000', 'http://localhost:5173'],
+        methods: ['GET'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+    }
+})
 
 io.on('connection', (socket) => {
-
-    qtd++;
-
-    console.log('a user connected')
-    console.log('users connected: ', qtd)
-
-    socket.on('disconnect', () => {
-        qtd--;
-        console.log('user disconnected')
-        console.log('users connected: ', qtd)
-    })
-
+    console.log(`Usuário conectado: ${socket.id}`);
+    
+    // Escuta mensagens do cliente
     socket.on('message', (msg) => {
-        console.log('message: ' + msg)
-        io.emit('message', msg)
-    })
-})
+        console.log(`Mensagem recebida: ${msg}`);
+        
+        // Envia uma resposta para o cliente
+        socket.emit('message', `Recebido: ${msg}`);
+    });
 
-// Handle GET calls
-app.get('/api', (req, res) => {
-    res.json({message: 'Hello from server'})
-})
+    // Quando o cliente se desconecta
+    socket.on('disconnect', () => {
+        console.log(`Usuário desconectado: ${socket.id}`);
+    });
+});
 
-// Handle untreated GET calls
-app.get('', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'))
-})
-
-server.listen(3000, () => {
-    console.log('listening at 3000')
+// Not being used yet
+httpServer.listen(3000, () => {
+    console.log('SERVER ON 3000')
 })

@@ -15,7 +15,16 @@ const Login = () => {
 
         try {
             const URL = `${API_URL}/login`
-            const RESULT = await fetch(URL)
+            const RESULT = await fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                }),
+            })
             const DATA = await RESULT.json()
             console.log('DATA: ', DATA) 
         } catch (error) {

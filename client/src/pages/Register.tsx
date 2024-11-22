@@ -13,11 +13,31 @@ const Register = () => {
         console.log('email: ', email)
         console.log('password: ', password)
 
+        if (email.length === 0) {
+            console.log('email empty')
+            return;
+        }
+
+        if (password.length <= 3) {
+            console.log('password too short')
+            return;
+        }
+
         try {
             const URL = `${API_URL}/register`
-            const RESULT = await fetch(URL)
+            const RESULT = await fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                }),
+            })
             const DATA = await RESULT.json()
             console.log('DATA: ', DATA) 
+            
         } catch (error) {
             console.log(error)
         }

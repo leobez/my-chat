@@ -4,8 +4,11 @@ const fs = require('fs')
 const path = require('path')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
-
+require('dotenv').config()
+const jwt = require('jsonwebtoken')
+const secret = process.env.SECRET_KEY
 const app = express()
+var cookieParser = require('cookie-parser')
 
 // File for saving data (temporary DB)
 const DB_filePath = path.join(__dirname, 'data.json')
@@ -14,10 +17,12 @@ const DB_filePath = path.join(__dirname, 'data.json')
 const corsOptions = {
     origin: ['http://localhost:3000', 'http://localhost:5173'],
     methods: ['GET'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
 }
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(cookieParser())
 
 // REST API
 app.post('/api/register', (req, res) => {
@@ -131,13 +136,47 @@ app.post('/api/login', (req, res) => {
             if (jsonData[a].email === email) {
                 const isPasswordCorrect = bcrypt.compareSync(password, jsonData[a].password)
                 if (isPasswordCorrect) {
-                    return res.status(200).json({message: 'can login'})
+
+                    // Generate JWT
+                    const token = jwt.sign(jsonData[a], secret, {expiresIn: '1h'})
+                    
+                    return res.cookie('jwt', token, {
+                        httpOnly: true,
+                        //secure: true,
+                        sameSite: 'strict',
+                    }).status(200).json({message: 'logged'})
+
                 }
             }
         }
 
         return res.status(400).json({message: 'user does not exist', error: true})
     })
+})
+
+app.get('/api/me', (req, res) => {
+
+    try {
+
+        console.log(req.cookies)
+
+        const token = req.cookies.jwt
+
+        if (!token) {
+            return res.status(401).json({loggedIn: false})
+        }
+
+        return res.status(200).json({loggedIn: true})
+
+    } catch (error) {
+
+        return res.status(400).json({loggedIn: false, message: 'error on reading token'})
+
+    }
+
+
+
+
 })
 
 app.get('', (req, res) => {

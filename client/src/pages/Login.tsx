@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { login } from '../slices/AuthSlice'
 
 const API_URL = "http://localhost:3000/api"
 
@@ -8,7 +10,10 @@ const Login = () => {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
 
+    const dispatch = useDispatch()
+
     const handleSubmit = async(e:any) => {
+
         e.preventDefault()
         console.log('email: ', email)
         console.log('password: ', password)
@@ -24,9 +29,18 @@ const Login = () => {
                     email: email,
                     password: password
                 }),
+                credentials: 'include'
             })
+
             const DATA = await RESULT.json()
-            console.log('DATA: ', DATA) 
+
+            console.log('DATA: ', DATA)
+
+            // Update login universal state
+            if (DATA.message === 'logged') {
+                dispatch(login())
+            }
+
         } catch (error) {
             console.log(error)
         }

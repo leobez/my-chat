@@ -1,16 +1,14 @@
-import { useDispatch } from "react-redux"
-import { logoutReducer } from "../slices/authSlice"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
+import { useLogout } from "../hooks/useLogout"
 
 const Logout = () => {
 
-    const dispatch = useDispatch()
     const navigate = useNavigate()
+    const {logout} = useLogout()
 
     useEffect(() => {
-        console.log('LOGOUT COMPONENT')
-        dispatch(logoutReducer())
+        logout()
         navigate('/login')
     }, [])
 

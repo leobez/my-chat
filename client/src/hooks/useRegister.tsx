@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { loginReducer } from "../slices/authSlice"
 
-const API_URL = "http://localhost:3000/api"
+const API_URL = "http://localhost:3000/api/user"
 
 export const useRegister = () => {
 

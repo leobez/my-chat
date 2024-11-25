@@ -15,8 +15,10 @@ const Home = () => {
   useEffect(() => {
     // Somehow user got into home page without being logged in
     if (!isLogged) return;
-    const socket = io(SOCKET_URL)
-    dispatch(loginReducer({socket: socket}))
+
+    const socket = io(SOCKET_URL) // MAYBE FIX THIS, BEING EXECUTED TWICE ON REFRESH
+    dispatch(loginReducer({socket: socket})) // TODO: NON-SERIALIZABLE THROWS ERROR, BUT NON LETHAL. FIND BETTER SOLUTION
+
     console.log('USER STATUS: ', user)
   }, [isLogged])
 

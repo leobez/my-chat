@@ -11,7 +11,7 @@ import NotFound from './pages/NotFound';
 import Logout from './pages/Logout';
 import { loginReducer } from './slices/authSlice';
 
-const API_URL = "http://localhost:3000/api"
+const API_URL = "http://localhost:3000/api/user"
 
 function App() {
 
@@ -24,14 +24,14 @@ function App() {
     const testAuthAsync = async() => {
       try {
 
-        const RESULT = await fetch(`${API_URL}/me`, {method: 'GET', credentials: 'include'})
-        const DATA =  await RESULT.json()
+        const DATA = await fetch(`${API_URL}/me`, {method: 'GET', credentials: 'include'})
+        const RESULT =  await DATA.json()
 
-        if (DATA.loggedIn) {
-          if (DATA.user)
+        if (RESULT.loggedIn) {
+          if (RESULT.user)
           dispatch(loginReducer({
-            email: DATA.user.email,
-            username: DATA.user.username
+            email: RESULT.user.email,
+            username: RESULT.user.username
           }))
         }
 

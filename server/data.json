@@ -2,16 +2,7 @@
   {
     "id": 0,
     "email": "alow",
-    "password": "$2b$10$UAlCWapOlAGlK0q3sVH/AeYtKU4b3UUFeWENCEwkhR5XvWr5ZYXVC"
-  },
-  {
-    "id": 1,
-    "email": "alow1",
-    "password": "$2b$10$ghimb1AW6YKEplqHsZM/Ju.xOtriHV8ip04uXyJkfNn5EVCizkXbC"
-  },
-  {
-    "id": 2,
-    "email": "alow2",
-    "password": "$2b$10$2WM5BKrn2P/0GH1G5EPzIu5q8KgSbEJ392/sWo80fyijLmrINLTVi"
+    "username": "alow",
+    "password": "$2b$10$3AA4PC2MWVqrAhj55h0Yzu1TdMHIasul7yK3hspqXReAfdf5LyiRu"
   }
 ]

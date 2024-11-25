@@ -1,5 +1,4 @@
 import './App.css'
-//import { io } from "socket.io-client";
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router-dom';
@@ -10,19 +9,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/Logout';
-import { login } from './slices/AuthSlice';
+import { loginReducer } from './slices/authSlice';
 
 const API_URL = "http://localhost:3000/api"
-// const SOCKET_URL = "http://localhost:3000"
-//const socket = io(SOCKET_URL)
 
 function App() {
 
   const dispatch = useDispatch()
-
   const [loadingTestLogin, setLoadingTestLogin] = useState(true)
 
-  // Verify user auth status
+  // Verify user auth status (auto login user)
   useEffect(() => {
     
     const testAuthAsync = async() => {
@@ -32,7 +28,11 @@ function App() {
         const DATA =  await RESULT.json()
 
         if (DATA.loggedIn) {
-          dispatch(login())
+          if (DATA.user)
+          dispatch(loginReducer({
+            email: DATA.user.email,
+            username: DATA.user.username
+          }))
         }
 
         setLoadingTestLogin(false)
@@ -46,7 +46,7 @@ function App() {
 
   }, [])
 
-  const isLogged = useSelector((state:any) => state.auth.value)
+  const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
 
   useEffect(() => {
     console.log('LOGGED: ', isLogged)
@@ -68,7 +68,6 @@ function App() {
             { !isLogged && <li><Link to="/register">To Register</Link></li> }
             { isLogged && <li><Link to="/">To Home</Link></li> }
             { isLogged && <li><Link to="/logout">Logout</Link></li> }
-
           </ul>
         </nav>
 

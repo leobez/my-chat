@@ -1,49 +1,35 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { login } from '../slices/AuthSlice'
-
-const API_URL = "http://localhost:3000/api"
+import { useLogin } from '../hooks/useLogin'
+import FeedbackMessage from '../components/FeedbackMessage'
 
 const Login = () => {
 
+    // FORM STATES
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
+    const [clientSideFeedback, setClientSideFeedback] = useState<string|null>(null)
 
-    const dispatch = useDispatch()
+    // HOOKS (the thing thats doing the talk with the server)
+    const {login, serverSideFeedback} = useLogin()
 
+    // FUNCTIONS
     const handleSubmit = async(e:any) => {
 
         e.preventDefault()
-        console.log('email: ', email)
-        console.log('password: ', password)
 
-        try {
-            const URL = `${API_URL}/login`
-            const RESULT = await fetch(URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                }),
-                credentials: 'include'
-            })
-
-            const DATA = await RESULT.json()
-
-            console.log('DATA: ', DATA)
-
-            // Update login universal state
-            if (DATA.message === 'logged') {
-                dispatch(login())
-            }
-
-        } catch (error) {
-            console.log(error)
+        // TODO: ADD BETTER CLIENT-SIDE VERIFICATION
+        if (!email || email.length === 0) {
+            setClientSideFeedback('EMPTY EMAIL')
+            return;
         }
+
+        if (!password || password.length <= 3) {
+            setClientSideFeedback('PASSWORD TOO SHORT')
+            return;
+        }
+
+        login(email, password)
     }
 
     return (
@@ -80,6 +66,9 @@ const Login = () => {
                     <input type="submit" value="Entrar" className='border-2'/>
                     <Link to="/register">Ainda não tem uma conta?</Link>
                 </div>
+
+                <FeedbackMessage message={clientSideFeedback}/>
+                <FeedbackMessage message={serverSideFeedback}/>
 
             </form>
 

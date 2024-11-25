@@ -1,46 +1,41 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-
-const API_URL = "http://localhost:3000/api"
+import FeedbackMessage from '../components/FeedbackMessage'
+import { useRegister } from '../hooks/useRegister'
 
 const Register = () => {
 
+    // FORM STATES
     const [email, setEmail] = useState<string>("")
+    const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
+    const [clientSideFeedback, setClientSideFeedback] = useState<string|null>(null)
 
+    // HOOKS (the thing thats doing the talk with the server)
+    const {register, serverSideFeedback} = useRegister()
+
+    // FUNCTONS
     const handleSubmit = async(e:any) => {
+
         e.preventDefault()
-        console.log('email: ', email)
-        console.log('password: ', password)
 
-        if (email.length === 0) {
-            console.log('email empty')
+        // TODO: ADD BETTER CLIENT-SIDE VERIFICATION
+        if (!email || email.length === 0) {
+            setClientSideFeedback('EMPTY EMAIL')
             return;
         }
 
-        if (password.length <= 3) {
-            console.log('password too short')
+        if (!username || username.length === 0) {
+            setClientSideFeedback('EMPTY USERNAME')
             return;
         }
 
-        try {
-            const URL = `${API_URL}/register`
-            const RESULT = await fetch(URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                }),
-            })
-            const DATA = await RESULT.json()
-            console.log('DATA: ', DATA) 
-            
-        } catch (error) {
-            console.log(error)
+        if (!password || password.length <= 3) {
+            setClientSideFeedback('PASSWORD TOO SHORT')
+            return;
         }
+
+        register(email, username, password)
     }
 
     return (
@@ -63,6 +58,17 @@ const Register = () => {
                 </div>
 
                 <div>
+                    <label htmlFor="username">Username: </label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="username" 
+                        onChange={(e) => setUsername(e.target.value)}
+                        value={username}
+                        className='border-2'/>                
+                </div>
+
+                <div>
                     <label htmlFor="Senha">Senha: </label>
                     <input 
                         type="password" 
@@ -77,6 +83,9 @@ const Register = () => {
                     <input type="submit" value="Registrar" className='border-2'/>
                     <Link to="/login">Já está cadastrado?</Link>
                 </div>
+
+                <FeedbackMessage message={clientSideFeedback}/>
+                <FeedbackMessage message={serverSideFeedback}/>
 
             </form>
 

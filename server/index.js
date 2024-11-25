@@ -24,15 +24,18 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 
-// REST API
+// API
 app.post('/api/register', (req, res) => {
 
     // Get data
-    const {email, password} = req.body
+    const {email, username, password} = req.body
 
     // Validate data
     if (email.length === 0) {
         return res.status(400).json({message: 'email empty', error: true})
+    }
+    if (username.length === 0) {
+        return res.status(400).json({message: 'username empty', error: true})
     }
     if (password.length <= 3) {
         return res.status(400).json({message: 'password to short', error: true})
@@ -46,7 +49,7 @@ app.post('/api/register', (req, res) => {
         return res.status(500).json({message: 'Error while hashing password', error: true})
     }
 
-    // Register data on JSON (eventually a database)
+    // save data on a JSON (temporary database)
     fs.readFile(DB_filePath, 'utf8', (err, data) => {
 
         if (err) {
@@ -81,6 +84,7 @@ app.post('/api/register', (req, res) => {
         const newData = {
             id: userId,
             email: email,
+            username: username,
             password: hash
         }
 
@@ -89,10 +93,21 @@ app.post('/api/register', (req, res) => {
 
         // Write data on file
         fs.writeFile(DB_filePath, JSON.stringify(jsonData, null, 2), 'utf8', writeErr => {
+
             if (writeErr) {
                 return res.status(500).json({message: 'cannot write into json file', error: true})
             }
-            res.status(200).json({message: 'user registered', email: email})
+
+            // Register succesfull
+            // auto login user
+            const token = jwt.sign(newData, secret, {expiresIn: '1h'})
+
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                //secure: true,
+                sameSite: 'strict',
+            }).status(200).json({message: 'user registered', user:{id:userId, email:email, username:username}})
+
         })
 
     })
@@ -144,7 +159,7 @@ app.post('/api/login', (req, res) => {
                         httpOnly: true,
                         //secure: true,
                         sameSite: 'strict',
-                    }).status(200).json({message: 'logged'})
+                    }).status(200).json({message: 'logged', user: {email:jsonData[a].email, username:jsonData[a].username}})
 
                 }
             }
@@ -158,7 +173,7 @@ app.get('/api/me', (req, res) => {
 
     try {
 
-        console.log(req.cookies)
+        //console.log(req.cookies)
 
         const token = req.cookies.jwt
 
@@ -166,16 +181,23 @@ app.get('/api/me', (req, res) => {
             return res.status(401).json({loggedIn: false})
         }
 
-        return res.status(200).json({loggedIn: true})
+        const userDecoded = jwt.verify(token, secret);
+
+        if (userDecoded.id && userDecoded.email) {
+            const sendBack = {
+                email: userDecoded.email,
+                username: userDecoded.username
+            }
+            return res.status(200).json({loggedIn: true, user: sendBack})
+        }
+
+        return res.status(400).json({loggedIn: false, message: 'invalid info on token'})
 
     } catch (error) {
 
         return res.status(400).json({loggedIn: false, message: 'error on reading token'})
 
     }
-
-
-
 
 })
 

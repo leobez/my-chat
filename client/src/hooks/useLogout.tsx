@@ -13,9 +13,9 @@ export const useLogout = () => {
 
         try {
 
-            const URL = `${API_URL}/logout`
+            const url = `${API_URL}/logout`
 
-            const DATA = await fetch(URL, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -23,11 +23,23 @@ export const useLogout = () => {
                 credentials: 'include'
             })
 
-            const RESULT = await DATA.json()
+            const data = await response.json()
 
-            console.log('RESULT: ', RESULT)
+            // Resonse code not between 200 - 299
+            if (!response.ok) {
+                console.log('All details: ', data.details)
+                console.log('Error Message: ', data.message)
+                throw new Error(`${data.details[0]}`)
+            }
 
-            dispatch(logoutReducer())
+            // User sent valid info to backend. Log him out on frontend.
+            if (data.message === 'User logged out') {
+                dispatch(logoutReducer())
+                return;
+            }
+            
+            // If code got here, something is wrong with server
+            throw new Error(`Missing code`)
 
         } catch (error:any) {
             console.log(error)

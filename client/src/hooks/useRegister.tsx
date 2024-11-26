@@ -13,8 +13,9 @@ export const useRegister = () => {
 
         try {
 
-            const URL = `${API_URL}/register`
-            const RESULT = await fetch(URL, {
+            const url = `${API_URL}/register`
+
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -26,14 +27,28 @@ export const useRegister = () => {
                 }),
             })
 
-            const DATA = await RESULT.json()
-            console.log('DATA: ', DATA)
+            const data = await response.json()
 
-            // Auto login user after succesfull register
-            if (DATA.user) {
-                dispatch(loginReducer({email:DATA.user.email, username:DATA.user.username}))
+            // Resonse code not between 200 - 299
+            if (!response.ok) {
+                console.log('All details: ', data.details)
+                console.log('Error Message: ', data.message)
+                throw new Error(`${data.details[0]}`)
             }
 
+            // User was succesfully created on backend. Login him automatically.
+            if (data.message === 'User created') {
+                dispatch(loginReducer(
+                    {
+                        email: data.data.email,
+                        username: data.data.username
+                    }
+                ))
+                return;
+            }
+
+            // If code got here, something is wrong with server
+            throw new Error(`Missing code`)
 
         } catch (error:any) {
             console.log(error)

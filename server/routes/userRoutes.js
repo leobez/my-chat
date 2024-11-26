@@ -30,13 +30,13 @@ router.post('/register', (req, res) => {
 
     // Validate data
     if (email.length === 0) {
-        return res.status(400).json({message: 'email empty', error: true})
+        return res.status(400).json({message: 'Invalid request', details: ['Field "Email" is required']})
     }
     if (username.length === 0) {
-        return res.status(400).json({message: 'username empty', error: true})
+        return res.status(400).json({message: 'Invalid request', details: ['Field "Username" is required']})
     }
     if (password.length <= 3) {
-        return res.status(400).json({message: 'password to short', error: true})
+        return res.status(400).json({message: 'Invalid request', details: ['Field "Password" is required']})
     }
 
     let hash = ''
@@ -44,14 +44,14 @@ router.post('/register', (req, res) => {
         const salt = bcrypt.genSaltSync(saltRounds)
         hash = bcrypt.hashSync(password, salt)
     } catch (error) {
-        return res.status(500).json({message: 'Error while hashing password', error: true})
+        return res.status(500).json({message: 'Error on server',  details: ['Could not generate hash and salt for password']})
     }
 
     // save data on a JSON (temporary database)
     fs.readFile(DB_filePath, 'utf8', (err, data) => {
 
         if (err) {
-            return res.status(500).json({message: 'cannot access DB file', error: true})
+            return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
         }
 
         // Parse existing data
@@ -60,14 +60,14 @@ router.post('/register', (req, res) => {
             try {
                 jsonData = JSON.parse(data)
             } catch (error) {
-                return res.status(500).json({message: 'cannot interpret json file', error: true}) 
+                return res.status(500).json({message: 'Error on server',  details: ['Could not parse JSON data from temporary DB file']}) 
             }
         }
 
         // TODO: VERIFY IF EMAIL ALREADY EXISTS
         for (let a=0; a<jsonData.length; a++) {
             if (jsonData[a].email === email) {
-                return res.status(400).json({message: 'email already used', error: true}) 
+                return res.status(400).json({message: 'Invalid request',  details: ['Email already used']}) 
             }
         }
 
@@ -93,7 +93,7 @@ router.post('/register', (req, res) => {
         fs.writeFile(DB_filePath, JSON.stringify(jsonData, null, 2), 'utf8', writeErr => {
 
             if (writeErr) {
-                return res.status(500).json({message: 'cannot write into json file', error: true})
+                return res.status(500).json({message: 'Error on server',  details: ['Could write into temporary DB file']})
             }
 
             // Register succesfull
@@ -104,7 +104,7 @@ router.post('/register', (req, res) => {
                 httpOnly: true,
                 //secure: true,
                 sameSite: 'strict',
-            }).status(200).json({message: 'user registered', user:{id:userId, email:email, username:username}})
+            }).status(201).json({message: 'User created', data:{id:userId, email:email, username:username}})
 
         })
 
@@ -119,11 +119,11 @@ router.post('/login', (req, res) => {
 
     // Validate data
     if (email.length === 0) {
-        return res.status(400).json({message: 'email empty', error: true})
+        return res.status(400).json({message: 'Invalid request', details: ['Field "Email" is required']})
     }
 
     if (password.length <= 3) {
-        return res.status(400).json({message: 'password to short', error: true})
+        return res.status(400).json({message: 'Invalid request', details: ['Field "Password" is too short']})
     }
 
 
@@ -131,7 +131,7 @@ router.post('/login', (req, res) => {
     fs.readFile(DB_filePath, 'utf8', (err, data) => {
 
         if (err) {
-            return res.status(500).json({message: 'cannot access DB file', error: true})
+            return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
         }
 
         // Parse existing data
@@ -140,7 +140,7 @@ router.post('/login', (req, res) => {
             try {
                 jsonData = JSON.parse(data)
             } catch (error) {
-                return res.status(500).json({message: 'cannot interpret json file', error: true}) 
+                return res.status(500).json({message: 'Error on server',  details: ['Could write into temporary DB file']}) 
             }
         }
 
@@ -157,13 +157,13 @@ router.post('/login', (req, res) => {
                         httpOnly: true,
                         //secure: true,
                         sameSite: 'strict',
-                    }).status(200).json({message: 'logged', user: {email:jsonData[a].email, username:jsonData[a].username}})
+                    }).status(200).json({message: 'User logged', data:{email:jsonData[a].email, username:jsonData[a].username}})
 
                 }
             }
         }
 
-        return res.status(400).json({message: 'user does not exist', error: true})
+        return res.status(404).json({message: 'Resource not found',  details: ['User not found inside temporary DB file']})
     })
 })
 
@@ -176,11 +176,11 @@ router.post('/logout', (req, res) => {
             //secure: true,
             sameSite: 'strict',
             maxAge: 0,
-        }).status(200).json({message: 'logged out'})
+        }).status(200).json({message: 'User logged out', details: ['JWT cookies got removed', 'Needs [ credentials: "include" ] on the client side fetching in order to work']})
 
     } catch (error) {
 
-        return res.status(400).json({loggedIn: false, message: 'error on logging out'})
+        return res.status(500).json({message: 'Error on server', details: ['Error on updating JWT cookie']})
 
     }   
 })
@@ -189,31 +189,31 @@ router.get('/me', (req, res) => {
 
     try {
 
-        //console.log(req.cookies)
-
         const token = req.cookies.jwt
 
         if (!token) {
-            return res.status(401).json({loggedIn: false})
+            return res.status(401).json({loggedIn: false, message: 'User is not logged in', details: ['JWT cookie does not exist']})
         }
 
         const userDecoded = jwt.verify(token, secret);
 
-        /* console.log('userDecoded: ', userDecoded) */
-
         if (userDecoded.email && userDecoded.username) {
-            const sendBack = {
-                email: userDecoded.email,
-                username: userDecoded.username
-            }
-            return res.status(200).json({loggedIn: true, user: sendBack})
+            return res.status(200).json({
+                loggedIn: true, 
+                message: 'User is logged in',
+                details: ['Valid JWT detected on requisition cookies'],
+                data: {
+                    email: userDecoded.email,
+                    username: userDecoded.username,
+                }
+            })
         }
 
-        return res.status(400).json({loggedIn: false, message: 'invalid info on token'})
+        return res.status(400).json({loggedIn: false, message: 'User is not logged in', details: ['JWT cookie does exist but isnt valid']})
 
     } catch (error) {
 
-        return res.status(400).json({loggedIn: false, message: 'error on reading token'})
+        return res.status(500).json({loggedIn: false, message: 'Error on server', details: ['Error while reading cookies']})
 
     }
 

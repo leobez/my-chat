@@ -24,14 +24,21 @@ function App() {
     const testAuthAsync = async() => {
       try {
 
-        const DATA = await fetch(`${API_URL}/me`, {method: 'GET', credentials: 'include'})
-        const RESULT =  await DATA.json()
+        const response = await fetch(`${API_URL}/me`, {method: 'GET', credentials: 'include'})
+        const data =  await response.json()
 
-        if (RESULT.loggedIn) {
-          if (RESULT.user)
+        // Resonse code not between 200 - 299
+        if (!response.ok) {
+          console.log('All details: ', data.details) // REMOVE LATER
+          console.log('Error Message: ', data.message) // REMOVE LATER
+        }
+
+        // JWT sent by user is correct, therefore is user is already logged in
+        if (data.loggedIn) {
+          if (data.data)
           dispatch(loginReducer({
-            email: RESULT.user.email,
-            username: RESULT.user.username
+            email: data.data.email,
+            username: data.data.username
           }))
         }
 
@@ -47,10 +54,6 @@ function App() {
   }, [])
 
   const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
-
-  useEffect(() => {
-    console.log('LOGGED: ', isLogged)
-  }, [isLogged])
 
   if (loadingTestLogin) {
     return;

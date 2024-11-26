@@ -17,7 +17,7 @@ require('dotenv').config()
 const secret = process.env.SECRET_KEY
 
 // File for saving data (temporary DB)
-const DB_filePath = path.join(__dirname, '../data.json')
+const DB_filePath = path.join(__dirname, '../data/user.json')
 
 // Middlewares
 // ...
@@ -216,6 +216,55 @@ router.get('/me', (req, res) => {
         return res.status(500).json({loggedIn: false, message: 'Error on server', details: ['Error while reading cookies']})
 
     }
+
+})
+
+// Get all users (protected route)
+router.get('/all', (req, res) => {
+    
+    // testing
+    res.status(200).json({message: 'nice'})
+
+/*     try {
+
+        const token = req.cookies.jwt
+
+        if (!token) {
+            return res.status(401).json({loggedIn: false, message: 'User is not logged in', details: ['JWT cookie does not exist']})
+        }
+
+        const userDecoded = jwt.verify(token, secret);
+
+        // Passed verification
+        if (userDecoded.email && userDecoded.username) {
+            
+            fs.readFile(DB_filePath, 'utf8', (err, data) => {
+
+                if (err) {
+                    return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
+                }
+        
+                // Parse existing data
+                let jsonData = []
+                if (data) {
+                    try {
+                        jsonData = JSON.parse(data)
+                    } catch (error) {
+                        return res.status(500).json({message: 'Error on server',  details: ['Could write into temporary DB file']}) 
+                    }
+                }
+                
+                res.status(200).json({message: 'retrival succesfull', data: jsonData})      
+            })
+        }
+
+        return res.status(400).json({loggedIn: false, message: 'User is not logged in', details: ['JWT cookie does exist but isnt valid']})
+
+    } catch (error) {
+
+        return res.status(500).json({loggedIn: false, message: 'Error on server', details: ['Error while reading cookies']})
+
+    } */
 
 })
 

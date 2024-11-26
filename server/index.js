@@ -20,12 +20,8 @@ const userRoutes = require('./routes/userRoutes')
 app.use('/api/user', userRoutes)
 
 app.get('', (req, res) => {
-    res.json({message: 'not found'})
+    res.status(404).json({message: 'not found'})
 })
-
-
-
-
 
 
 // WEBSOCKET
@@ -41,7 +37,28 @@ const io = new socketIO.Server(httpServer, {
     }
 })
 
+
+// ROOM
+/* 
+    id
+    name
+    desc
+    users []
+    messages
+
+
+
+*/
+
+// Any user has connected
 io.on('connection', (socket) => {
+
+    // socket is a user
+    // Every user automatically joins a universal room at beggning of connection
+    socket.join('universal_room')
+
+    io.to('universal_room').emit('message', 'you have now entered')
+
     console.log(`Usuário conectado: ${socket.id}`);
     
     // Escuta mensagens do cliente

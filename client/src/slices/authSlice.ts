@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface User {
     email?:string|undefined
     username?:string|undefined
-    socket?:any|undefined
 }
 
 export const authSlice = createSlice({
@@ -14,7 +13,6 @@ export const authSlice = createSlice({
         isLoggedIn: false,
         email: "",
         username: "",
-        socket: {},
     },
 
     reducers: {
@@ -25,7 +23,6 @@ export const authSlice = createSlice({
             if (action?.payload) {
                 if (action.payload.email) state.email = action.payload.email
                 if (action.payload.username) state.username = action.payload.username
-                if (action.payload.socket) state.socket = action.payload.socket
             }
         },
 
@@ -34,7 +31,6 @@ export const authSlice = createSlice({
             state.isLoggedIn = false
             state.email = ""
             state.username = ""
-            state.socket = {}
         }
     }
 })

@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const JsonVerifier = require('./middlewares/JsonVerifier')
+require('dotenv').config()
 
 // MIDDLEWARES
 const corsOptions = {
@@ -11,7 +13,18 @@ const corsOptions = {
     credentials: true,
 }
 app.use(cors(corsOptions))
-app.use(express.json())
+
+app.use(express.json({
+    verify: (req, res, buf, encoding) => { // Verify is user req has any SyntaxError's
+        try {
+            JSON.parse(buf)
+        } catch (error) {
+            throw new SyntaxError('Invalid JSON')
+        }
+    }
+}))
+
+app.use(JsonVerifier) 
 app.use(cookieParser())
 
 // ROUTES

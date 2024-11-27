@@ -11,32 +11,32 @@ const saltRounds = 10
 
 // Session management
 const jwt = require('jsonwebtoken')
+const tokenVerifier = require('../middlewares/TokenVerifier')
 
 // Envirment variables
-require('dotenv').config()
 const secret = process.env.SECRET_KEY
 
 // File for saving data (temporary DB)
 const DB_filePath = path.join(__dirname, '../data/user.json')
 
-// Middlewares
-// ...
 
-// Routes
+// ROUTES
+
+// Unprotected routes
 router.post('/register', (req, res) => {
 
     // Get data
     const {email, username, password} = req.body
 
     // Validate data
-    if (email.length === 0) {
-        return res.status(400).json({message: 'Invalid request', details: ['Field "Email" is required']})
+    if (!email || email.length === 0) {
+        return res.status(400).json({message: 'Invalid request', details: ['Field Email is required']})
     }
-    if (username.length === 0) {
-        return res.status(400).json({message: 'Invalid request', details: ['Field "Username" is required']})
+    if (!username || username.length === 0) {
+        return res.status(400).json({message: 'Invalid request', details: ['Field Username is required']})
     }
-    if (password.length <= 3) {
-        return res.status(400).json({message: 'Invalid request', details: ['Field "Password" is required']})
+    if (!password || password.length <= 3) {
+        return res.status(400).json({message: 'Invalid request', details: ['Field Password is required']})
     }
 
     let hash = ''
@@ -93,7 +93,7 @@ router.post('/register', (req, res) => {
         fs.writeFile(DB_filePath, JSON.stringify(jsonData, null, 2), 'utf8', writeErr => {
 
             if (writeErr) {
-                return res.status(500).json({message: 'Error on server',  details: ['Could write into temporary DB file']})
+                return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
             }
 
             // Register succesfull
@@ -118,11 +118,11 @@ router.post('/login', (req, res) => {
     const {email, password} = req.body
 
     // Validate data
-    if (email.length === 0) {
+    if (!email || email.length === 0) {
         return res.status(400).json({message: 'Invalid request', details: ['Field "Email" is required']})
     }
 
-    if (password.length <= 3) {
+    if (!password || password.length <= 3) {
         return res.status(400).json({message: 'Invalid request', details: ['Field "Password" is too short']})
     }
 
@@ -140,7 +140,7 @@ router.post('/login', (req, res) => {
             try {
                 jsonData = JSON.parse(data)
             } catch (error) {
-                return res.status(500).json({message: 'Error on server',  details: ['Could write into temporary DB file']}) 
+                return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']}) 
             }
         }
 
@@ -167,7 +167,8 @@ router.post('/login', (req, res) => {
     })
 })
 
-router.post('/logout', (req, res) => {
+// Protected routes (uses middleware: tokenVerifier)
+router.post('/logout', tokenVerifier, (req, res) => {
 
     try {
 
@@ -176,7 +177,7 @@ router.post('/logout', (req, res) => {
             //secure: true,
             sameSite: 'strict',
             maxAge: 0,
-        }).status(200).json({message: 'User logged out', details: ['JWT cookies got removed', 'Needs [ credentials: "include" ] on the client side fetching in order to work']})
+        }).status(200).json({message: 'User logged out', details: ['JWT cookies got removed', 'Needs [ credentials: include ] on the client side fetching in order to work']})
 
     } catch (error) {
 
@@ -185,7 +186,7 @@ router.post('/logout', (req, res) => {
     }   
 })
 
-router.get('/me', (req, res) => {
+router.get('/me', tokenVerifier, (req, res) => {
 
     try {
 
@@ -201,7 +202,7 @@ router.get('/me', (req, res) => {
             return res.status(200).json({
                 loggedIn: true, 
                 message: 'User is logged in',
-                details: ['Valid JWT detected on requisition cookies'],
+                details: ['Valid JWT detected on cookies'],
                 data: {
                     email: userDecoded.email,
                     username: userDecoded.username,
@@ -219,53 +220,74 @@ router.get('/me', (req, res) => {
 
 })
 
-// Get all users (protected route)
-router.get('/all', (req, res) => {
+router.get('/all', tokenVerifier, (req, res) => {
     
-    // testing
-    res.status(200).json({message: 'nice'})
+    const data = req.data
 
-/*     try {
-
-        const token = req.cookies.jwt
-
-        if (!token) {
-            return res.status(401).json({loggedIn: false, message: 'User is not logged in', details: ['JWT cookie does not exist']})
-        }
-
-        const userDecoded = jwt.verify(token, secret);
-
-        // Passed verification
-        if (userDecoded.email && userDecoded.username) {
+    if (data.email && data.username) {
             
-            fs.readFile(DB_filePath, 'utf8', (err, data) => {
+        fs.readFile(DB_filePath, 'utf8', (err, data) => {
 
-                if (err) {
-                    return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
-                }
+            if (err) {
+                return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
+            }
         
-                // Parse existing data
-                let jsonData = []
-                if (data) {
-                    try {
-                        jsonData = JSON.parse(data)
-                    } catch (error) {
-                        return res.status(500).json({message: 'Error on server',  details: ['Could write into temporary DB file']}) 
-                    }
+            // Parse existing data
+            let jsonData = []
+            if (data) {
+                try {
+                    jsonData = JSON.parse(data)
+                } catch (error) {
+                    return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']}) 
                 }
-                
-                res.status(200).json({message: 'retrival succesfull', data: jsonData})      
-            })
-        }
+            }
 
-        return res.status(400).json({loggedIn: false, message: 'User is not logged in', details: ['JWT cookie does exist but isnt valid']})
-
-    } catch (error) {
-
-        return res.status(500).json({loggedIn: false, message: 'Error on server', details: ['Error while reading cookies']})
-
-    } */
+            res.status(200).json({message: 'Data retrieved', data: jsonData})      
+        })
+    }
 
 })
+
+router.get('/byid/:id', tokenVerifier, (req, res) => {
+    
+    const id = req.params.id
+    console.log('id: ', id)
+
+    fs.readFile(DB_filePath, 'utf8', (err, data) => {
+
+        if (err) {
+            return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
+        }
+    
+        if (data) {
+
+            try {
+
+                // Parse existing data
+                let jsonData = JSON.parse(data)
+
+                for (let a=0; a<jsonData.length; a++) {
+                    if (Number(jsonData[a].id) === Number(id)) {
+                        return res.status(200).json({message: 'Data retrieved', data: jsonData[a]})      
+                    }
+                }
+
+                return res.status(404).json({message: 'Invalid id'})      
+
+            } catch (error) {
+                return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']}) 
+            }
+
+        } else {
+
+            return res.status(500).json({message: 'Error on server',  details: ['Somehow there is nothing on DB file']}) 
+        }
+
+    })
+    
+})
+
+
+
 
 module.exports = router

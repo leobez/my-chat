@@ -16,8 +16,10 @@ app.use(cors(corsOptions))
 
 app.use(express.json({
     verify: (req, res, buf, encoding) => { // Verify is user req has any SyntaxError's
-        try {
-            JSON.parse(buf)
+        try {  
+            if (buf && buf.length) {
+                JSON.parse(buf)
+            }
         } catch (error) {
             throw new SyntaxError('Invalid JSON')
         }
@@ -50,18 +52,6 @@ const io = new socketIO.Server(httpServer, {
     }
 })
 
-
-// ROOM
-/* 
-    id
-    name
-    desc
-    users []
-    messages
-
-
-
-*/
 
 // Any user has connected
 io.on('connection', (socket) => {

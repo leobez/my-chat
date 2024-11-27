@@ -14,7 +14,7 @@ const Home = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false)
   const [events, setEvents] = useState<any[]>([])
 
-  useEffect(() => {
+  /* useEffect(() => {
 
     // Somehow user got into home page without being logged in
     if (!isLogged) return;
@@ -35,7 +35,7 @@ const Home = () => {
       socket.off('event', onEvent)
     }
 
-  }, [isLogged])
+  }, [isLogged]) */
 
 
   return (

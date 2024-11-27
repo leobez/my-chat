@@ -167,6 +167,7 @@ router.post('/login', (req, res) => {
     })
 })
 
+
 // Protected routes (uses middleware: tokenVerifier)
 router.post('/logout', tokenVerifier, (req, res) => {
 
@@ -286,8 +287,6 @@ router.get('/byid/:id', tokenVerifier, (req, res) => {
     })
     
 })
-
-
 
 
 module.exports = router

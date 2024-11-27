@@ -4,5 +4,17 @@
     "email": "alow",
     "username": "alow",
     "password": "$2b$10$eb6zyY01v9RcnYuDH0PhxOFpn39gIoYmjRi6GVB5HAikj7NoU0ru6"
+  },
+  {
+    "id": 1,
+    "email": "user1",
+    "username": "user1",
+    "password": "$2b$10$NUQYGv5LO7WnJhOJBqpk6.65lwqMlm7T5VgQHdAelE5jx8NlCY3Ie"
+  },
+  {
+    "id": 2,
+    "email": "user2",
+    "username": "user2",
+    "password": "$2b$10$ivDTlbgI6EddcJGbX4iMkOjsRnDGOYt7sJroVC0r99yVN41wbN/UG"
   }
 ]

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useGetAllUsers } from '../hooks/useGetAllUsers'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 const Room = () => {
 
@@ -25,7 +26,9 @@ const Room = () => {
                             {currentUser.email === user.email && <p>thats me lol</p>}
                             <p>{user.username}</p>
                             <p>{user.email}</p>
-                            <button className='border-2 border-black p-2'>chat</button>
+                            <div className='border-2 border-black p-2'>
+                                <Link to={`/chat/${user.id}`}>chat</Link>
+                            </div>
                         </div>
                     ))
                 }

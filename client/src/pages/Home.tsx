@@ -1,56 +1,79 @@
 import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
+import { Link } from "react-router-dom";
 import { io } from "socket.io-client";
-import { loginReducer } from "../slices/authSlice";
-import Room from "../components/Room";
 
 const SOCKET_URL = "http://localhost:3000"
 
 const Home = () => {
 
   const user = useSelector((state:any) => state.auth)
+  const email = useSelector((state:any) => state.auth.email)
   const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
 
-  const [isConnected, setIsConnected] = useState<boolean>(false)
-  const [events, setEvents] = useState<any[]>([])
+  const [users, setUsers] = useState<any[]>([])
 
-  /* useEffect(() => {
+  useEffect(() => {
+    console.log('users: ', users)
+  }, [users])
+
+  useEffect(() => {
 
     // Somehow user got into home page without being logged in
     if (!isLogged) return;
 
-    const socket = io(SOCKET_URL)
+    const socket = io(SOCKET_URL, {autoConnect: false})
 
-    const onConnect = () => setIsConnected(true)
-    const onDisconnect = () => setIsConnected(false)
-    const onEvent = (value:any) => setEvents((prev) => [...prev, value])
+    socket.onAny((event, ...args) => {
+      console.log(event, args)
+    })
 
-    socket.on('connect', onConnect)
-    socket.on('disconnect', onDisconnect)
-    socket.on('event', onEvent)
+    socket.auth = { email }
+
+    socket.connect()
+
+    socket.on('connect_error', (err) => {
+      if (err.message === 'No email') {
+          console.log('No email')
+          return;
+      }
+    })
+
+    socket.on('users', (users:any[]) => {
+
+      users.forEach((user:any) => {
+          user.self = user.userId === socket.id
+      });
+
+      //console.log('users: ', users)
+      setUsers(users)
+    })
+
+    socket.on('user connected', (user) => {
+      setUsers((prev:any) => [...prev, user])
+    })
 
     return () => {
-      socket.off('connect', onConnect)
-      socket.off('disconnect', onDisconnect)
-      socket.off('event', onEvent)
+        socket.off('connect_error')
+        socket.disconnect()
     }
 
-  }, [isLogged]) */
+  }, [isLogged])
 
 
   return (
     
-    <div>
-
-      <p>HOME</p>
-
-      <p>DATA: </p>
-
-      <p>isConnected: {isConnected ? `True` : `False`}</p>
-
-      <Room/>
+    <div className="flex gap-2">
+      {users && users.length > 0 && users.map((user:any, index:number) => (
+            <div key={index} className="border border-black p-3">
+              <Link to={`chat/${user.userId}`}>
+                {user.email}
+              </Link>
+            </div>
+      ))}
 
     </div>
+
   )
 }
 

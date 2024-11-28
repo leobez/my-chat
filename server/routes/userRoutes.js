@@ -4,6 +4,7 @@ const router = express.Router()
 //Temporary database
 const fs = require('fs')
 const path = require('path')
+const DB_filePath = path.join(__dirname, '../data/user.json')
 
 // Password encryption
 const bcrypt = require('bcrypt')
@@ -15,9 +16,6 @@ const tokenVerifier = require('../middlewares/TokenVerifier')
 
 // Envirment variables
 const secret = process.env.SECRET_KEY
-
-// File for saving data (temporary DB)
-const DB_filePath = path.join(__dirname, '../data/user.json')
 
 
 // ROUTES

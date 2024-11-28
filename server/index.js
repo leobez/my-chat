@@ -5,6 +5,11 @@ const cookieParser = require('cookie-parser')
 const JsonVerifier = require('./middlewares/JsonVerifier')
 require('dotenv').config()
 
+//Temporary database
+const fs = require('fs')
+const path = require('path')
+const DB_filePath = path.join(__dirname, '/data/user.json')
+
 // MIDDLEWARES
 const corsOptions = {
     origin: ['http://localhost:3000', 'http://localhost:5173'],
@@ -38,7 +43,6 @@ app.get('', (req, res) => {
     res.status(404).json({message: 'not found'})
 })
 
-
 // WEBSOCKET
 const http = require('node:http')
 const socketIO = require('socket.io')
@@ -52,33 +56,47 @@ const io = new socketIO.Server(httpServer, {
     }
 })
 
+io.use((socket, next) => {
+    const email = socket.handshake.auth.email
+
+    // Validate email 
+    // TODO: Validate if email is correct on database
+
+    if (!email) {
+        return next(new Error('No email'))
+    }
+
+    socket.email = email
+    next()
+})
+
 
 // Any user has connected
 io.on('connection', (socket) => {
 
-    // socket is a user
-    // Every user automatically joins a universal room at beggning of connection
-    socket.join('universal_room')
+    // Create list of current connected sockets
+    const users = []
+    for (let [id, socket] of io.of('/').sockets) {
+        users.push({
+            userId: id,
+            email: socket.email
+        })
+    }
 
-    io.to('universal_room').emit('message', 'you have now entered')
+    console.log('CURRENT CONNECTED USERS: ', users)
 
-    console.log(`Usuário conectado: ${socket.id}`);
-    
-    // Escuta mensagens do cliente
-    socket.on('message', (msg) => {
-        console.log(`Mensagem recebida: ${msg}`);
-        
-        // Envia uma resposta para o cliente
-        socket.emit('message', `Recebido: ${msg}`);
-    });
+    // Emit to user who just connected the list
+    socket.emit('users', users)
 
-    // Quando o cliente se desconecta
-    socket.on('disconnect', () => {
-        console.log(`Usuário desconectado: ${socket.id}`);
-    });
+    // Broadcast to every socket that a new user has arrived
+    socket.broadcast.emit('user connected', {
+        userId: socket.id,
+        email: socket.email,
+    })
+
 });
 
-// Not being used yet
+
 httpServer.listen(3000, () => {
     console.log('SERVER ON 3000')
 })

@@ -6,11 +6,12 @@
 
 TODO: 
     -> CREATE COMMUNICATION BETWEEN USERS
-        -> CLICK 'CHAT' BUTTON/LINK
-        -> TAKES TO ROUTE chat/:id
-        -> STABLISH CONNECTION BEETWEN SOCKETS
-        -> EXCHANGE MESSAGES
-        -> SAVE MESSAGES SOMEWAHERE
+
+        -> CREATE CONTEXT FOR SOCKET
+        -> FINISH PRIVATE CHAT FUNCTIONALITY (https://socket.io/get-started/private-messaging-part-1/)
+        -> MAKE BETTER CODE ON FRONT-END 
+        -> MAKE BETTER CODE ON BACK END
+            -> IMPLEMENT SQLLITE
 
     ACCOUNT:
     -> FORGOT PASSWORD

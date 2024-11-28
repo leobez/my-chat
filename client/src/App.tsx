@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/Logout';
 import { loginReducer } from './slices/authSlice';
+import Chat from './pages/Chat';
 
 const API_URL = "http://localhost:3000/api/user"
 
@@ -77,8 +78,9 @@ function App() {
         <Routes>
           <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>
           <Route path="/register" element={isLogged ? <Navigate to="/"/> : <Register/>}/>
-          <Route path="/" element={isLogged ? <Home/> : <Navigate to="/login"/>}/>
           <Route path="/logout" element={isLogged ? <Logout/> : <Navigate to="/login"/>}/>
+          <Route path="/chat/:id" element={isLogged ? <Chat/> : <Navigate to="/login"/>}></Route>
+          <Route path="/" element={isLogged ? <Home/> : <Navigate to="/login"/>}/>
           <Route path='*' element={<NotFound />} />
         </Routes>
 

@@ -7,8 +7,9 @@
 TODO: 
     -> CREATE COMMUNICATION BETWEEN USERS
 
-        -> CREATE CONTEXT FOR SOCKET
         -> FINISH PRIVATE CHAT FUNCTIONALITY (https://socket.io/get-started/private-messaging-part-1/)
+            -> 
+
         -> MAKE BETTER CODE ON FRONT-END 
         -> MAKE BETTER CODE ON BACK END
             -> IMPLEMENT SQLLITE

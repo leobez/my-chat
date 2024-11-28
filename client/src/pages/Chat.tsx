@@ -17,10 +17,8 @@ const Chat = () => {
 
     const handleSubmit = (e:any) => {
         e.preventDefault()
-
         if (!message.length) return;
 
-        
     }
 
     return (

@@ -60,7 +60,7 @@ io.use((socket, next) => {
     const email = socket.handshake.auth.email
 
     // Validate email 
-    // TODO: Validate if email is correct on database
+    // TODO: Validate if email exists on database
 
     if (!email) {
         return next(new Error('No email'))

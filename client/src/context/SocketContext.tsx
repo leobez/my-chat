@@ -4,7 +4,7 @@ const SOCKET_URL = "http://localhost:3000"
 
 export interface SocketContextType {
     socket: Socket
-    connect:()=>void;
+    connect:(email:string)=>void;
     disconnect:()=>void;
 }
 
@@ -22,14 +22,21 @@ export function SocketContextProvider({children}:SocketContextProps) {
         console.log('SOCKET: ', socket)
     }, [socket])
 
-    // TODO: MAYBE ADD TO 'auth' TO PASS MIDDLEWARE
-
-    const connect = () => {
+    const connect = (email:string) => {
+        socket.auth = {email}
         socket.connect()
     }
 
     const disconnect = () => {
         socket.disconnect()
+    }
+
+    // Use in home component
+    const getAllConnectedUsers = () => {
+    }
+
+    // Use in chat component
+    const sendPrivateMessage = () => {
     }
 
     return (
@@ -40,6 +47,7 @@ export function SocketContextProvider({children}:SocketContextProps) {
         }}>
 
             {children}
+
         </SocketContext.Provider>
     )
 }

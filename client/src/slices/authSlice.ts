@@ -32,6 +32,7 @@ export const authSlice = createSlice({
             state.email = ""
             state.username = ""
         }
+        
     }
 })
 

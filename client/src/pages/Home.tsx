@@ -20,7 +20,7 @@ const Home = () => {
       if (!isLogged) return;
 
       // Connect to server via websockets
-      connect()
+      connect(email)
 
     }, [isLogged])
 
@@ -66,7 +66,6 @@ const Home = () => {
     }
 
   }, [isLogged]) */
-
 
     return (
       

@@ -1,23 +1,30 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom";
-import { io } from "socket.io-client";
+import SocketContext, { SocketContextType } from "../context/SocketContext";
 
-const SOCKET_URL = "http://localhost:3000"
 
 const Home = () => {
 
-  const user = useSelector((state:any) => state.auth)
-  const email = useSelector((state:any) => state.auth.email)
-  const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
+    const user = useSelector((state:any) => state.auth)
+    const email = useSelector((state:any) => state.auth.email)
+    const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
 
-  const [users, setUsers] = useState<any[]>([])
+    const [users, setUsers] = useState<any[]>([])
 
-  useEffect(() => {
-    console.log('users: ', users)
-  }, [users])
+    const {socket, connect, disconnect} = useContext(SocketContext) as SocketContextType
 
-  useEffect(() => {
+    useEffect(() => {
+
+      // User somehow got here wihout being logged
+      if (!isLogged) return;
+
+      // Connect to server via websockets
+      connect()
+
+    }, [isLogged])
+
+/*   useEffect(() => {
 
     // Somehow user got into home page without being logged in
     if (!isLogged) return;
@@ -58,23 +65,17 @@ const Home = () => {
         socket.disconnect()
     }
 
-  }, [isLogged])
+  }, [isLogged]) */
 
 
-  return (
-    
-    <div className="flex gap-2">
-      {users && users.length > 0 && users.map((user:any, index:number) => (
-            <div key={index} className="border border-black p-3">
-              <Link to={`chat/${user.userId}`}>
-                {user.email}
-              </Link>
-            </div>
-      ))}
+    return (
+      
+      <div className="flex gap-2">
+        <p>HOME</p>
 
-    </div>
+      </div>
 
-  )
+    )
 }
 
 export default Home

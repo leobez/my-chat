@@ -74,6 +74,8 @@ io.use((socket, next) => {
 // Any user has connected
 io.on('connection', (socket) => {
 
+    console.log('connected: ', socket.id)
+
     // Create list of current connected sockets
     const users = []
     for (let [id, socket] of io.of('/').sockets) {

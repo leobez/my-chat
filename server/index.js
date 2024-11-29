@@ -77,18 +77,26 @@ io.on('connection', (socket) => {
     console.log('connected: ', socket.id)
 
     // Create list of current connected sockets
-    const users = []
+    const connected_users = []
     for (let [id, socket] of io.of('/').sockets) {
-        users.push({
+        connected_users.push({
             userId: id,
             email: socket.email
         })
     }
 
-    console.log('CURRENT CONNECTED USERS: ', users)
+    console.log('CURRENT CONNECTED USERS: ', connected_users)
 
     // Emit to user who just connected the list
-    socket.emit('users', users)
+    socket.emit('connected users', connected_users)
+
+    socket.on('disconnect', () => {
+        // Broadcast to every socket that a user has disconnected
+        socket.broadcast.emit('user disconnected', {
+            userId: socket.id,
+            email: socket.email
+        })
+    })
 
     // Broadcast to every socket that a new user has arrived
     socket.broadcast.emit('user connected', {

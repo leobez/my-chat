@@ -6,13 +6,10 @@ import SocketContext, { SocketContextType } from "../context/SocketContext";
 
 const Home = () => {
 
-    const user = useSelector((state:any) => state.auth)
     const email = useSelector((state:any) => state.auth.email)
     const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
 
-    const [users, setUsers] = useState<any[]>([])
-
-    const {socket, connect, disconnect} = useContext(SocketContext) as SocketContextType
+    const {connect, disconnect, connectedUsers} = useContext(SocketContext) as SocketContextType
 
     useEffect(() => {
 
@@ -24,53 +21,29 @@ const Home = () => {
 
     }, [isLogged])
 
-/*   useEffect(() => {
-
-    // Somehow user got into home page without being logged in
-    if (!isLogged) return;
-
-    const socket = io(SOCKET_URL, {autoConnect: false})
-
-    socket.onAny((event, ...args) => {
-      console.log(event, args)
-    })
-
-    socket.auth = { email }
-
-    socket.connect()
-
-    socket.on('connect_error', (err) => {
-      if (err.message === 'No email') {
-          console.log('No email')
-          return;
-      }
-    })
-
-    socket.on('users', (users:any[]) => {
-
-      users.forEach((user:any) => {
-          user.self = user.userId === socket.id
-      });
-
-      //console.log('users: ', users)
-      setUsers(users)
-    })
-
-    socket.on('user connected', (user) => {
-      setUsers((prev:any) => [...prev, user])
-    })
-
-    return () => {
-        socket.off('connect_error')
-        socket.disconnect()
-    }
-
-  }, [isLogged]) */
-
     return (
       
-      <div className="flex gap-2">
+      <div className="flex flex-col justify-center">
         <p>HOME</p>
+
+        <div className="flex gap-2">
+
+          {connectedUsers && connectedUsers.map((connectedUser:any, index:number) => (
+            <>
+              {connectedUser.self ? (
+                <div key={index} className="w-1/12 h-12 border-2 border-green-700">
+                  <p>{connectedUser.email}</p>
+                </div>
+              ) : (
+                <div key={index} className="w-1/12 h-12 border-2 border-blue-700">
+                  <p>{connectedUser.email}</p>
+                </div>
+              )}
+            </>
+
+          ))}
+
+        </div>
 
       </div>
 

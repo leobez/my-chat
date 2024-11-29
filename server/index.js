@@ -70,7 +70,6 @@ io.use((socket, next) => {
     next()
 })
 
-
 // Any user has connected
 io.on('connection', (socket) => {
 
@@ -104,8 +103,15 @@ io.on('connection', (socket) => {
         email: socket.email,
     })
 
-});
+    socket.on('private message', ({content, to}) => {
+        console.log('transmiting message: ', {content, to, from: socket.id})
+        socket.to(to).emit('private message', {
+            content, 
+            from: socket.id
+        })
+    })
 
+});
 
 httpServer.listen(3000, () => {
     console.log('SERVER ON 3000')

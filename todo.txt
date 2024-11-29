@@ -4,15 +4,43 @@
 
 --/--
 
+USER:
+    -> Username: string
+    -> Email: string
+    -> Password: string
+    -> ID: number
+    -> Socket_ID (Changes constantly): string
+
+STATE:
+    -> ConnectedUsers: any[]
+        -> Username
+        -> Email
+        -> Socket_ID (Changes constantly)
+        -> Messages: any[]
+            -> Content: string
+            -> From: string
+            
 TODO: 
     -> CREATE COMMUNICATION BETWEEN USERS
 
-        -> FINISH PRIVATE CHAT FUNCTIONALITY (https://socket.io/get-started/private-messaging-part-1/)
-            -> 
+        -> BEGIN FROM START (LOGIN ETC)
 
-        -> MAKE BETTER CODE ON FRONT-END 
-        -> MAKE BETTER CODE ON BACK END
-            -> IMPLEMENT SQLLITE
+        -> ADJUST USER PROPERTIES
+            -> MAP USERNAME OR DB_ID TO HIS USERNAME
+            -> WHEN CONNECT/DISCONNECT -> KNOW THAT ITS WTILL THE SAME USER DESPITE SOCKET ID CHANGE
+
+        -> IMPLEMENT SQLLITE TO SAVE MESSAGES (ONLY ON SERVER INITIALLY)
+        -> MAKE BETTER CODE
+
+        -> FINISH PRIVATE CHAT FUNCTIONALITY (https://socket.io/get-started/private-messaging-part-1/)
+            -> AFTER MESSAGE SENT, SAVE ON DATABASE. 
+            -> SENT FROM DATABASE TO USER
+
+
+
+            
+
+
 
     ACCOUNT:
     -> FORGOT PASSWORD

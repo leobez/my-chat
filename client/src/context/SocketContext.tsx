@@ -8,6 +8,9 @@ export interface SocketContextType {
     connect:(email:string)=>void;
     disconnect:()=>void;
     connectedUsers:any[];
+    talkTo:(userId:string)=>void;
+    userToTalk:string;
+    sendMessage:(message:string)=>void;
 }
 
 const SocketContext = createContext<SocketContextType|undefined>(undefined)
@@ -32,6 +35,8 @@ export function SocketContextProvider({children}:SocketContextProps) {
         console.log('connectedUsers: ', connectedUsers)
     }, [connectedUsers])
 
+    const [userToTalk, setUserToTalk] = useState<string>('')
+
     useEffect(() => {
 
         console.log('SOCKET: ', socket)
@@ -44,12 +49,14 @@ export function SocketContextProvider({children}:SocketContextProps) {
             connectedUsers.forEach(connectedUser => {
                 // Add 'self' property to user who is current logged user
                 connectedUser.self = connectedUser.userId === socket.id
+                connectedUser.messages = []
             });
             setConnectedUsers(connectedUsers);
         })
 
         // Update all connected_users -> HOME component
         socket.on('user connected',  (user) => {
+            user.messages = []
             setConnectedUsers((prev:any) => [...prev, user])
         })
 
@@ -59,10 +66,24 @@ export function SocketContextProvider({children}:SocketContextProps) {
             setConnectedUsers((prev:any[]) => prev.filter((localUser:any) => localUser.userId !== user.userId))
         })
 
+        // Update when user receives message
+        socket.on('private message', ({content, from}) => {
+            for (let a=0; a<connectedUsers.length; a++) {
+                const user = connectedUsers[a]
+                if (user.userId === from) {
+                    user.messages.push({
+                        content: content,
+                        fromSelf: false
+                    })
+                }
+            }
+        })
+
         return () => {
             socket.off('connected users')
             socket.off('user connected')
             socket.off('user disconnected')
+            socket.off('private message')
         }
 
     }, [socket, isLogged])
@@ -76,8 +97,45 @@ export function SocketContextProvider({children}:SocketContextProps) {
         socket.disconnect()
     }
 
-    // Use in chat component
-    const sendPrivateMessage = () => {
+    const talkTo = (userId:string) => {
+        if (userToTalk === userId) {
+            setUserToTalk('')
+            return;
+        }
+        console.log('TALK TO: ', userId)
+        setUserToTalk(userId)
+    }
+
+    const sendMessage = (message:string) => {
+
+        console.log('SENDING: ', {content:message, to:userToTalk})
+
+        socket.emit("private message", {
+            content: message,
+            to: userToTalk,
+        })
+
+/*         setConnectedUsers((prev) => {}prev.map((user:any) => {
+            if (user.userId === userToTalk) {
+                user.messages.push({
+                    content: message,
+                    from: socket.id
+                })
+            }
+        })) */
+
+        setConnectedUsers((prev) => {
+            console.log('prev: ', prev)
+            return prev.map((user:any) => {
+                if (user.userId === userToTalk) {
+                    user.messages.push({
+                        content: message,
+                        from: socket.id
+                    })
+                }
+            })
+        })
+
     }
 
     return (
@@ -86,6 +144,9 @@ export function SocketContextProvider({children}:SocketContextProps) {
             connect,
             disconnect,
             connectedUsers,
+            talkTo,
+            userToTalk,
+            sendMessage
         }}>
 
             {children}

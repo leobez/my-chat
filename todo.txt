@@ -22,7 +22,8 @@ STATE:
             
 TODO: 
     -> CREATE COMMUNICATION BETWEEN USERS
-
+        -> CREATE FRIENDS LIST
+        -> CREATE CONTROLLERS ON SERVER
         -> BEGIN FROM START (LOGIN ETC)
 
         -> ADJUST USER PROPERTIES
@@ -36,7 +37,8 @@ TODO:
             -> AFTER MESSAGE SENT, SAVE ON DATABASE. 
             -> SENT FROM DATABASE TO USER
 
-
+        -> EVENTUALLY ADD EXPRESS-VALIDATOR
+        
 
             
 

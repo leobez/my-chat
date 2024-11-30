@@ -16,5 +16,11 @@
     "email": "user2",
     "username": "user2",
     "password": "$2b$10$ivDTlbgI6EddcJGbX4iMkOjsRnDGOYt7sJroVC0r99yVN41wbN/UG"
+  },
+  {
+    "id": 3,
+    "email": "user3",
+    "username": "user3",
+    "password": "$2b$10$MTBo3BPJEgydWXC1yGbnee.AuqgWN98JHIiI9lKskGFhX5/enuRYO"
   }
 ]

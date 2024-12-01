@@ -4,24 +4,11 @@
 
 --/--
 
-USER:
-    -> Username: string
-    -> Email: string
-    -> Password: string
-    -> ID: number
-    -> Socket_ID (Changes constantly): string
-
-STATE:
-    -> ConnectedUsers: any[]
-        -> Username
-        -> Email
-        -> Socket_ID (Changes constantly)
-        -> Messages: any[]
-            -> Content: string
-            -> From: string
-            
 TODO: 
+    -> FINISH IMPLEMENTING SQLITE
+
     -> CREATE COMMUNICATION BETWEEN USERS
+
         -> CREATE FRIENDS LIST
         -> CREATE CONTROLLERS ON SERVER
         -> BEGIN FROM START (LOGIN ETC)
@@ -30,9 +17,6 @@ TODO:
             -> MAP USERNAME OR DB_ID TO HIS USERNAME
             -> WHEN CONNECT/DISCONNECT -> KNOW THAT ITS WTILL THE SAME USER DESPITE SOCKET ID CHANGE
 
-        -> IMPLEMENT SQLLITE TO SAVE MESSAGES (ONLY ON SERVER INITIALLY)
-        -> MAKE BETTER CODE
-
         -> FINISH PRIVATE CHAT FUNCTIONALITY (https://socket.io/get-started/private-messaging-part-1/)
             -> AFTER MESSAGE SENT, SAVE ON DATABASE. 
             -> SENT FROM DATABASE TO USER
@@ -40,10 +24,7 @@ TODO:
         -> EVENTUALLY ADD EXPRESS-VALIDATOR
         
 
-            
-
-
-
+        
     ACCOUNT:
     -> FORGOT PASSWORD
     -> GUEST

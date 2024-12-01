@@ -4,16 +4,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const JsonVerifier = require('./middlewares/JsonVerifier')
 require('dotenv').config()
-
-const sqlite3 = require('sqlite3').verbose()
-
-const db = new sqlite3.Database('./database.db', (err) => {
-    if (err) {
-        console.error('Error while connecting to database', err.message)
-    } else {
-        console.log('Connected to SQLITE3 database')
-    }
-})
+const db = require('./db/db')
 
 // MIDDLEWARES
 const corsOptions = {
@@ -38,14 +29,6 @@ app.use(express.json({
 
 app.use(JsonVerifier) 
 app.use(cookieParser())
-
-
-
-
-
-
-
-
 
 
 // ROUTES

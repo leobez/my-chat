@@ -1,11 +1,12 @@
 //Temporary database
 const fs = require('fs')
 const path = require('path')
-const DB_filePath = path.join(__dirname, '../data/user.json')
+
+const db = require('../db/db')
 
 // Password encryption
 const bcrypt = require('bcrypt')
-const saltRounds = 10
+const saltRounds = 12
 
 // Session management
 const jwt = require('jsonwebtoken')
@@ -21,7 +22,7 @@ class UserController {
         // Get data
         const {email, username, password} = req.body
 
-        // Validate data
+        // Validate data (do a better job here)
         if (!email || email.length === 0) {
             return res.status(400).json({message: 'Invalid request', details: ['Field Email is required']})
         }
@@ -32,8 +33,8 @@ class UserController {
             return res.status(400).json({message: 'Invalid request', details: ['Field Password is required']})
         }
 
+        // Hash password
         let hash = ''
-
         try {
             const salt = bcrypt.genSaltSync(saltRounds)
             hash = bcrypt.hashSync(password, salt)
@@ -41,8 +42,23 @@ class UserController {
             return res.status(500).json({message: 'Error on server',  details: ['Could not generate hash and salt for password']})
         }
 
+        // Add data to database
+        try {
+            const insert = db.prepare('INSERT INTO (email, username, password) VALUES (?, ?, ?)')
+            insert.run(1, email)
+            insert.run(2, username)
+            insert.run(3, hash)
+        } catch (error) {
+            console.log('Error while inserting data into database: ', error.message)
+            return res.status(500).json({message: 'Error on server',  details: ['Could not insert data into database']})
+        }
+
+        // Just to see
+        const query = db.prepare('SELECT * FROM Users')
+        console.log(query.all())
+
         // save data on a JSON (temporary database)
-        fs.readFile(DB_filePath, 'utf8', (err, data) => {
+        /* fs.readFile(DB_filePath, 'utf8', (err, data) => {
 
             if (err) {
                 return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
@@ -103,7 +119,7 @@ class UserController {
             })
 
         })
-
+ */
     
     }
 

@@ -3,8 +3,10 @@ const app = express()
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const JsonVerifier = require('./middlewares/JsonVerifier')
+const expressValidator = require('express-validator')
 require('dotenv').config()
-const db = require('./db/db')
+// Initiate DB
+require('./db/db')
 
 // MIDDLEWARES
 const corsOptions = {
@@ -30,7 +32,6 @@ app.use(express.json({
 app.use(JsonVerifier) 
 app.use(cookieParser())
 
-
 // ROUTES
 // USER ROUTES
 const userRoutes = require('./routes/userRoutes')
@@ -39,6 +40,20 @@ app.use('/api/user', userRoutes)
 app.get('', (req, res) => {
     res.status(404).json({message: 'not found'})
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // WEBSOCKET
 const http = require('node:http')

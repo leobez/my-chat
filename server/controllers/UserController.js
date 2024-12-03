@@ -10,6 +10,7 @@ const saltRounds = 12
 
 // Session management
 const jwt = require('jsonwebtoken')
+const { validationResult, matchedData } = require('express-validator')
 
 // Envirment variables
 const secret = process.env.SECRET_KEY
@@ -45,42 +46,30 @@ class UserController {
     // Saves user on database, creates session token and sends them.
     static register = async(req, res) => {
         
+        // Validate data
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(422).json({message: 'Bad request', details: errors})
+        }
+         
         // Get data
-        const {email, username, password} = req.body
+        const {email, username, password} = matchedData(req)
 
-        // Validate data (do a better job here)
-        if (!email || email.length === 0) {
-            return res.status(400).json({message: 'Bad request', details: ['Field Email is required']})
-        }
-        if (!username || username.length === 0) {
-            return res.status(400).json({message: 'Bad request', details: ['Field Username is required']})
-        }
-        if (!password || password.length <= 3) {
-            return res.status(400).json({message: 'Bad request', details: ['Field Password is required']})
-        }
 
         // Hash password
         let hash = ''
         try {
-
             const salt = bcrypt.genSaltSync(saltRounds)
             hash = bcrypt.hashSync(password, salt)
-
         } catch (error) {
-
             return res.status(500).json({message: 'Server error',  details: ['Fail to generate hash and salt for password']})
-
         }
 
         // Insert user into database
         try {
-
             await insertUser(email, username, password)
-
         } catch (error) {
-
             console.log(error)
-
             // Some of the info sent by user already exists in database
             if (error.includes('UNIQUE constraint failed')) {
 
@@ -92,27 +81,20 @@ class UserController {
                     return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
                 }    
             }
-
             return res.status(500).json({message: 'Server error',  details: ['Fail to insert user into database']}) 
         }
 
         // Get user from database, create token session and send it to user
         try {
-            
             const userData = await getUser(email)
-
             const token = jwt.sign(userData, secret, {expiresIn: '1h'})
-
             return res.cookie('jwt', token, {
                 httpOnly: true,
                 //secure: true,
                 sameSite: 'strict',
             }).status(201).json({message: 'User created', data:userData}) 
-
         } catch (error) {
-            
             console.log(error)
-
             return res.status(200).json({message: 'Server error',  details: ['Fail to get userdata from database']})
         }
     }
@@ -120,21 +102,24 @@ class UserController {
     // Verify if user exists, matches, creates session token, assigns it to cookie and sends them.
     static login = async(req, res) => {
 
-        // Get data
-        const {email, password} = req.body
-
         // Validate data
-        if (!email || email.length === 0) {
-            return res.status(400).json({message: 'Invalid request', details: ['Field "Email" is required']})
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(422).json({message: 'Bad request', details: errors})
         }
+            
+        // Get data
+        const {email, password} = matchedData(req)
 
-        if (!password || password.length <= 3) {
-            return res.status(400).json({message: 'Invalid request', details: ['Field "Password" is too short']})
-        }
+        // Find data in DB
+
+        // Verify if is correct
+
+        // Send token 
 
 
         // Register data on JSON (eventually a database)
-        fs.readFile(DB_filePath, 'utf8', (err, data) => {
+       /*  fs.readFile(DB_filePath, 'utf8', (err, data) => {
 
             if (err) {
                 return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
@@ -170,7 +155,7 @@ class UserController {
             }
 
             return res.status(404).json({message: 'Resource not found',  details: ['User not found inside temporary DB file']})
-        })
+        }) */
     }
 
     // Remove session token from cookies

@@ -22,13 +22,11 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
 db.serialize(() => {
     db.run(`
         CREATE TABLE Users(
-            userId INTEGER AUTO_INCREMENT NOT NULL,
+            userId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             socketId VARCHAR(255) UNIQUE, 
             email VARCHAR(255) UNIQUE NOT NULL,
             username VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
-
-            PRIMARY KEY(userId)
+            password VARCHAR(255) NOT NULL
         )
     `, (err) => {
         if (err) {
@@ -41,11 +39,9 @@ db.serialize(() => {
 
 db.run(`
     CREATE TABLE Friendship(
-        friendshipId INTEGER AUTO_INCREMENT NOT NULL,
+        friendshipId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         user1 INTEGER NOT NULL,
         user2 INTEGER NOT NULL,
-
-        PRIMARY KEY(friendshipId),
         FOREIGN KEY(user1) REFERENCES Users(userId),
         FOREIGN KEY(user2) REFERENCES Users(userId)
     ); 
@@ -59,12 +55,10 @@ db.run(`
 
 db.run(`
     CREATE TABLE Messages(
-        messageId INTEGER AUTO_INCREMENT NOT NULL,
+        messageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         from_user INTEGER NOT NULL UNIQUE,
         to_user INTEGER NOT NULL UNIQUE,
         content VARCHAR(500) NOT NULL,
-
-        PRIMARY KEY(messageId),
         FOREIGN KEY(from_user) REFERENCES Users(userId),
         FOREIGN KEY(to_user) REFERENCES Users(userId)
     )
@@ -76,5 +70,18 @@ db.run(`
     }
 })
 
+// Insert some data for testing
+db.run(`
+    
+    INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+
+`, ['email_test', 'username_test', 'password_test'], (err) => {
+    
+    if (err) {
+        console.log('Error while inserting test data: ', err.message)
+    } else {
+        console.log('Test data added')
+    }
+})
 
 module.exports = db 

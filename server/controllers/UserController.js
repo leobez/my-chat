@@ -14,6 +14,32 @@ const jwt = require('jsonwebtoken')
 // Envirment variables
 const secret = process.env.SECRET_KEY
 
+
+/* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
+function insertUser(email, username, hash) {
+    return new Promise((resolve, reject) => {
+        return db.run('INSERT INTO Users (email, username, password) VALUES (?, ?, ?)', [email, username, hash], (err) => {
+            if (err) {
+                console.error('DB Insertion failed')
+                return reject(err.message)
+            } 
+            return resolve('User created')
+        })
+    })
+}
+function getUser(email) {
+    return new Promise((resolve, reject) => {
+        return db.get(`SELECT userId, email, username FROM Users WHERE email = ?`, [email],  (err, row) => {
+            if (err) {
+                return reject(err.message)
+            }
+            return resolve(row)
+        })
+    })
+}
+
+
+/* CONTROLLER */
 class UserController {
 
     // Saves user on database, creates session token and sends them.
@@ -24,103 +50,71 @@ class UserController {
 
         // Validate data (do a better job here)
         if (!email || email.length === 0) {
-            return res.status(400).json({message: 'Invalid request', details: ['Field Email is required']})
+            return res.status(400).json({message: 'Bad request', details: ['Field Email is required']})
         }
         if (!username || username.length === 0) {
-            return res.status(400).json({message: 'Invalid request', details: ['Field Username is required']})
+            return res.status(400).json({message: 'Bad request', details: ['Field Username is required']})
         }
         if (!password || password.length <= 3) {
-            return res.status(400).json({message: 'Invalid request', details: ['Field Password is required']})
+            return res.status(400).json({message: 'Bad request', details: ['Field Password is required']})
         }
 
         // Hash password
         let hash = ''
         try {
+
             const salt = bcrypt.genSaltSync(saltRounds)
             hash = bcrypt.hashSync(password, salt)
+
         } catch (error) {
-            return res.status(500).json({message: 'Error on server',  details: ['Could not generate hash and salt for password']})
+
+            return res.status(500).json({message: 'Server error',  details: ['Fail to generate hash and salt for password']})
+
         }
 
-        // Add data to database
+        // Insert user into database
         try {
-            const insert = db.prepare('INSERT INTO (email, username, password) VALUES (?, ?, ?)')
-            insert.run(1, email)
-            insert.run(2, username)
-            insert.run(3, hash)
+
+            await insertUser(email, username, password)
+
         } catch (error) {
-            console.log('Error while inserting data into database: ', error.message)
-            return res.status(500).json({message: 'Error on server',  details: ['Could not insert data into database']})
+
+            console.log(error)
+
+            // Some of the info sent by user already exists in database
+            if (error.includes('UNIQUE constraint failed')) {
+
+                if (error.includes('Users.username')) {
+                    return res.status(400).json({message: 'Bad request',  details: ['Username already used']}) 
+                }   
+
+                if (error.includes('Users.email')) {
+                    return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
+                }    
+            }
+
+            return res.status(500).json({message: 'Server error',  details: ['Fail to insert user into database']}) 
         }
 
-        // Just to see
-        const query = db.prepare('SELECT * FROM Users')
-        console.log(query.all())
-
-        // save data on a JSON (temporary database)
-        /* fs.readFile(DB_filePath, 'utf8', (err, data) => {
-
-            if (err) {
-                return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
-            }
-
-            // Parse existing data
-            let jsonData = []
-            if (data) {
-                try {
-                    jsonData = JSON.parse(data)
-                } catch (error) {
-                    return res.status(500).json({message: 'Error on server',  details: ['Could not parse JSON data from temporary DB file']}) 
-                }
-            }
-
-            // TODO: VERIFY IF EMAIL ALREADY EXISTS
-            for (let a=0; a<jsonData.length; a++) {
-                if (jsonData[a].email === email) {
-                    return res.status(400).json({message: 'Invalid request',  details: ['Email already used']}) 
-                }
-            }
-
-            // Generate id to user (+1 from last)
-            let lastId = -1
-            if (jsonData.length > 0) {
-                lastId = jsonData[jsonData.length-1].id
-            } 
-
-            const userId = lastId + 1
+        // Get user from database, create token session and send it to user
+        try {
             
-            const newData = {
-                id: userId,
-                email: email,
-                username: username,
-                password: hash
-            }
+            const userData = await getUser(email)
 
-            // Add new user to list
-            jsonData.push(newData)
+            const token = jwt.sign(userData, secret, {expiresIn: '1h'})
 
-            // Write data on file
-            fs.writeFile(DB_filePath, JSON.stringify(jsonData, null, 2), 'utf8', writeErr => {
+            return res.cookie('jwt', token, {
+                httpOnly: true,
+                //secure: true,
+                sameSite: 'strict',
+            }).status(201).json({message: 'User created', data:userData}) 
 
-                if (writeErr) {
-                    return res.status(500).json({message: 'Error on server',  details: ['Could not access temporary DB file']})
-                }
+        } catch (error) {
+            
+            console.log(error)
 
-                // Register succesfull
-                // auto login user
-                const token = jwt.sign(newData, secret, {expiresIn: '1h'})
-
-                res.cookie('jwt', token, {
-                    httpOnly: true,
-                    //secure: true,
-                    sameSite: 'strict',
-                }).status(201).json({message: 'User created', data:{id:userId, email:email, username:username}})
-
-            })
-
-        })
- */
-    
+            return res.status(200).json({message: 'Server error',  details: ['Fail to get userdata from database']})
+        }
     }
 
     // Verify if user exists, matches, creates session token, assigns it to cookie and sends them.

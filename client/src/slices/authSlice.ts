@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface User {
+    userId?:number
+    socketId?:string
     email?:string|undefined
     username?:string|undefined
 }
@@ -11,6 +13,8 @@ export const authSlice = createSlice({
 
     initialState: {
         isLoggedIn: false,
+        userId: -1,
+        socketId: "",
         email: "",
         username: "",
     },
@@ -21,6 +25,8 @@ export const authSlice = createSlice({
             console.log('LOGIN REDUCER')
             state.isLoggedIn = true
             if (action?.payload) {
+                if (action.payload.userId) state.userId = action.payload.userId
+                if (action.payload.socketId) state.socketId = action.payload.socketId
                 if (action.payload.email) state.email = action.payload.email
                 if (action.payload.username) state.username = action.payload.username
             }
@@ -29,6 +35,8 @@ export const authSlice = createSlice({
         logoutReducer: (state) => {
             console.log('LOGOUT REDUCER')
             state.isLoggedIn = false
+            state.userId = -1
+            state.socketId = ""
             state.email = ""
             state.username = ""
         }

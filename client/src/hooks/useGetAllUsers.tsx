@@ -5,8 +5,7 @@ const API_URL = "http://localhost:3000/api/user"
 export const useGetAllUsers = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
-
-    const [users, setUsers] = useState<any[]>([])
+    const [usersList, setUsersList] = useState<any[]>([])
 
     const getAllUsers = async() => {
 
@@ -19,7 +18,7 @@ export const useGetAllUsers = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: 'include' // VERY IMPORTANT -> ALLOWS TO SEND/SAVE COOKIES (SESSION TOKEN IS STORED THERE)
+                credentials: 'include'
             })
 
             const data = await response.json()
@@ -31,7 +30,7 @@ export const useGetAllUsers = () => {
                 throw new Error(`${data.details[0]}`)
             }
 
-            setUsers(data.data)
+            setUsersList(data.data)
 
         } catch (error:any) {
             console.log(error)
@@ -43,7 +42,7 @@ export const useGetAllUsers = () => {
 
     return {
         getAllUsers,
-        users,
+        usersList,
         serverSideFeedback,
     }
 }

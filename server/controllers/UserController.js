@@ -1,7 +1,4 @@
-//Temporary database
-const fs = require('fs')
-const path = require('path')
-
+// DB
 const db = require('../db/db')
 
 // Password encryption
@@ -38,7 +35,26 @@ function getUserByEmail(email) {
         })
     })
 }
-
+function getUserById(id) {
+    return new Promise((resolve, reject) => {
+        return db.get(`SELECT userId, username FROM Users WHERE userId = ?`, [id],  (err, row) => {
+            if (err) {
+                return reject(err.message)
+            }
+            return resolve(row)
+        })
+    })
+}
+function getAllUsers() {
+    return new Promise((resolve, reject) => {
+        return db.all(`SELECT userId, username FROM Users`, (err, row) => {
+            if (err) {
+                return reject(err.message)
+            }
+            return resolve(row)
+        })
+    })
+}
 
 /* CONTROLLER */
 class UserController {
@@ -189,6 +205,39 @@ class UserController {
     
             return res.status(500).json({loggedIn: false, message: 'Error on server', details: ['Error while reading cookies']})
     
+        }
+    }
+
+    // Get all users from database
+    static getAll = async(req, res) => {
+        
+        try {
+            
+            const allUsers = await getAllUsers()
+            return  res.status(200).json({message: 'data retrieved', data: allUsers})
+
+        } catch (error) {   
+            console.log(error)
+            return res.status(500).json({message: 'Error on server', details: ['Error while retrieving data from DB']})
+        }
+
+    }
+
+    // Get user by if from database
+    static getById = async(req, res) => {
+        try {
+            
+            const {id} = req.params
+            if (!id) return res.status(400).json({message: 'Bad request', details: ['Missing id on URL params']})
+            
+            const user = await getUserById(id)
+            if (!user) return res.status(400).json({message: 'Bad request', details: ['Id on params does not exist']})
+
+            return  res.status(200).json({message: 'data retrieved', data: user})
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: 'Error on server', details: ['Error while retrieving data from DB']})
         }
     }
 

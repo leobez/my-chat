@@ -1,26 +1,24 @@
 import { useState } from "react"
-import { useDispatch } from "react-redux"
-import { loginReducer } from "../slices/authSlice"
 
 const API_URL = "http://localhost:3000/api/user"
 
-export const useGetMe = () => {
+export const useGetById = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
-    const dispatch = useDispatch()
+    const [userData, setuserData] = useState<any>()
 
-    const me = async() => {
+    const getUserById = async(id:string) => {
 
         try {
 
-            const url = `${API_URL}/me`
+            const url = `${API_URL}/byid/${id}`
 
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: 'include' // VERY IMPORTANT -> ALLOWS TO SEND/SAVE COOKIES (SESSION TOKEN IS STORED THERE)
+                credentials: 'include'
             })
 
             const data = await response.json()
@@ -31,16 +29,8 @@ export const useGetMe = () => {
                 console.log('Error Message: ', data.message)
                 throw new Error(`${data.details[0]}`)
             }
-            
-            if (data.loggedIn) {
-                dispatch(loginReducer(
-                    {
-                        userId: data.data.id,
-                        email: data.data.email,
-                        username: data.data.username
-                    }
-                ))
-            } 
+
+            setuserData(data.data)
 
         } catch (error:any) {
             console.log(error)
@@ -51,7 +41,8 @@ export const useGetMe = () => {
     }
 
     return {
-        me,
+        getUserById,
+        userData,
         serverSideFeedback,
     }
 }

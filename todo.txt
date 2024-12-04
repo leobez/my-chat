@@ -5,9 +5,26 @@
 --/--
 
 TODO: 
-    -> WHEN USER CONNECTS VIA WEBSOCKER, ASSIGN TO HIS DATABASE FIELD THE SOCKETID
-    -> PROFIT?
 
+    -> GET ALL USERS (DB)                                   [ DONE ]
+    -> SHOW ALL USERS                                       [ DONE ] 
+    -> CLICKABLE (TAKES TO chat/:id)                        [ DONE ]
+    -> VERIFY IF USER EXISTS (API ROUTE /byid)              [ DONE ]
+    -> SEND MESSAGE                                         [ DONE ]
+    -> SAVE MESSAGE ON DATABASE                             [ DONE ]
+
+    -> CREATE API ROUTE TO GET MYMESSAGES FROM DB
+    -> SHOW MESSAGES ON FRONTEND                        
+
+    -> SEE HOW IT WORKS, THEN IMPLEMENT WEBSOCKET
+
+
+
+
+
+
+
+    -> WHEN USER CONNECTS VIA WEBSOCKER, ASSIGN TO HIS DATABASE FIELD THE SOCKETID
     -> FINISH PRIVATE CHAT FUNCTIONALITY (https://socket.io/get-started/private-messaging-part-1/)
     -> AFTER MESSAGE SENT, SAVE ON DATABASE. 
     -> SENT FROM DATABASE TO USER        

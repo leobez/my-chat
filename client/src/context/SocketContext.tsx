@@ -39,7 +39,7 @@ export function SocketContextProvider({children}:SocketContextProps) {
 
     useEffect(() => {
 
-        console.log('SOCKET: ', socket)
+        console.log('Socket: ', socket)
         console.log('isLogged: ', isLogged)
 
         if (!isLogged) return;

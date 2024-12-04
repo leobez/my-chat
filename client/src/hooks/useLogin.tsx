@@ -40,6 +40,7 @@ export const useLogin = () => {
             if (data.message === 'User logged') {
                 dispatch(loginReducer(
                     {
+                        userId: data.data.id,
                         email: data.data.email,
                         username: data.data.username
                     }

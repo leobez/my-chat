@@ -40,6 +40,7 @@ export const useRegister = () => {
             if (data.message === 'User created') {
                 dispatch(loginReducer(
                     {
+                        userId: data.data.id,
                         email: data.data.email,
                         username: data.data.username
                     }

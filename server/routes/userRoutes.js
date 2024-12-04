@@ -32,6 +32,8 @@ router.post(
 // Protected routes (uses middleware: tokenVerifier)
 router.post('/logout', tokenVerifier, UserController.logout)
 router.get('/me', tokenVerifier, UserController.me)
+router.get('/all', tokenVerifier, UserController.getAll)
+router.get('/byid/:id', tokenVerifier, UserController.getById)
 
 // MISSING ROUTES: /all and /byid/:id
 

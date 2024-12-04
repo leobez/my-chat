@@ -36,22 +36,14 @@ app.use(cookieParser())
 const userRoutes = require('./routes/userRoutes')
 app.use('/api/user', userRoutes)
 
+// MESSAGE ROUTES
+const messageRoutes = require('./routes/messageRouter')
+app.use('/api/message', messageRoutes)
+
+// 404 ROUTE
 app.get('', (req, res) => {
     res.status(404).json({message: 'not found'})
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // WEBSOCKET
@@ -68,30 +60,33 @@ const io = new socketIO.Server(httpServer, {
 })
 
 io.use((socket, next) => {
-    const email = socket.handshake.auth.email
+
+    const username = socket.handshake.auth.username
 
     // Validate email 
     // TODO: Validate if email exists on database
 
-    if (!email) {
-        return next(new Error('No email'))
+    if (!username) {
+        return next(new Error('No username'))
     }
 
-    socket.email = email
+    socket.username = username
     next()
 })
 
 // Any user has connected
 io.on('connection', (socket) => {
 
-    console.log('connected: ', socket.id)
+    console.log('A new socket has connected: ', socket.id)
+    console.log('Socket information ', socket)
 
-    // Create list of current connected sockets
+
+    /* // Create list of current connected sockets
     const connected_users = []
     for (let [id, socket] of io.of('/').sockets) {
         connected_users.push({
             userId: id,
-            email: socket.email
+            username: socket.username
         })
     }
 
@@ -120,7 +115,7 @@ io.on('connection', (socket) => {
             content, 
             from: socket.id
         })
-    })
+    }) */
 
 });
 

@@ -5,7 +5,7 @@ const API_URL = "http://localhost:3000/api/user"
 export const useGetById = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
-    const [userData, setuserData] = useState<any>()
+    const [userData, setUserData] = useState<any>()
 
     const getUserById = async(id:string) => {
 
@@ -30,7 +30,7 @@ export const useGetById = () => {
                 throw new Error(`${data.details[0]}`)
             }
 
-            setuserData(data.data)
+            setUserData(data.data)
 
         } catch (error:any) {
             console.log(error)

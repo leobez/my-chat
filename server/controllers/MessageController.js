@@ -23,6 +23,18 @@ function insertMessage(from, to, content) {
         })
     })
 }
+function getMessagesBetween(user1, user2) {
+    return new Promise((resolve, reject) => {
+        return db.all('SELECT * FROM Messages WHERE (from_user = ? AND to_user = ?) OR (from_user = ? AND to_user = ?) ORDER BY timestamp', [user1, user2, user2, user1], (err, rows) => {
+            if (err) {
+                console.error('failed to retieve data from DB')
+                return reject(err.message)
+            } 
+            return resolve(rows)
+        })
+    })
+}
+
 
 /* CONTROLLER */
 class MessageController {
@@ -56,9 +68,33 @@ class MessageController {
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({message: 'Server error', details: ['Error while veryfing jwt on cookies']})
+            return res.status(500).json({message: 'Server error', details: ['Error while verifying jwt on cookies']})
         }
 
+    }
+
+    static privateHistory = async(req, res) => {
+
+        // Validate data
+        const errors = validationResult(req)
+
+        if (!errors.isEmpty()) {
+            return res.status(422).json({message: 'Bad request', details: errors})
+        }
+            
+        // Get data
+        const {user:userWeTalkedTo} = matchedData(req)
+        const {userId:userWeAre} = jwt.verify(req.cookies.jwt, secret)
+        console.log('users: ', userWeTalkedTo, userWeAre)
+
+        // Get every message from database that was exchanged between users: userWeTalkedTo and userWeAre
+        try {
+            const messages = await getMessagesBetween(userWeAre, userWeTalkedTo)
+            return res.status(200).json({message: 'Messages retrieved', data: messages})
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: 'Server error', details: ['Error while retrieving messages from DB']})
+        }
     }
 
 }

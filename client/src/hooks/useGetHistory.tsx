@@ -2,26 +2,23 @@ import { useState } from "react"
 
 const API_URL = "http://localhost:3000/api/message"
 
-export const useSendMessage = () => {
+export const useGetHistory = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [history, setHistory] = useState<any[]>([])
 
-    const sendMessage = async(message:string, from:string, to:string) => {
+
+    const getHistoryWithThisUser = async(id:string) => {
 
         try {
 
-            const url = `${API_URL}`
+            const url = `${API_URL}/with?user=${id}`
 
             const response = await fetch(url, {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    content: message,
-                    from: from,
-                    to: to
-                }),
                 credentials: 'include'
             })
 
@@ -34,7 +31,8 @@ export const useSendMessage = () => {
                 throw new Error(`${data.details[0]}`)
             }
 
-            console.log(data)
+            console.log('history: ', data.data)
+            setHistory(data.data)
 
         } catch (error:any) {
             console.log(error)
@@ -45,7 +43,8 @@ export const useSendMessage = () => {
     }
 
     return {
+        getHistoryWithThisUser,
+        history,
         serverSideFeedback,
-        sendMessage
     }
 }

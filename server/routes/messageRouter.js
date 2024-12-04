@@ -8,11 +8,11 @@ const tokenVerifier = require('../middlewares/TokenVerifier')
 const MessageController = require('../controllers/MessageController')
 
 // Express-validator
-const { body } = require('express-validator')
+const { body, query } = require('express-validator')
 
 
 // ROUTES
-// Unprotected routes
+// Protected routes
 router.post(
         '/',
         body('content').exists().withMessage('Invalid message content').isLength({max: 150}).withMessage('Maximum length for message: 150'),
@@ -22,5 +22,12 @@ router.post(
         MessageController.privateMessage
     )
 
+
+router.get(
+    '/with',
+    query('user').exists().isNumeric().withMessage('Invalid id'),
+    tokenVerifier,
+    MessageController.privateHistory
+)
 
 module.exports = router

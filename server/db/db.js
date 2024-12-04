@@ -64,6 +64,7 @@ db.serialize(() => {
             from_user INTEGER NOT NULL,
             to_user INTEGER NOT NULL,
             content VARCHAR(500) NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(from_user) REFERENCES Users(userId),
             FOREIGN KEY(to_user) REFERENCES Users(userId)
         )
@@ -75,7 +76,7 @@ db.serialize(() => {
         }
     }),
 
-    // Insert some data for testing
+    // Insert some data for testing (User table)
     db.run(`
         
         INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
@@ -94,6 +95,33 @@ db.serialize(() => {
         INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
 
     `, ['email_test2@email.com', 'username_test2', hash], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    }),
+
+    // Insert some data for testing (Message table)
+    db.run(`
+        
+        INSERT INTO Messages(from_user, to_user, content) VALUES (?, ?, ?)
+
+    `, [1, 2, 'Eae mano user2, de boa?'], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    }),
+
+    db.run(`
+        
+        INSERT INTO Messages(from_user, to_user, content) VALUES (?, ?, ?)
+
+    `, [2, 1, 'de boa man user1, e você?'], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)

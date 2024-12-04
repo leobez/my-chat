@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
-import SocketContext, { SocketContextType } from '../context/SocketContext';
 import { useGetById } from '../hooks/useGetById';
+import { useSendMessage } from '../hooks/useSendMessage';
+import { useGetHistory } from '../hooks/useGetHistory';
 
 
 const Chat = () => {
@@ -10,10 +11,14 @@ const Chat = () => {
     const {id} = useParams()
 
     const {userData:userWeAreTalkingTo, getUserById} = useGetById()
+    const {sendMessage} = useSendMessage()
+
+    const {history, getHistoryWithThisUser} = useGetHistory()
 
     useEffect(() => {
         if (!id) return;
-        getUserById(id)
+        getUserById(id);
+        getHistoryWithThisUser(id);
     }, [id])
 
     const [message, setMessage] = useState<string>('')
@@ -23,18 +28,45 @@ const Chat = () => {
         e.preventDefault()
         if (!message.length) return;
         console.log(`Sending message from [ ${userId} ] to [ ${userWeAreTalkingTo.userId} ] : `, message)
-        //sendMessage(message)
+        sendMessage(message, userId, userWeAreTalkingTo.userId)
+        getHistoryWithThisUser(userWeAreTalkingTo.userId);
+        setMessage("")
     }
 
     return (
-        <div className='flex flex-col items-center justify-center gap-2 w-64 h-80 border-2 border-black p-2 self-center'>
+        <div className='flex flex-col items-center justify-center gap-2 w-[400px] h-80 border-2 border-black p-2 self-center'>
             
             {userWeAreTalkingTo ? (
                 <>
                     <p>Talking to user of Id: {userWeAreTalkingTo.userId}</p>
 
                     {/* CHAT BOX */}
-                    <div className='border-black border-2 w-full h-5/6'>
+                    <div className='border-black border-2 w-full h-5/6 flex flex-col gap-5 overflow-y-scroll p-2'>
+
+                        {history && history.map((message:any, index:number) => (
+
+                            <div key={index} className='flex flex-col'>
+
+                                {/* MY MESSAGE */}
+                                {message.from_user === userId && 
+                                    <div className='rounded-xl bg-green-300 w-1/2 self-start'>
+                                        <p className='p-2 w-full h-full'>
+                                            {message.content}
+                                        </p>
+                                    </div>
+                                }
+
+                                {/* OTHER PERSON MESSAGE */}
+                                {message.from_user === userWeAreTalkingTo.userId && 
+                                    <div className='rounded-xl bg-red-300 w-1/2 self-end'>
+                                        <p className='p-2 w-full h-full'>
+                                            {message.content}
+                                        </p>
+                                    </div>
+                                }
+
+                            </div>
+                        ))}
                     </div>
 
                     {/* MESSAGE AREA */}

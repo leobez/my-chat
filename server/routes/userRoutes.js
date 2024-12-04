@@ -28,6 +28,7 @@ router.post(
         UserController.login
     )
 
+
 // Protected routes (uses middleware: tokenVerifier)
 router.post('/logout', tokenVerifier, UserController.logout)
 router.get('/me', tokenVerifier, UserController.me)

@@ -3,7 +3,6 @@ const app = express()
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const JsonVerifier = require('./middlewares/JsonVerifier')
-const expressValidator = require('express-validator')
 require('dotenv').config()
 // Initiate DB
 require('./db/db')

@@ -1,6 +1,8 @@
 const sqlite3 = require('sqlite3').verbose()
 const fs = require('fs')
 const path = require('path')
+const bcrypt = require('bcrypt')
+
 const DB_PATH = path.join(__dirname, 'database.sqlite3')
 
 // Delete existing DB file (if exists)
@@ -70,12 +72,15 @@ db.run(`
     }
 })
 
+const salt = bcrypt.genSaltSync(12)
+const hash = bcrypt.hashSync('password_test', salt)
+
 // Insert some data for testing
 db.run(`
     
     INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
 
-`, ['email_test', 'username_test', 'password_test'], (err) => {
+`, ['email_test@email.com', 'username_test', hash], (err) => {
     
     if (err) {
         console.log('Error while inserting test data: ', err.message)

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
 import { useGetById } from '../hooks/useGetById';
 import { useSendMessage } from '../hooks/useSendMessage';
 import { useGetHistory } from '../hooks/useGetHistory';
+import SocketContext, { SocketContextType } from '../context/SocketContext';
 
 
 const Chat = () => {
@@ -13,6 +14,7 @@ const Chat = () => {
     const {userData:userWeAreTalkingTo, getUserById} = useGetById()
     const {sendMessage} = useSendMessage()
     const {history, getHistoryWithThisUser, addToHistory} = useGetHistory()
+
 
     // Auto scroll to bottom
     const endOfChatBoxRef = useRef<any>(null)
@@ -31,12 +33,22 @@ const Chat = () => {
     const [message, setMessage] = useState<string>('')
     const userId = useSelector((state:any) => state.auth.userId)
 
+    const {sendMessage:sendMessageWS} = useContext(SocketContext) as SocketContextType
+
     const handleSubmit = async(e:any) => {
         e.preventDefault()
         if (!message.length) return;
         console.log(`Sending message from [ ${userId} ] to [ ${userWeAreTalkingTo.userId} ] : `, message)
+
+        // Send to API
         const newMessage = await sendMessage(message, userId, userWeAreTalkingTo.userId)
+
+        // Send by websocket
+        sendMessageWS(newMessage)
+
+        // Add to local history of messages
         addToHistory(newMessage)
+        
         setMessage("")
     }
 

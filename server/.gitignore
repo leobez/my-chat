@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 .env
 database.db
-database.sqlite3
+db/database.sqlite3

@@ -34,7 +34,7 @@ export const useSendMessage = () => {
                 throw new Error(`${data.details[0]}`)
             }
 
-            console.log(data)
+            return data.data
 
         } catch (error:any) {
             console.log(error)

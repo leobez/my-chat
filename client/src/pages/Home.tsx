@@ -9,8 +9,12 @@ import { useGetAllUsers } from "../hooks/useGetAllUsers";
 const Home = () => {
 
     const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
+    const userId = useSelector((state:any) => state.auth.userId)
 
     const {usersList, getAllUsers} = useGetAllUsers()
+
+    const {connect} = useContext(SocketContext) as SocketContextType
+
 
     useEffect(() => {
 
@@ -19,6 +23,9 @@ const Home = () => {
 
       // Get all users from DB
       getAllUsers()
+
+      // Initiate connection via websocket
+      connect(userId)
 
     }, [isLogged])
 

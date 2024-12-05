@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
 import { useGetById } from '../hooks/useGetById';
@@ -12,8 +12,15 @@ const Chat = () => {
 
     const {userData:userWeAreTalkingTo, getUserById} = useGetById()
     const {sendMessage} = useSendMessage()
+    const {history, getHistoryWithThisUser, addToHistory} = useGetHistory()
 
-    const {history, getHistoryWithThisUser} = useGetHistory()
+    // Auto scroll to bottom
+    const endOfChatBoxRef = useRef<any>(null)
+    useEffect(() => {
+        if (endOfChatBoxRef.current) {
+            endOfChatBoxRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [history])
 
     useEffect(() => {
         if (!id) return;
@@ -24,12 +31,12 @@ const Chat = () => {
     const [message, setMessage] = useState<string>('')
     const userId = useSelector((state:any) => state.auth.userId)
 
-    const handleSubmit = (e:any) => {
+    const handleSubmit = async(e:any) => {
         e.preventDefault()
         if (!message.length) return;
         console.log(`Sending message from [ ${userId} ] to [ ${userWeAreTalkingTo.userId} ] : `, message)
-        sendMessage(message, userId, userWeAreTalkingTo.userId)
-        getHistoryWithThisUser(userWeAreTalkingTo.userId);
+        const newMessage = await sendMessage(message, userId, userWeAreTalkingTo.userId)
+        addToHistory(newMessage)
         setMessage("")
     }
 
@@ -67,6 +74,9 @@ const Chat = () => {
 
                             </div>
                         ))}
+
+                        <div ref={endOfChatBoxRef}/>
+
                     </div>
 
                     {/* MESSAGE AREA */}

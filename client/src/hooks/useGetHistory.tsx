@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 const API_URL = "http://localhost:3000/api/message"
 
@@ -7,6 +7,9 @@ export const useGetHistory = () => {
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
     const [history, setHistory] = useState<any[]>([])
 
+    useEffect(() => {
+        console.log('history: ', history)
+    }, [history])
 
     const getHistoryWithThisUser = async(id:string) => {
 
@@ -42,8 +45,14 @@ export const useGetHistory = () => {
         }
     }
 
+    const addToHistory = (message:any) => {
+        console.log('adding to history: ', message)
+        setHistory((prev:any) => [...prev, message])
+    }
+
     return {
         getHistoryWithThisUser,
+        addToHistory,
         history,
         serverSideFeedback,
     }

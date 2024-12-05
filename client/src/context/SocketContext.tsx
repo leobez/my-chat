@@ -79,17 +79,24 @@ export function SocketContextProvider({children}:SocketContextProps) {
             }
         })
 
+        // When an error occurs
+        socket.on('connect_error', (err:any) => {
+            console.log(err.message)
+            console.log(err.data)
+        })
+
         return () => {
             socket.off('connected users')
             socket.off('user connected')
             socket.off('user disconnected')
             socket.off('private message')
+            socket.off('connect_error')
         }
 
     }, [socket, isLogged])
 
-    const connect = (email:string) => {   
-        socket.auth = {email}
+    const connect = (userId:string) => {   
+        socket.auth = {userId}
         socket.connect()
     }
 

@@ -136,7 +136,7 @@ db.serialize(() => {
             return console.log('Error while selecting from Users on DB: ', err)
         }
 
-        return console.log('Current state of DB: ', row)
+       /*  return console.log('Current state of DB: ', row) */
     })
 })
 

@@ -1,9 +1,13 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
+const secret = process.env.SECRET_KEY
 const JsonVerifier = require('./middlewares/JsonVerifier')
-require('dotenv').config()
+
 // Initiate DB
 require('./db/db')
 
@@ -59,18 +63,59 @@ const io = new socketIO.Server(httpServer, {
     }
 })
 
+// WS MIDDLEWARE
 io.use((socket, next) => {
 
-    const username = socket.handshake.auth.username
-
-    // Validate email 
-    // TODO: Validate if email exists on database
-
-    if (!username) {
-        return next(new Error('No username'))
+    // Validate userId in handshake
+    const userId = socket.handshake.auth.userId
+    if (!userId) {
+        const err = new Error('Bad request')
+        err.data = {details: ['No userId detected']}
+        return next(err)
     }
 
-    socket.username = username
+    // See if cookies has JWT
+    const isJWTIncluded = socket.handshake.headers.cookie.includes('jwt=')
+    if (!isJWTIncluded) {
+        const err = new Error('Bad request')
+        err.data = {details: ['No JWT detected']}
+        return next(err)
+    }
+
+
+    // Get JWT from cookies
+    const cookiesArray = socket.handshake.headers.cookie.split(' ')
+    let token = ''
+    for (let cookie of cookiesArray) {
+        if (cookie.includes('jwt=')) {
+            token = cookie.split('jwt=')[1]
+        }
+    }
+
+    try {
+
+        // Validate JWT 
+        const userData = jwt.verify(token, secret)
+
+        // Validate if userId on auth is the same than the one on cookie
+        if (userId != userData.userId) {
+            const err = new Error('Bad request')
+            err.data = {details: ['Invalid userId']}
+            return next(err)
+        } 
+
+        socket.user = {
+            userId: userData.userId,
+            email: userData.email,
+            username: userData.username,
+        }
+
+    } catch (error) {
+        const err = new Error('Server error')
+        err.data = {details: ['Failed to validate JWT token']}
+        return next(err)
+    }
+
     next()
 })
 
@@ -78,7 +123,15 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
 
     console.log('A new socket has connected: ', socket.id)
-    console.log('Socket information ', socket)
+    console.log('User that has connected: ', socket.user)
+
+
+
+
+
+
+
+
 
 
     /* // Create list of current connected sockets

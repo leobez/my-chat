@@ -14,12 +14,23 @@ const secret = process.env.SECRET_KEY
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
 function insertMessage(from, to, content) {
     return new Promise((resolve, reject) => {
-        return db.run('INSERT INTO Messages (from_user, to_user, content) VALUES (?, ?, ?)', [from, to, content], (err) => {
+        return db.run('INSERT INTO Messages (from_user, to_user, content) VALUES (?, ?, ?)', [from, to, content], function(err) {
+
             if (err) {
                 console.error('DB Insertion failed')
                 return reject(err.message)
             } 
-            return resolve('Message saved on DB')
+
+            // Get line that just got inserted so it can be returned to user
+            const lastId = this.lastID
+            db.get('SELECT * FROM Messages WHERE messageId = ?', [lastId], (err, row) => {
+                if (err) {
+                    console.error('Failed to retrieve last ID from DB')
+                    return reject(err.message)
+                }
+                return resolve({message: 'Message saved on DB', data: row})
+            })
+
         })
     })
 }
@@ -62,9 +73,8 @@ class MessageController {
                 return res.status(400).json({message: 'Bad request', details: ['User thats sending the message is not the one thats actually on req.body']})
             }
 
-            await insertMessage(from, to, content)
-
-            return res.status(200).json({message: 'Message saved on DB', data: {from: from, to: to, content: content}})
+            const result = await insertMessage(from, to, content)
+            return res.status(200).json({message: 'Message saved on DB', data: result.data})
 
         } catch (error) {
             console.log(error)
@@ -85,7 +95,7 @@ class MessageController {
         // Get data
         const {user:userWeTalkedTo} = matchedData(req)
         const {userId:userWeAre} = jwt.verify(req.cookies.jwt, secret)
-        console.log('users: ', userWeTalkedTo, userWeAre)
+        //console.log('users: ', userWeTalkedTo, userWeAre)
 
         // Get every message from database that was exchanged between users: userWeTalkedTo and userWeAre
         try {

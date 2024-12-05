@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLogin } from '../hooks/useLogin'
 import FeedbackMessage from '../components/FeedbackMessage'
@@ -31,6 +31,12 @@ const Login = () => {
 
         login(email, password)
     }
+
+    // Just to make login easier (REMOVE)
+    useEffect(() => {
+        setEmail('email_test@email.com')
+        setPassword('password_test')
+    }, [])
 
     return (
 

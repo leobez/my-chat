@@ -1,20 +1,15 @@
-import { useContext, useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom";
-import SocketContext, { SocketContextType } from "../context/SocketContext";
-import Chat from "./Chat";
 import { useGetAllUsers } from "../hooks/useGetAllUsers";
 
 
 const Home = () => {
 
     const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
-    const userId = useSelector((state:any) => state.auth.userId)
+    const username = useSelector((state:any) => state.auth.username)
 
     const {usersList, getAllUsers} = useGetAllUsers()
-
-    const {connect} = useContext(SocketContext) as SocketContextType
-
 
     useEffect(() => {
 
@@ -24,8 +19,6 @@ const Home = () => {
       // Get all users from DB
       getAllUsers()
 
-      // Initiate connection via websocket
-      connect(userId)
 
     }, [isLogged])
 
@@ -33,7 +26,7 @@ const Home = () => {
       
       <div className="flex flex-col justify-center">
 
-        <p>HOME</p>
+        <p>HOME: {username}</p>
 
         <div className="flex gap-2">
           {usersList && usersList.map((user) => (

@@ -99,6 +99,8 @@ io.use((socket, next) => {
 
         // Validate if userId on auth is the same than the one on cookie
         if (userId != userData.userId) {
+            /* console.log('userId: ', userId)
+            console.log('userData.userId: ', userData.userId) */
             const err = new Error('Bad request')
             err.data = {details: ['Invalid userId']}
             return next(err)
@@ -125,7 +127,7 @@ io.on('connection', (socket) => {
     console.log('A new socket has connected: ', socket.id)
     console.log('User that has connected: ', socket.user)
 
-    socket.on('private message', (message) => {
+    socket.on('private message', ({message}) => {
 
         // Find socket of user thats going to receive message
         let to_socket=''
@@ -143,3 +145,40 @@ io.on('connection', (socket) => {
 httpServer.listen(3000, () => {
     console.log('SERVER ON 3000')
 })
+
+
+  /* // Create list of current connected sockets
+    const connected_users = []
+    for (let [id, socket] of io.of('/').sockets) {
+        connected_users.push({
+            userId: id,
+            username: socket.username
+        })
+    }
+
+    console.log('CURRENT CONNECTED USERS: ', connected_users)
+
+    // Emit to user who just connected the list
+    socket.emit('connected users', connected_users)
+
+    socket.on('disconnect', () => {
+        // Broadcast to every socket that a user has disconnected
+        socket.broadcast.emit('user disconnected', {
+            userId: socket.id,
+            email: socket.email
+        })
+    })
+
+    // Broadcast to every socket that a new user has arrived
+    socket.broadcast.emit('user connected', {
+        userId: socket.id,
+        email: socket.email,
+    })
+
+    socket.on('private message', ({content, to}) => {
+        console.log('transmiting message: ', {content, to, from: socket.id})
+        socket.to(to).emit('private message', {
+            content, 
+            from: socket.id
+        })
+    }) */

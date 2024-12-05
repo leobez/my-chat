@@ -15,7 +15,6 @@ const Chat = () => {
     const {sendMessage} = useSendMessage()
     const {history, getHistoryWithThisUser, addToHistory} = useGetHistory()
 
-
     // Auto scroll to bottom
     const endOfChatBoxRef = useRef<any>(null)
     useEffect(() => {
@@ -30,10 +29,25 @@ const Chat = () => {
         getHistoryWithThisUser(id);
     }, [id])
 
+    useEffect(() => {
+        if (!userWeAreTalkingTo) return;
+        if (!userWeAreTalkingTo.userId) return;
+        updateIsTalkingTo(userWeAreTalkingTo.userId)
+    }, [userWeAreTalkingTo])
+
     const [message, setMessage] = useState<string>('')
     const userId = useSelector((state:any) => state.auth.userId)
+    const {sendMessage:sendMessageWS, updateIsTalkingTo, newMessageFromWS, connect} = useContext(SocketContext) as SocketContextType
 
-    const {sendMessage:sendMessageWS} = useContext(SocketContext) as SocketContextType
+    useEffect(() => {
+        // Initiate connection via websocket
+        connect(userId)
+    }, [])
+
+    useEffect(() => {
+        if (!newMessageFromWS) return;
+        addToHistory(newMessageFromWS)
+    }, [newMessageFromWS])
 
     const handleSubmit = async(e:any) => {
         e.preventDefault()

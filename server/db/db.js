@@ -103,6 +103,20 @@ db.serialize(() => {
         }
     }),
 
+    db.run(`
+        
+        INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+
+    `, ['email_test3@email.com', 'username_test3', hash], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    }),
+
+
     // Insert some data for testing (Message table)
     db.run(`
         

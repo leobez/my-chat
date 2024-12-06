@@ -12,49 +12,8 @@ const { validationResult, matchedData } = require('express-validator')
 // Envirment variables
 const secret = process.env.SECRET_KEY
 
-
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
-function insertUser(email, username, hash) {
-    return new Promise((resolve, reject) => {
-        return db.run('INSERT INTO Users (email, username, password) VALUES (?, ?, ?)', [email, username, hash], (err) => {
-            if (err) {
-                console.error('DB Insertion failed')
-                return reject(err.message)
-            } 
-            return resolve('User created')
-        })
-    })
-}
-function getUserByEmail(email) {
-    return new Promise((resolve, reject) => {
-        return db.get(`SELECT userId, email, username, password FROM Users WHERE email = ?`, [email],  (err, row) => {
-            if (err) {
-                return reject(err.message)
-            }
-            return resolve(row)
-        })
-    })
-}
-function getUserById(id) {
-    return new Promise((resolve, reject) => {
-        return db.get(`SELECT userId, username FROM Users WHERE userId = ?`, [id],  (err, row) => {
-            if (err) {
-                return reject(err.message)
-            }
-            return resolve(row)
-        })
-    })
-}
-function getAllUsers() {
-    return new Promise((resolve, reject) => {
-        return db.all(`SELECT userId, username FROM Users`, (err, row) => {
-            if (err) {
-                return reject(err.message)
-            }
-            return resolve(row)
-        })
-    })
-}
+const {insertUser, getUserByEmail, getUserById, getAllUsers} = require('../utils/sqlite3wrappers')
 
 /* CONTROLLER */
 class UserController {

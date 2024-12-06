@@ -1,5 +1,4 @@
 require('dotenv').config()
-
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -7,9 +6,7 @@ const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
 const secret = process.env.SECRET_KEY
 const JsonVerifier = require('./middlewares/JsonVerifier')
-
-// Initiate DB
-const db = require('./db/db')
+require('./db/db') //INITIATE DB
 
 // MIDDLEWARES
 const corsOptions = {
@@ -48,7 +45,6 @@ app.use('/api/message', messageRoutes)
 app.get('', (req, res) => {
     res.status(404).json({message: 'not found'})
 })
-
 
 // WEBSOCKET
 const http = require('node:http')
@@ -142,40 +138,7 @@ io.use(async(socket, next) => {
 })
 
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
-function updateSocketId(userId, socketId) {
-    return new Promise((resolve, reject) => {
-        return db.run('UPDATE Users SET socketId = ? WHERE userId = ?', [socketId, userId], (err) => {
-            if (err) {
-                console.error('DB update failed')
-                return reject(err.message)
-            } 
-            return resolve('socketId updated')
-        })
-    })
-}
-
-function getSocketInfo() {
-    return new Promise((resolve, reject) => {
-        return db.all(`SELECT userId, socketId FROM Users`, (err, row) => {
-            if (err) {
-                return reject(err.message)
-            }
-            console.log('Data: ', row)
-            return resolve(row)
-        })
-    })
-}
-
-function getSocketIdByUserId(userId) {
-    return new Promise((resolve, reject) => {
-        return db.get(`SELECT socketId FROM Users WHERE userId = ?`, [userId], (err, row) => {
-            if (err) {
-                return reject(err.message)
-            }
-            return resolve(row)
-        })
-    })
-}
+const {getSocketInfo, getSocketIdByUserId, updateSocketId} = require('./utils/sqlite3wrappers')
 
 // Any user has connected
 io.on('connection', async(socket) => {
@@ -207,38 +170,44 @@ httpServer.listen(3000, () => {
 })
 
 
-  /* // Create list of current connected sockets
-    const connected_users = []
-    for (let [id, socket] of io.of('/').sockets) {
-        connected_users.push({
-            userId: id,
-            username: socket.username
-        })
-    }
 
-    console.log('CURRENT CONNECTED USERS: ', connected_users)
 
-    // Emit to user who just connected the list
-    socket.emit('connected users', connected_users)
 
-    socket.on('disconnect', () => {
-        // Broadcast to every socket that a user has disconnected
-        socket.broadcast.emit('user disconnected', {
-            userId: socket.id,
-            email: socket.email
-        })
-    })
 
-    // Broadcast to every socket that a new user has arrived
-    socket.broadcast.emit('user connected', {
-        userId: socket.id,
-        email: socket.email,
-    })
 
-    socket.on('private message', ({content, to}) => {
-        console.log('transmiting message: ', {content, to, from: socket.id})
-        socket.to(to).emit('private message', {
-            content, 
-            from: socket.id
-        })
-    }) */
+
+/* // Create list of current connected sockets
+const connected_users = []
+for (let [id, socket] of io.of('/').sockets) {
+connected_users.push({
+userId: id,
+username: socket.username
+})
+}
+
+console.log('CURRENT CONNECTED USERS: ', connected_users)
+
+// Emit to user who just connected the list
+socket.emit('connected users', connected_users)
+
+socket.on('disconnect', () => {
+// Broadcast to every socket that a user has disconnected
+socket.broadcast.emit('user disconnected', {
+userId: socket.id,
+email: socket.email
+})
+})
+
+// Broadcast to every socket that a new user has arrived
+socket.broadcast.emit('user connected', {
+userId: socket.id,
+email: socket.email,
+})
+
+socket.on('private message', ({content, to}) => {
+console.log('transmiting message: ', {content, to, from: socket.id})
+socket.to(to).emit('private message', {
+content, 
+from: socket.id
+})
+}) */

@@ -9,7 +9,7 @@ const secret = process.env.SECRET_KEY
 const JsonVerifier = require('./middlewares/JsonVerifier')
 
 // Initiate DB
-require('./db/db')
+const db = require('./db/db')
 
 // MIDDLEWARES
 const corsOptions = {
@@ -60,10 +60,14 @@ const io = new socketIO.Server(httpServer, {
         origin: ['http://localhost:3000', 'http://localhost:5173'],
         methods: ['GET'],
         allowedHeaders: ['Content-Type', 'Authorization']
+    },
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 2*60*1000
     }
 })
 
-// WS MIDDLEWARE
+/* WEBSOCKET MIDDLEWARES */
+// Validate connection
 io.use((socket, next) => {
 
     // Validate userId in handshake
@@ -121,23 +125,79 @@ io.use((socket, next) => {
     next()
 })
 
+// Map userId to their corresponding socketId
+io.use(async(socket, next) => {
+
+    // Add socketId on database
+    try {
+        console.log(`Mapping [userId: ${socket.user.userId}] to [socketId: ${socket.id}]`)
+        await updateSocketId(socket.user.userId, socket.id)
+        await getSocketInfo()
+    } catch (error) {
+        const err = new Error('Server error')
+        err.data = {details: ['Failed to map userId to socketId']}
+        return next(err)
+    }
+    next()
+})
+
+/* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
+function updateSocketId(userId, socketId) {
+    return new Promise((resolve, reject) => {
+        return db.run('UPDATE Users SET socketId = ? WHERE userId = ?', [socketId, userId], (err) => {
+            if (err) {
+                console.error('DB update failed')
+                return reject(err.message)
+            } 
+            return resolve('socketId updated')
+        })
+    })
+}
+
+function getSocketInfo() {
+    return new Promise((resolve, reject) => {
+        return db.all(`SELECT userId, socketId FROM Users`, (err, row) => {
+            if (err) {
+                return reject(err.message)
+            }
+            console.log('Data: ', row)
+            return resolve(row)
+        })
+    })
+}
+
+function getSocketIdByUserId(userId) {
+    return new Promise((resolve, reject) => {
+        return db.get(`SELECT socketId FROM Users WHERE userId = ?`, [userId], (err, row) => {
+            if (err) {
+                return reject(err.message)
+            }
+            return resolve(row)
+        })
+    })
+}
+
 // Any user has connected
-io.on('connection', (socket) => {
+io.on('connection', async(socket) => {
 
     console.log('A new socket has connected: ', socket.id)
     console.log('User that has connected: ', socket.user)
 
-    socket.on('private message', ({message}) => {
+    socket.on('private message', async({message}) => {
 
-        // Find socket of user thats going to receive message
-        let to_socket=''
-        for (let [id, socket] of io.of('/').sockets) {
-            if (socket.user.userId === message.to_user) {
-                to_socket = socket.id
-            }
+        const receiverUserId = message.to_user
+
+        try {
+            const receiverSockerId = await getSocketIdByUserId(receiverUserId)
+            console.log(`Transmitting message [${message.content}] to socket: ${receiverSockerId.socketId}`)
+            return socket.to(receiverSockerId.socketId).emit('private message', message)
+        } catch (error) {
+            console.log(error)
+            const err = new Error('Server error')
+            err.data = {details: error}
+            return socket.to(message.from_user).emit('connect_error', err)
         }
-        console.log('transmiting message: ', message, ' To socket: ', to_socket)
-        socket.to(to_socket).emit('private message', message)
+
     }) 
 
 });

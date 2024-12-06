@@ -37,12 +37,7 @@ const Chat = () => {
 
     const [message, setMessage] = useState<string>('')
     const userId = useSelector((state:any) => state.auth.userId)
-    const {sendMessage:sendMessageWS, updateIsTalkingTo, newMessageFromWS, connect} = useContext(SocketContext) as SocketContextType
-
-    useEffect(() => {
-        // Initiate connection via websocket
-        connect(userId)
-    }, [])
+    const {sendMessage:sendMessageWS, updateIsTalkingTo, newMessageFromWS} = useContext(SocketContext) as SocketContextType
 
     useEffect(() => {
         if (!newMessageFromWS) return;

@@ -6,7 +6,7 @@ const API_URL = "http://localhost:3000/api/user"
 
 export const useRegister = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
     const dispatch = useDispatch()
 
     const register = async(email:string, username:string, password:string) => {
@@ -33,7 +33,8 @@ export const useRegister = () => {
             if (!response.ok) {
                 console.log('All details: ', data.details)
                 console.log('Error Message: ', data.message)
-                throw new Error(`${data.details[0]}`)
+                setServerSideFeedback(data.details.errors)
+                return;
             }
 
             // User was succesfully created on backend. Login him automatically.
@@ -46,16 +47,13 @@ export const useRegister = () => {
                     }
                 ))
                 return;
+            } else {
+                // If code got here, something is wrong with server
+                throw new Error(`Missing code`)
             }
-
-            // If code got here, something is wrong with server
-            throw new Error(`Missing code`)
 
         } catch (error:any) {
-            console.log(error)
-            if (error.message) {
-                setServerSideFeedback(error.message)
-            }
+            console.log('Error: ', error)
         }
     }
 

@@ -18,14 +18,13 @@ const Login = () => {
 
         e.preventDefault()
 
-        // TODO: ADD BETTER CLIENT-SIDE VERIFICATION
         if (!email || email.length === 0) {
             setClientSideFeedback('EMPTY EMAIL')
             return;
         }
 
-        if (!password || password.length <= 3) {
-            setClientSideFeedback('PASSWORD TOO SHORT')
+        if (!password) {
+            setClientSideFeedback('PASSWORD EMPTY')
             return;
         }
 
@@ -75,8 +74,9 @@ const Login = () => {
                     <Link to="/register" className='w-4/6 grid place-items-center hover:bg-black hover:text-white duration-200'>No account yet?</Link>
                 </div>
 
-                <FeedbackMessage message={clientSideFeedback}/>
-                <FeedbackMessage message={serverSideFeedback}/>
+
+                <FeedbackMessage clientSideFeedback={clientSideFeedback}/>
+                <FeedbackMessage serverSideFeedback={serverSideFeedback}/>
 
             </form>
 

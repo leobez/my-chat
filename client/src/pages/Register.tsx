@@ -18,8 +18,8 @@ const Register = () => {
     const handleSubmit = async(e:any) => {
 
         e.preventDefault()
+        setClientSideFeedback("")
 
-        // TODO: ADD BETTER CLIENT-SIDE VERIFICATION
         if (!email || email.length === 0) {
             setClientSideFeedback('EMPTY EMAIL')
             return;
@@ -30,8 +30,13 @@ const Register = () => {
             return;
         }
 
-        if (!password || password.length <= 3) {
-            setClientSideFeedback('PASSWORD TOO SHORT')
+        if (!password || password.length == 3) {
+            setClientSideFeedback('PASSWORD EMPTY')
+            return;
+        }
+
+        if (password.length <= 3) {
+            setClientSideFeedback('MINIMUM PASSWORD LENGTH: 3')
             return;
         }
 
@@ -86,8 +91,8 @@ const Register = () => {
                     <Link to="/login" className='w-4/6 grid place-items-center hover:bg-black hover:text-white duration-200'>Already has an account?</Link>
                 </div>
 
-                <FeedbackMessage message={clientSideFeedback}/>
-                <FeedbackMessage message={serverSideFeedback}/>
+                <FeedbackMessage clientSideFeedback={clientSideFeedback}/>
+                <FeedbackMessage serverSideFeedback={serverSideFeedback}/>
 
             </form>
 

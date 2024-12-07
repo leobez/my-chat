@@ -15,16 +15,16 @@ const { body } = require('express-validator')
 // Unprotected routes
 router.post(
         '/register',
-        body('email').exists().isEmail().withMessage('Invalid email'),
-        body('username').exists().withMessage('Invalid username'),
-        body('password').exists().withMessage('Invalid password').isLength({min: 6}).withMessage('Mininum length for password: 6'),
+        body('email').exists().isEmail().withMessage('INVALID EMAIL'),
+        body('username').exists().withMessage('INVALID USERNAME'),
+        body('password').exists().withMessage('INVALID PASSWORD').isLength({min: 3}).withMessage('MINIMUM PASSWORD LENGTH: 3'),
         UserController.register
     )
 
 router.post(
         '/login', 
-        body('email').exists().isEmail().withMessage('Invalid email'),
-        body('password').exists().withMessage('Invalid password').isLength({min: 6}).withMessage('Mininum length for password: 6'),
+        body('email').exists().isEmail().withMessage('INVALID EMAIL'),
+        body('password').exists().withMessage('INVALID PASSWORD'),
         UserController.login
     )
 
@@ -34,7 +34,5 @@ router.post('/logout', tokenVerifier, UserController.logout)
 router.get('/me', tokenVerifier, UserController.me)
 router.get('/all', tokenVerifier, UserController.getAll)
 router.get('/byid/:id', tokenVerifier, UserController.getById)
-
-// MISSING ROUTES: /all and /byid/:id
 
 module.exports = router

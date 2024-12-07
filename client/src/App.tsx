@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound';
 import Logout from './pages/Logout';
 import Chat from './pages/Chat';
 import { useGetMe } from './hooks/useGetMe';
+import Navbar from './components/Navbar';
 
 
 function App() {
@@ -40,14 +41,7 @@ function App() {
 
         <BrowserRouter>
 
-          <nav className='border-2 m-2'>
-            <ul className='flex gap-2'>
-              { !isLogged && <li><Link to="/login">To Login</Link></li> }
-              { !isLogged && <li><Link to="/register">To Register</Link></li> }
-              { isLogged && <li><Link to="/">To Home</Link></li> }
-              { isLogged && <li><Link to="/logout">Logout</Link></li> }
-            </ul>
-          </nav>
+          <Navbar isLogged={isLogged}/>
 
           <Routes>
             <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>

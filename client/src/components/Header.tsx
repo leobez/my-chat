@@ -1,7 +1,9 @@
 const Header = () => {
-  return (
-    <div>Header</div>
-  )
+    return (
+      <div className="h-20 border-black border-2 p-4 flex items-center justify-center">
+        <p>Header</p>
+      </div>
+    )
 }
 
 export default Header

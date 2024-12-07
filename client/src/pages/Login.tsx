@@ -40,37 +40,39 @@ const Login = () => {
 
     return (
 
-        <div className='p-4 border-2'>
+        <div className='p-4 border-2 border-black grid place-items-center'>
 
-            <p>Login</p>
+            <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-80 py-3'>
+            
+                <div className='border-b-2 border-black p-2'>
+                    <p>LOGIN</p>
+                </div>
 
-            <form onSubmit={handleSubmit} className='flex flex-col gap-2'>
-
-                <div>
-                    <label htmlFor="email">Email: </label>
+                <div className='flex gap-1 flex-col'>
+                    <label htmlFor="email" className='flex justify-start'>Email: </label>
                     <input 
                         type="text" 
                         name="email" 
                         id="email" 
                         onChange={(e) => setEmail(e.target.value)}
                         value={email}
-                        className='border-2'/>                
+                        className='border-2 border-black w-full p-2'/>                
                 </div>
 
-                <div>
-                    <label htmlFor="Senha">Senha: </label>
+                <div className='flex gap-1 flex-col'>
+                    <label htmlFor="Senha" className='flex justify-start'>Password: </label>
                     <input 
                         type="password" 
                         name="password" 
                         id="password"
                         onChange={(e) => setPassword(e.target.value)}
                         value={password}
-                        className='border-2'/>
+                        className='border-2 border-black w-full p-2'/>
                 </div>
 
                 <div className='flex gap-2 justify-center'>
-                    <input type="submit" value="Entrar" className='border-2'/>
-                    <Link to="/register">Ainda não tem uma conta?</Link>
+                    <input type="submit" value="Enter" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer hover:bg-black hover:text-white duration-200'/>
+                    <Link to="/register" className='w-4/6 grid place-items-center hover:bg-black hover:text-white duration-200'>No account yet?</Link>
                 </div>
 
                 <FeedbackMessage message={clientSideFeedback}/>

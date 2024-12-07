@@ -34,5 +34,7 @@ router.post('/logout', tokenVerifier, UserController.logout)
 router.get('/me', tokenVerifier, UserController.me)
 router.get('/all', tokenVerifier, UserController.getAll)
 router.get('/byid/:id', tokenVerifier, UserController.getById)
+router.post('/add', tokenVerifier, UserController.addFriend)
+
 
 module.exports = router

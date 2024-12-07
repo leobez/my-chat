@@ -70,10 +70,13 @@ const Login = () => {
                 </div>
 
                 <div className='flex gap-2 justify-center'>
-                    <input type="submit" value="Enter" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer hover:bg-black hover:text-white duration-200'/>
-                    <Link to="/register" className='w-4/6 grid place-items-center hover:bg-black hover:text-white duration-200'>No account yet?</Link>
+                    {loading ? (
+                        <input type="submit" value="Entering" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer bg-black text-white' disabled/>
+                    ) : (
+                        <input type="submit" value="Enter" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer hover:bg-black hover:text-white duration-200'/>
+                    )}
+                        <Link to="/register" className='w-4/6 grid place-items-center hover:bg-black hover:text-white duration-200'>No account yet?</Link>
                 </div>
-
 
                 <FeedbackMessage clientSideFeedback={clientSideFeedback}/>
                 <FeedbackMessage serverSideFeedback={serverSideFeedback}/>

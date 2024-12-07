@@ -7,7 +7,7 @@ const saltRounds = 12
 
 // Session management
 const jwt = require('jsonwebtoken')
-const { validationResult, matchedData } = require('express-validator')
+const { matchedData } = require('express-validator')
 
 // Envirment variables
 const secret = process.env.SECRET_KEY
@@ -15,6 +15,13 @@ const secret = process.env.SECRET_KEY
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
 const {insertUser, getUserByEmail, getUserById, getAllUsers} = require('../utils/sqlite3wrappers')
 const errorHandle = require('../utils/errorHandling')
+
+/* 
+    TYPES OF ERRORS 
+    message:
+        Server error
+        Bad request
+*/
 
 /* CONTROLLER */
 class UserController {
@@ -37,7 +44,7 @@ class UserController {
             const salt = bcrypt.genSaltSync(saltRounds)
             hash = bcrypt.hashSync(password, salt)
         } catch (error) {
-            return res.status(500).json({message: 'Server error', type: 'custom', details: ['Fail to generate hash and salt for password']})
+            return res.status(500).json({message: 'Server error', details: ['Fail to generate hash and salt for password']})
         }
 
         // Insert user into database
@@ -49,15 +56,17 @@ class UserController {
             // Some of the info sent by user already exists in database
             if (error.includes('UNIQUE constraint failed')) {
 
+                if (error.includes('Users.email')) {
+                    return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
+                }   
+
                 if (error.includes('Users.username')) {
                     return res.status(400).json({message: 'Bad request',  details: ['Username already used']}) 
                 }   
 
-                if (error.includes('Users.email')) {
-                    return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
-                }    
+
             }
-            return res.status(500).json({message: 'Server error',  type: 'custom', details: ['Fail to insert user into database']}) 
+            return res.status(500).json({message: 'Server error',  details: ['Fail to insert user into database']}) 
         }
 
         // Get user from database, create token session and send it to user
@@ -67,6 +76,8 @@ class UserController {
 
             const token = jwt.sign(userData, secret, {expiresIn: '1h'})
 
+            console.log('SENDING TOKEN TO USER')
+
             return res.cookie('jwt', token, {
                 httpOnly: true,
                 //secure: true,
@@ -75,7 +86,7 @@ class UserController {
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({message: 'Server error', type: 'custom', details: ['Fail to get userdata from database']})
+            return res.status(500).json({message: 'Server error', details: ['Fail to get userdata from database']})
         }
     }
 
@@ -198,6 +209,10 @@ class UserController {
             console.log(error)
             return res.status(500).json({message: 'Error on server', details: ['Error while retrieving data from DB']})
         }
+    }
+
+    static addFriend = async(req, res) => {
+        
     }
 
 }

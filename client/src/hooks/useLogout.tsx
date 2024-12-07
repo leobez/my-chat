@@ -7,6 +7,7 @@ const API_URL = "http://localhost:3000/api/user"
 export const useLogout = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
     const logout = async() => {
@@ -14,6 +15,8 @@ export const useLogout = () => {
         try {
 
             const url = `${API_URL}/logout`
+
+            setLoading(false)
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -24,6 +27,8 @@ export const useLogout = () => {
             })
 
             const data = await response.json()
+
+            setLoading(true)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
@@ -43,14 +48,13 @@ export const useLogout = () => {
 
         } catch (error:any) {
             console.log(error)
-            if (error.message) {
-                setServerSideFeedback(error.message)
-            }
+            setLoading(false)
         }
     }
 
     return {
         logout,
+        loading,
         serverSideFeedback,
     }
 }

@@ -8,7 +8,6 @@ import SocketContext, { SocketContextType } from "../context/SocketContext";
 const Home = () => {
 
     const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
-    const username = useSelector((state:any) => state.auth.username)
     const userId = useSelector((state:any) => state.auth.userId)
 
     const {usersList, getAllUsers} = useGetAllUsers()
@@ -31,19 +30,19 @@ const Home = () => {
       
       <div className="flex flex-col justify-center">
 
-        <p>HOME: {username}</p>
-
         <div className="flex gap-2">
-          {usersList && usersList.map((user) => (
-            <div key={user.userId} className="border-2 border-black p-3">
-              <p>{user.username}</p>
 
-              <div className="border-black border-2">
-                <Link to={`/chat/${user.userId}`} className="h-full w-full">Talk to user</Link>
-              </div>
+          {/* FRIENDSLIST */}
+          <div className="border-2 border-black p-2 min-h-96 w-2/6">
+            <p>FRIENDLIST</p>
+            <p>REQUEST SENT</p>
+            <p>REQUEST RECEIVED</p>
+          </div>
 
-            </div>
-          ))}
+          {/* CHAT COMPONENT */}
+          <div className="border-2 border-black p-2 min-h-96 w-4/6">
+            CHAT
+          </div>
 
         </div>
         

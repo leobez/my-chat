@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 type Props = {
@@ -5,8 +6,12 @@ type Props = {
 }
 
 const Navbar = ({isLogged}: Props) => {
+
+    const username = useSelector((state:any) => state.auth.username)
+
     return (
-        <nav className='border-2 p-2 my-4 border-black'>
+        <nav className='border-2 p-2 my-2 border-black flex justify-between'>
+
             <ul className='flex gap-2 p-2'>
 
                 { !isLogged && <li><NavLink to="/login" 
@@ -33,6 +38,14 @@ const Navbar = ({isLogged}: Props) => {
                     </NavLink>
                 </li> }
 
+                { isLogged && <li><NavLink to="/add" 
+                    className={({ isActive, isPending }) =>
+                        isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
+                    }>
+                    Add a friend
+                    </NavLink>
+                </li> }
+
                 { isLogged && <li><NavLink to="/logout" 
                     className={({ isActive, isPending }) =>
                         isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-red-700 hover:text-white cursor-pointer duration-200"
@@ -41,7 +54,14 @@ const Navbar = ({isLogged}: Props) => {
                     </NavLink>
                 </li> }
 
+
+
             </ul>
+
+            <div className='flex items-center'>
+                <p>{username}</p>
+            </div>
+
         </nav>
     )
 }

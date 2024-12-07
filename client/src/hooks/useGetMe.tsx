@@ -7,6 +7,7 @@ const API_URL = "http://localhost:3000/api/user"
 export const useGetMe = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
     const me = async() => {
@@ -29,7 +30,10 @@ export const useGetMe = () => {
             if (!response.ok) {
                 console.log('All details: ', data.details)
                 console.log('Error Message: ', data.message)
-                throw new Error(`${data.details[0]}`)
+                if (data.message === 'Bad request') {
+                    setServerSideFeedback(data.details)
+                }
+                return;
             }
             
             if (data.loggedIn) {
@@ -44,9 +48,7 @@ export const useGetMe = () => {
 
         } catch (error:any) {
             console.log(error)
-            if (error.message) {
-                setServerSideFeedback(error.message)
-            }
+            setLoading(false)
         }
     }
 

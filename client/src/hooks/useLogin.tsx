@@ -38,8 +38,10 @@ export const useLogin = () => {
             if (!response.ok) {
                 console.log('All details: ', data.details)
                 console.log('Error Message: ', data.message)
-                setServerSideFeedback(data.details)
-                return
+                if (data.message === 'Bad request') {
+                    setServerSideFeedback(data.details)
+                }
+                return;
             }
             
             // User sent valid info to backend. Log him in on frontend.
@@ -52,6 +54,7 @@ export const useLogin = () => {
                     }
                 ))
                 return;
+                
             } else {
                 // If code got here, something is wrong with server
                 throw new Error(`Missing code`)

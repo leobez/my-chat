@@ -12,6 +12,7 @@ import Logout from './pages/Logout';
 import Chat from './pages/Chat';
 import { useGetMe } from './hooks/useGetMe';
 import Navbar from './components/Navbar';
+import AddFriend from './pages/AddFriend';
 
 
 function App() {
@@ -44,12 +45,20 @@ function App() {
           <Navbar isLogged={isLogged}/>
 
           <Routes>
+
+            {/* MUST NOT BE LOGGED TO ACCESS */}
             <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>
             <Route path="/register" element={isLogged ? <Navigate to="/"/> : <Register/>}/>
+
+            {/* MUST BE LOGGED TO ACCESS */}
             <Route path="/logout" element={isLogged ? <Logout/> : <Navigate to="/login"/>}/>
-            <Route path="/chat/:id" element={isLogged ? <Chat/> : <Navigate to="/login"/>}></Route>
+            <Route path="/chat/:id" element={isLogged ? <Chat/> : <Navigate to="/login"/>}/>
             <Route path="/" element={isLogged ? <Home/> : <Navigate to="/login"/>}/>
+            <Route path="/add" element={isLogged ? <AddFriend/> : <Navigate to="/login"/>}/>
+
+            {/* WHATEVER */}
             <Route path='*' element={<NotFound />} />
+
           </Routes>
 
         </BrowserRouter>

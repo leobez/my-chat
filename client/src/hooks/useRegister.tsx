@@ -30,6 +30,7 @@ export const useRegister = () => {
                     username:username,
                     password: password
                 }),
+                credentials: 'include'
             })
 
             const data = await response.json()
@@ -40,7 +41,9 @@ export const useRegister = () => {
             if (!response.ok) {
                 console.log('All details: ', data.details)
                 console.log('Error Message: ', data.message)
-                setServerSideFeedback(data.details)
+                if (data.message === 'Bad request') {
+                    setServerSideFeedback(data.details)
+                }
                 return;
             }
 

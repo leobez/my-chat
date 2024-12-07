@@ -12,7 +12,7 @@ const FeedbackMessage = ({clientSideFeedback, serverSideFeedback}:Props) => {
         console.log('serverSideFeedback: ', serverSideFeedback) 
     }, [])
 
-    if (!clientSideFeedback && !serverSideFeedback) return;
+    if (!clientSideFeedback && serverSideFeedback?.length === 0) return;
 
     if (clientSideFeedback) {
         return (

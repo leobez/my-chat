@@ -7,6 +7,7 @@ const API_URL = "http://localhost:3000/api/user"
 export const useLogin = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
     const login = async(email:string, password:string) => {
@@ -14,6 +15,8 @@ export const useLogin = () => {
         try {
 
             const url = `${API_URL}/login`
+
+            setLoading(true)
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -29,11 +32,13 @@ export const useLogin = () => {
 
             const data = await response.json()
 
+            setLoading(false)
+
             // Resonse code not between 200 - 299
             if (!response.ok) {
                 console.log('All details: ', data.details)
                 console.log('Error Message: ', data.message)
-                setServerSideFeedback(data.details.errors)
+                setServerSideFeedback(data.details)
                 return
             }
             
@@ -54,11 +59,13 @@ export const useLogin = () => {
 
         } catch (error:any) {
             console.log(error)
+            setLoading(false)
         }
     }
 
     return {
         login,
         serverSideFeedback,
+        loading
     }
 }

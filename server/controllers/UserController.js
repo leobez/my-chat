@@ -14,6 +14,7 @@ const secret = process.env.SECRET_KEY
 
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
 const {insertUser, getUserByEmail, getUserById, getAllUsers} = require('../utils/sqlite3wrappers')
+const errorHandle = require('../utils/errorHandling')
 
 /* CONTROLLER */
 class UserController {
@@ -22,14 +23,13 @@ class UserController {
     static register = async(req, res) => {
         
         // Validate data
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(422).json({message: 'Bad request', details: errors})
+        const errorObj = errorHandle(req)
+        if (errorObj) {
+            return res.status(422).json(errorObj)
         }
-         
+        
         // Get data
         const {email, username, password} = matchedData(req)
-
 
         // Hash password
         let hash = ''
@@ -37,7 +37,7 @@ class UserController {
             const salt = bcrypt.genSaltSync(saltRounds)
             hash = bcrypt.hashSync(password, salt)
         } catch (error) {
-            return res.status(500).json({message: 'Server error',  details: ['Fail to generate hash and salt for password']})
+            return res.status(500).json({message: 'Server error', type: 'custom', details: ['Fail to generate hash and salt for password']})
         }
 
         // Insert user into database
@@ -57,7 +57,7 @@ class UserController {
                     return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
                 }    
             }
-            return res.status(500).json({message: 'Server error',  details: ['Fail to insert user into database']}) 
+            return res.status(500).json({message: 'Server error',  type: 'custom', details: ['Fail to insert user into database']}) 
         }
 
         // Get user from database, create token session and send it to user
@@ -75,7 +75,7 @@ class UserController {
 
         } catch (error) {
             console.log(error)
-            return res.status(200).json({message: 'Server error',  details: ['Fail to get userdata from database']})
+            return res.status(500).json({message: 'Server error', type: 'custom', details: ['Fail to get userdata from database']})
         }
     }
 
@@ -83,9 +83,9 @@ class UserController {
     static login = async(req, res) => {
 
         // Validate data
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            return res.status(422).json({message: 'Bad request', details: errors})
+        const errorObj = errorHandle(req)
+        if (errorObj) {
+            return res.status(422).json(errorObj)
         }
             
         // Get data

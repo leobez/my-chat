@@ -11,7 +11,7 @@ const Login = () => {
     const [clientSideFeedback, setClientSideFeedback] = useState<string|null>(null)
 
     // HOOKS (the thing thats doing the talk with the server)
-    const {login, serverSideFeedback} = useLogin()
+    const {login, serverSideFeedback, loading} = useLogin()
 
     // FUNCTIONS
     const handleSubmit = async(e:any) => {

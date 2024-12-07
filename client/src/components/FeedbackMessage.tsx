@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 type Props = {
     clientSideFeedback?:string|null;
     serverSideFeedback?:any[]|null;
@@ -5,8 +7,10 @@ type Props = {
 
 const FeedbackMessage = ({clientSideFeedback, serverSideFeedback}:Props) => {
 
-    /* console.log('clientSideFeedback: ', clientSideFeedback)
-    console.log('serverSideFeedback: ', serverSideFeedback) */
+    useEffect(() => {
+        console.log('clientSideFeedback: ', clientSideFeedback)
+        console.log('serverSideFeedback: ', serverSideFeedback) 
+    }, [])
 
     if (!clientSideFeedback && !serverSideFeedback) return;
 
@@ -24,9 +28,9 @@ const FeedbackMessage = ({clientSideFeedback, serverSideFeedback}:Props) => {
         return (
             <div className="border-2 p-4 border-red-500">
                 <ul>
-                    {serverSideFeedback.map((feedback, index) => (
+                    {serverSideFeedback.map((message, index) => (
                         <li className="text-red-500 font-bold w-fit" key={index}>
-                            {feedback.msg}
+                            {message}
                         </li>
                     ))}
                 </ul>

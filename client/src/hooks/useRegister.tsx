@@ -7,13 +7,18 @@ const API_URL = "http://localhost:3000/api/user"
 export const useRegister = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
     const register = async(email:string, username:string, password:string) => {
+        
+        setServerSideFeedback([])
 
         try {
 
             const url = `${API_URL}/register`
+
+            setLoading(true)
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -29,11 +34,13 @@ export const useRegister = () => {
 
             const data = await response.json()
 
+            setLoading(false)
+
             // Resonse code not between 200 - 299
             if (!response.ok) {
                 console.log('All details: ', data.details)
                 console.log('Error Message: ', data.message)
-                setServerSideFeedback(data.details.errors)
+                setServerSideFeedback(data.details)
                 return;
             }
 
@@ -54,11 +61,13 @@ export const useRegister = () => {
 
         } catch (error:any) {
             console.log('Error: ', error)
+            setLoading(false)
         }
     }
 
     return {
         register,
         serverSideFeedback,
+        loading
     }
 }

@@ -12,7 +12,7 @@ const Register = () => {
     const [clientSideFeedback, setClientSideFeedback] = useState<string|null>(null)
 
     // HOOKS (the thing thats doing the talk with the server)
-    const {register, serverSideFeedback} = useRegister()
+    const {register, serverSideFeedback, loading} = useRegister()
 
     // FUNCTONS
     const handleSubmit = async(e:any) => {
@@ -87,10 +87,15 @@ const Register = () => {
                 </div>
 
                 <div className='flex gap-2 justify-center'>
-                    <input type="submit" value="Register" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer hover:bg-black hover:text-white duration-200'/>
+                    {loading ? (
+                        <input type="submit" value="Registering" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer bg-black text-white' disabled/>
+                    ) : (
+                        <input type="submit" value="Register" className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer hover:bg-black hover:text-white duration-200'/>
+                    )}
                     <Link to="/login" className='w-4/6 grid place-items-center hover:bg-black hover:text-white duration-200'>Already has an account?</Link>
                 </div>
-
+                
+                {loading && <div>Loading...</div>}
                 <FeedbackMessage clientSideFeedback={clientSideFeedback}/>
                 <FeedbackMessage serverSideFeedback={serverSideFeedback}/>
 

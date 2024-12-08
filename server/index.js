@@ -1,22 +1,10 @@
+// ENVIROMENT VARIABLE
 require('dotenv').config()
+const SECRET = process.env.SECRET_KEY
+
+// API
 const express = require('express')
 const app = express()
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-const jwt = require('jsonwebtoken')
-const secret = process.env.SECRET_KEY
-const JsonVerifier = require('./middlewares/JsonVerifier')
-require('./db/db') //INITIATE DB
-
-// MIDDLEWARES
-const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
-    methods: ['GET'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-}
-app.use(cors(corsOptions))
-
 app.use(express.json({
     verify: (req, res, buf, encoding) => { // Verify is user req has any SyntaxError's
         try {  
@@ -29,22 +17,50 @@ app.use(express.json({
     }
 }))
 
-app.use(JsonVerifier) 
+// CORS
+const cors = require('cors')
+
+const corsOptions = {
+    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    methods: ['GET'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // IMPORTANT -> ALLOWS TO ATTACH JWT TOKEN TO USER COOKIES //
+}
+
+app.use(cors(corsOptions))
+
+// COOKIE MANIPULARION
+const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
+// SESSION TOKEN
+const jwt = require('jsonwebtoken')
+
+// MIDDLEWARE THAT VALIDATES SYNTAX ERRORS ON JSON THAT WAS SENT BY USER
+const JsonVerifier = require('./middlewares/JsonVerifier')
+app.use(JsonVerifier) 
+
+//INITIATE DB
+require('./db/db') 
+
 // ROUTES
-// USER ROUTES
 const userRoutes = require('./routes/userRoutes')
-app.use('/api/user', userRoutes)
-
-// MESSAGE ROUTES
 const messageRoutes = require('./routes/messageRouter')
-app.use('/api/message', messageRoutes)
+const friendshipRoutes = require('./routes/friendshipRouter')
 
-// 404 ROUTE
-app.get('', (req, res) => {
-    res.status(404).json({message: 'not found'})
-})
+app.use('/api/user', userRoutes)
+app.use('/api/message', messageRoutes)
+app.use('/api/friendship', messageRoutes)
+app.get('', (req, res) => res.status(404).json({message: 'not found'})) // 404 ROUTE
+
+
+
+
+
+
+
+
+
 
 // WEBSOCKET
 const http = require('node:http')
@@ -82,7 +98,6 @@ io.use((socket, next) => {
         return next(err)
     }
 
-
     // Get JWT from cookies
     const cookiesArray = socket.handshake.headers.cookie.split(' ')
     let token = ''
@@ -95,7 +110,7 @@ io.use((socket, next) => {
     try {
 
         // Validate JWT 
-        const userData = jwt.verify(token, secret)
+        const userData = jwt.verify(token, SECRET)
 
         // Validate if userId on auth is the same than the one on cookie
         if (userId != userData.userId) {

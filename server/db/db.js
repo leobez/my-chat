@@ -2,13 +2,12 @@ const sqlite3 = require('sqlite3').verbose()
 const fs = require('fs')
 const path = require('path')
 const bcrypt = require('bcrypt')
-
 const DB_PATH = path.join(__dirname, 'database.sqlite3')
 
 // Delete existing DB file (if exists)
 if (fs.existsSync(DB_PATH)) {
     fs.unlinkSync(DB_PATH)
-    console.log('Old DB deleted.')
+    console.log('Old DB deleted')
 }
 
 //Create new DB connection
@@ -20,12 +19,15 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
     }
 })
 
+// Default password for testing (TO REMOVE)
 const salt = bcrypt.genSaltSync(12)
 const hash = bcrypt.hashSync('password_test', salt)
 
+// Run commands in order
 db.serialize(() => {
 
     // Create tables
+    // Table 'Users'
     db.run(`
         CREATE TABLE Users(
             userId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -36,28 +38,33 @@ db.serialize(() => {
         )
     `, (err) => {
         if (err) {
-            console.log('Error while creating DB file: ', err.message)
+            console.log('Error while creating "Users" table', err.message)
         } else {
             console.log('Table Users created')
         }
     }),
 
+    // Table 'Friendship'
     db.run(`
         CREATE TABLE Friendship(
             friendshipId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             user1 INTEGER NOT NULL,
             user2 INTEGER NOT NULL,
+            sent_by INTEGER NOT NULL,
+            accepted BOOLEAN,
+            wait BOOLEAN,
             FOREIGN KEY(user1) REFERENCES Users(userId),
             FOREIGN KEY(user2) REFERENCES Users(userId)
         ); 
     `, (err) => {
         if (err) {
-            console.log('Error while creating friendship table: ', err.message)
+            console.log('Error while creating "Friendship" table', err.message)
         } else {
             console.log('Table Friendship created')
         }
     }),
-    
+
+    // Table 'Messages'
     db.run(`
         CREATE TABLE Messages(
             messageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -70,13 +77,19 @@ db.serialize(() => {
         )
     `, (err) => {
         if (err) {
-            console.log('Error while creating messages table: ', err.message)
+            console.log('Error while creating "Messages" table', err.message)
         } else {
             console.log('Table Messages created')
         }
     }),
 
-    // Insert some data for testing (User table)
+
+    // Insert some data for testing (Users) (TO REMOVE)
+    /* 
+        email_test@email.com    password_test     
+        email_test2@email.com   password_test
+        email_test3@email.com   password_test
+    */
     db.run(`
         
         INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
@@ -116,8 +129,8 @@ db.serialize(() => {
         }
     }),
 
-
-    // Insert some data for testing (Message table)
+    
+    // Insert some data for testing (Messages) (TO REMOVE)
     db.run(`
         
         INSERT INTO Messages(from_user, to_user, content) VALUES (?, ?, ?)
@@ -142,16 +155,8 @@ db.serialize(() => {
         } else {
             console.log('Test data added')
         }
-    }),
-
-    // View if data was inserted correctly
-    db.all(`SELECT * FROM Users`, (err, row) => {
-        if (err) {
-            return console.log('Error while selecting from Users on DB: ', err)
-        }
-
-       /*  return console.log('Current state of DB: ', row) */
     })
+
 })
 
 module.exports = db 

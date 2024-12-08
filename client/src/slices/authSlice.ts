@@ -5,6 +5,7 @@ interface User {
     socketId?:string
     email?:string|undefined
     username?:string|undefined
+    friendlist?:any[]|undefined
 }
 
 export const authSlice = createSlice({

@@ -1,6 +1,3 @@
-// DB
-const db = require('../db/db')
-
 // Password encryption
 const bcrypt = require('bcrypt')
 const saltRounds = 12
@@ -10,10 +7,14 @@ const jwt = require('jsonwebtoken')
 const { matchedData } = require('express-validator')
 
 // Envirment variables
-const secret = process.env.SECRET_KEY
+const SECRET = process.env.SECRET_KEY
 
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
-const {insertUser, getUserByEmail, getUserById, getAllUsers} = require('../utils/sqlite3wrappers')
+const {
+        createUser,
+        readUser
+    } = require('../utils/userWrapper')
+
 const errorHandle = require('../utils/errorHandling')
 
 /* 
@@ -31,6 +32,7 @@ class UserController {
         
         // Validate data
         const errorObj = errorHandle(req)
+
         if (errorObj) {
             return res.status(422).json(errorObj)
         }
@@ -49,44 +51,45 @@ class UserController {
 
         // Insert user into database
         try {
-            await insertUser(email, username, hash)
-        } catch (error) {
 
-            console.log(error)
-            // Some of the info sent by user already exists in database
-            if (error.includes('UNIQUE constraint failed')) {
+            const result = await createUser(email, username, hash)
+            //console.log('RESULT: ', result)
 
-                if (error.includes('Users.email')) {
-                    return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
-                }   
-
-                if (error.includes('Users.username')) {
-                    return res.status(400).json({message: 'Bad request',  details: ['Username already used']}) 
-                }   
-
-
+            // User was created successfully. Create session token, and send to client.
+            const userData = {
+                userId: result.data.userId,
+                email: result.data.email,
+                username: result.data.username,
+                password: result.data.password,
             }
-            return res.status(500).json({message: 'Server error',  details: ['Fail to insert user into database']}) 
-        }
-
-        // Get user from database, create token session and send it to user
-        try {
-
-            const userData = await getUserByEmail(email)
 
             const token = jwt.sign(userData, secret, {expiresIn: '1h'})
-
-            console.log('SENDING TOKEN TO USER')
 
             return res.cookie('jwt', token, {
                 httpOnly: true,
                 //secure: true,
                 sameSite: 'strict',
-            }).status(201).json({message: 'User created', data: {id: userData.userId, email: userData.email, username: userData.username}}) 
+            }).status(201).json({message: 'User created', data: userData}) 
 
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({message: 'Server error', details: ['Fail to get userdata from database']})
+
+            //console.log('error: ', error)
+
+            if (error.data.includes('UNIQUE constraint failed')) {
+
+                if (error.data.includes('Users.email')) {
+                    return res.status(400).json({message: 'Bad request',  details: ['Email already used']}) 
+                }   
+
+                if (error.data.includes('Users.username')) {
+                    return res.status(400).json({message: 'Bad request',  details: ['Username already used']}) 
+                }  
+
+            } else {
+
+                return res.status(500).json({message: 'Server error',  details: ['Failed to insert user into database. Try again later.']}) 
+
+            }
         }
     }
 
@@ -95,6 +98,7 @@ class UserController {
 
         // Validate data
         const errorObj = errorHandle(req)
+
         if (errorObj) {
             return res.status(422).json(errorObj)
         }
@@ -105,12 +109,20 @@ class UserController {
         // Find data in DB
         try {
             
-            const userData = await getUserByEmail(email)
-            
-            if (!userData) {
+            const result = await readUser({by: 'email', data: email})
+            console.log('RESULT: ', result)
+
+            if (!result.success) {
                 return res.status(400).json({message: 'Bad request',  details: ['Email not found']})
             }
-            
+
+            const userData = {
+                userId: result.data.userId,
+                email: result.data.email,
+                username: result.data.username,
+                password: result.data.password,
+            }
+
             // Validate password
             const isPasswordCorrect = bcrypt.compareSync(password, userData.password)
 
@@ -119,7 +131,7 @@ class UserController {
             }
 
             // Generate JWT
-            const token = jwt.sign(userData, secret, {expiresIn: '1h'})
+            const token = jwt.sign(userData, SECRET, {expiresIn: '1h'})
                 
             return res.cookie('jwt', token, {
                 httpOnly: true,
@@ -129,7 +141,7 @@ class UserController {
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({message: 'Server error',  details: ['Fail to get data from database']})
+            return res.status(500).json({message: 'Server error',  details: ['Failed to get data from database']})
         }
     }
 
@@ -137,7 +149,6 @@ class UserController {
     static logout = async(req, res) => {
 
         try {
-
             res.cookie('jwt', '', {
                 httpOnly: true,
                 //secure: true,
@@ -158,11 +169,11 @@ class UserController {
         try {
 
             const token = req.cookies.jwt
-            const userDecoded = jwt.verify(token, secret);
+            const userDecoded = jwt.verify(token, SECRET);
             
             return res.status(200).json({
                 loggedIn: true, 
-                message: 'User is logged in',
+                message: 'User is valid',
                 details: ['Valid JWT detected on cookies'],
                 data: {
                     id: userDecoded.userId,
@@ -178,41 +189,31 @@ class UserController {
         }
     }
 
-    // Get all users from database
-    static getAll = async(req, res) => {
-        
-        try {
-            
-            const allUsers = await getAllUsers()
-            return  res.status(200).json({message: 'data retrieved', data: allUsers})
-
-        } catch (error) {   
-            console.log(error)
-            return res.status(500).json({message: 'Error on server', details: ['Error while retrieving data from DB']})
-        }
-
-    }
-
-    // Get user by if from database
+    // Get user by id
     static getById = async(req, res) => {
         try {
             
             const {id} = req.params
-            if (!id) return res.status(400).json({message: 'Bad request', details: ['Missing id on URL params']})
+            if (!id) return res.status(400).json({message: 'Bad request', details: ['Missing id on params']})
             
-            const user = await getUserById(id)
-            if (!user) return res.status(400).json({message: 'Bad request', details: ['Id on params does not exist']})
+            const result = await readUser({by: 'userId', data: id})
 
-            return  res.status(200).json({message: 'data retrieved', data: user})
+            if (!result.success) {
+                return res.status(400).json({message: 'Bad request',  details: ['Id not found']})
+            }
+
+            const userData = {
+                userId: result.data.userId,
+                email: result.data.email,
+                username: result.data.username,
+            }
+
+            return  res.status(200).json({message: 'Data retrieved', data:userData})
 
         } catch (error) {
             console.log(error)
             return res.status(500).json({message: 'Error on server', details: ['Error while retrieving data from DB']})
         }
-    }
-
-    static addFriend = async(req, res) => {
-        
     }
 
 }

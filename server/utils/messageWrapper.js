@@ -5,9 +5,6 @@
 const db = require('../db/db')
 
 /* 
-    Creates user on database.
-        if success: returns Object{success:true, data:row_that_was_added}
-        if fails: returns Object{success:false, data:<err.message>}
 */
 function createMessage(from, to, content) {
     return new Promise((resolve, reject) => {
@@ -34,26 +31,20 @@ function createMessage(from, to, content) {
 
 
 /* 
-    Retrieves data about user from database. It can be by: email, username or userId (All UNIQUE constraints)
-        if success: returns Object{success:true, data:row_that_was_added}
-        if fails: returns Object{success:false, data:<err.message>}
 */
-function readMessage({by, data}) {
+function readMessagesBetweenUsers({by, user1, user2}) {
 
     let query = ''
-    if (by === 'email') query = 'SELECT * FROM Users WHERE email = ?'
-    if (by === 'username') query = 'SELECT * FROM Users WHERE username = ?'
-    if (by === 'userId') query = 'SELECT * FROM Users WHERE userId = ?'
+    if (by === 'users') query = 'SELECT * FROM Messages WHERE (from_user = ? AND to_user = ?) OR (from_user = ? AND to_user = ?) ORDER BY timestamp'
     if (!query.length) return;
 
     return new Promise((resolve, reject) => {
-        return db.get(query, [data],  (err, row) => {
+        return db.all(query, [user1, user2, user2, user1], (err, rows) => {
             if (err) {
-                console.error('DB Insertion failed')
+                console.error('DB Query failed')
                 return reject({success: false, data: err.message})
-            }
-            console.log('DB Insertion successful')
-            return resolve({success: true, data: row})
+            } 
+            return resolve({success: true, data: rows});
         })
     })
 }
@@ -69,7 +60,7 @@ function deleteMessage() {
 
 module.exports = {
     createMessage,
-    readMessage,
+    readMessagesBetweenUsers,
     updateMessage,
     deleteMessage
 } 

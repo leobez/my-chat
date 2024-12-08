@@ -153,7 +153,7 @@ io.use(async(socket, next) => {
 })
 
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
-const {getSocketInfo, getSocketIdByUserId, updateSocketId} = require('./utils/sqlite3wrappers')
+const {getSocketInfo, getSocketIdByUserId, updateSocketId} = require('./utils/userWrapper')
 
 // Any user has connected
 io.on('connection', async(socket) => {

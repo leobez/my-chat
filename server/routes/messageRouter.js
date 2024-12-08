@@ -31,8 +31,7 @@ router.get(
         '/with',
         query('user').exists().isNumeric().withMessage('Invalid id'),
         tokenVerifier,
-        userIdVerifier,
-        MessageController.privateHistory
+        MessageController.getPivateHistory
     )
 
 module.exports = router

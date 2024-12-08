@@ -8,31 +8,17 @@ const { validationResult, matchedData } = require('express-validator')
 const jwt = require('jsonwebtoken')
 
 // Envirment variables
-const secret = process.env.SECRET_KEY
+const SECRET = process.env.SECRET_KEY
 
+/* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
+const {
+    createMessage,
+    readMessage
+} = require('../utils/messageWrapper')
 
 /* SYNCRONOUS WRAPPER FOR SQLITE3 FUNCTIONS */
 function insertMessage(from, to, content) {
-    return new Promise((resolve, reject) => {
-        return db.run('INSERT INTO Messages (from_user, to_user, content) VALUES (?, ?, ?)', [from, to, content], function(err) {
-
-            if (err) {
-                console.error('DB Insertion failed')
-                return reject(err.message)
-            } 
-
-            // Get line that just got inserted so it can be returned to user
-            const lastId = this.lastID
-            db.get('SELECT * FROM Messages WHERE messageId = ?', [lastId], (err, row) => {
-                if (err) {
-                    console.error('Failed to retrieve last ID from DB')
-                    return reject(err.message)
-                }
-                return resolve({message: 'Message saved on DB', data: row})
-            })
-
-        })
-    })
+    
 }
 function getMessagesBetween(user1, user2) {
     return new Promise((resolve, reject) => {
@@ -50,8 +36,7 @@ function getMessagesBetween(user1, user2) {
 /* CONTROLLER */
 class MessageController {
 
-    // Saves user on database, creates session token and sends them.
-    static privateMessage = async(req, res) => {
+    static sendPrivateMessage = async(req, res) => {
         
         // Validate data
         const errors = validationResult(req)
@@ -66,7 +51,7 @@ class MessageController {
         // Validate if from === userId that is on jwt-cookie
         try {
             const token = req.cookies.jwt
-            const  userData = jwt.verify(token, secret)
+            const  userData = jwt.verify(token, SECRET)
 
             // User thats sending the message is not the one thats actually on the req.body
             if (Number(userData.userId) !== Number(from)) {
@@ -94,7 +79,7 @@ class MessageController {
             
         // Get data
         const {user:userWeTalkedTo} = matchedData(req)
-        const {userId:userWeAre} = jwt.verify(req.cookies.jwt, secret)
+        const {userId:userWeAre} = jwt.verify(req.cookies.jwt, SECRET)
         //console.log('users: ', userWeTalkedTo, userWeAre)
 
         // Get every message from database that was exchanged between users: userWeTalkedTo and userWeAre

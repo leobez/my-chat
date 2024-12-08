@@ -9,10 +9,10 @@ const db = require('../db/db')
         if success: returns Object{success:true, data:row_that_was_added}
         if fails: returns Object{success:false, data:<err.message>}
 */
-function createMessage(email, username, hash) {
+function createMessage(from, to, content) {
     return new Promise((resolve, reject) => {
-        return db.run('INSERT INTO Users (email, username, password) VALUES (?, ?, ?)', [email, username, hash], function (err) {
-            
+        return db.run('INSERT INTO Messages (from_user, to_user, content) VALUES (?, ?, ?)', [from, to, content], function(err) {
+
             if (err) {
                 console.error('DB Insertion failed')
                 return reject({success: false, data: err.message})
@@ -20,15 +20,14 @@ function createMessage(email, username, hash) {
             console.log('DB Insertion successful')
             const lastId = this.lastID
 
-            db.get('SELECT * FROM Users WHERE userId = ?', [lastId], function (err, row) {
-
+            db.get('SELECT * FROM Messages WHERE messageId = ?', [lastId], (err, row) => {
                 if (err) {
                     console.error('DB Query failed');
-                    return reject({success: false, data: err.message});
+                    return reject({success: false, data: err.message})
                 }
-                console.log('DB Query successful')
                 return resolve({success: true, data: row});
-            });
+            })
+
         })
     })
 }
@@ -67,7 +66,6 @@ function updateMessage() {
 function deleteMessage() {
 
 } 
-
 
 module.exports = {
     createMessage,

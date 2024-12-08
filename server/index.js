@@ -50,7 +50,7 @@ const friendshipRoutes = require('./routes/friendshipRouter')
 
 app.use('/api/user', userRoutes)
 app.use('/api/message', messageRoutes)
-app.use('/api/friendship', messageRoutes)
+app.use('/api/friendship', friendshipRoutes)
 app.get('', (req, res) => res.status(404).json({message: 'not found'})) // 404 ROUTE
 
 

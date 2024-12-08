@@ -5,8 +5,13 @@
 --/--
 
 TODO: 
-    -> FINISH REFACTORING ALL WRAPPER FUNCTIONS, ROUTES, CONTROLLERS ETC.
     -> CREATE BACKEND FOR Friendship CRUD
+
+    -> ROUTE FOR: getFriendRequestSent and getFriendRequestReceived
+        -> ITERATES OVER ALL FRIENDSHIP AND BRINGS THE ONES WITH USERID ON USER1 OR USER2 COLUMN
+        -> WHEN USER INTERACTS WITH IT, UPDATE TABLE ...
+
+
 
     -> FRIENDSHIP FUNCTIONALITY
     -> ONLINE STATUS
@@ -19,3 +24,7 @@ TODO:
     ACCOUNT:
     -> FORGOT PASSWORD
     -> GUEST ACCOUNT
+
+
+MAYBE...
+    -> Instead of comparing session_token with req.body, just use session token right away... (remove userIdVerifier)

@@ -7,6 +7,7 @@ const SECRET = process.env.SECRET_KEY
 const userIdVerifier = (req, res, next) => {
 
     try {
+        
         const token = req.cookies.jwt 
         const  userData = jwt.verify(token, SECRET)
 

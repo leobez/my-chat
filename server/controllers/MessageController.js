@@ -1,6 +1,3 @@
-// DB
-const db = require('../db/db')
-
 // Express-validator
 const { validationResult, matchedData } = require('express-validator')
 
@@ -35,12 +32,11 @@ class MessageController {
         try {
 
             const result = await createMessage(from, to, content)
-
             if (result.success) return res.status(200).json({message: 'Message saved on DB', data: result.data})
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({message: 'Server error', details: ['Error while verifying jwt on cookies']})
+            return res.status(500).json({message: 'Server error', details: ['Error while inserting on DB']})
         }
 
     }

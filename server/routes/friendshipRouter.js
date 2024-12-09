@@ -10,32 +10,46 @@ const FriendshipController = require('../controllers/FriendshipController')
 // Express-validator
 const { body } = require('express-validator')
 
-// jwt
-const jwt = require('jsonwebtoken')
-
-// Envirment variables
-const SECRET = process.env.SECRET_KEY
-
 const userIdVerifier = require('../middlewares/userIdVerifier')
 
 // ROUTES
+router.get(
+    '/sent',
+    tokenVerifier,
+    FriendshipController.getSentFriendRequests
+)
+
+router.get(
+    '/received',
+    tokenVerifier,
+    FriendshipController.getReceivedFriendRequests
+)
+
 router.post(
     '/add', 
-    body('to').exists().withMessage('INVALID "TO" '),
     body('from').exists().withMessage('INVALID "FROM" '),
+    body('to').exists().withMessage('INVALID "TO" '),
     tokenVerifier, 
     userIdVerifier,
     FriendshipController.sendFriendRequest
 )
 
 router.post(
-    '/request', 
-    body('accept').exists().withMessage('INVALID "ACCEPT" '),
+    '/accept', 
     body('from').exists().withMessage('INVALID "FROM" '),
-    body('messageId').exists().withMessage('INVALID "MESSAGEID" '),
+    body('friendshipId').exists().withMessage('INVALID "FRIENDSHIPID" '),
     tokenVerifier,
     userIdVerifier,
-    FriendshipController.acceptOrDenyFriendRequest
+    FriendshipController.acceptFriendRequest
+)
+
+router.post(
+    '/deny', 
+    body('from').exists().withMessage('INVALID "FROM" '),
+    body('friendshipId').exists().withMessage('INVALID "FRIENDSHIPID" '),
+    tokenVerifier,
+    userIdVerifier,
+    FriendshipController.denyFriendRequest
 )
 
 module.exports = router

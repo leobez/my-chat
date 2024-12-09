@@ -4,9 +4,10 @@
 
 const db = require('../db/db')
 
-function createFriendship(user1, user2) {
+function createFriendship(from, to) {
+
     return new Promise((resolve, reject) => {
-        return db.run('INSERT INTO Friendship (user1, user2, sent_by, accepted, wait) VALUES (?, ?, ?, ?, ?)', [user1, user2, user1, false, true], function(err) {
+        return db.run('INSERT INTO Friendship (from_user, to_user, accepted, wait) VALUES (?, ?, ?, ?)', [from, to, false, true], function(err) {
 
             if (err) {
                 console.error('DB Insertion failed')
@@ -23,7 +24,7 @@ function createFriendship(user1, user2) {
                     return reject({success: false, data: err.message});
                 }
 
-                console.log('DB Query successful')
+                console.log('DB Query successful: ', row)
                 return resolve({success: true, data: row});
             });
 
@@ -31,9 +32,53 @@ function createFriendship(user1, user2) {
     })
 }
 
-function updateFriendship(accept, messageId) {
+function readFriendship({by, data}) {
+    
+    let query = ''
+    if (by === 'byid') query = 'SELECT * FROM Friendship WHERE friendshipId = ?'
+    if (by === 'from_user') query = 'SELECT * FROM Friendship WHERE from_user = ?'
+    if (by === 'to_user') query = 'SELECT * FROM Friendship WHERE to_user = ?'
+    if (!query.length) return;
+
+    if (by === 'from_user' || by === 'to_user') {
+        return new Promise((resolve, reject) => {
+
+            return db.all(query, [data], function(err, rows) {
+    
+                if (err) {
+                    console.error('DB query failed')
+                    return reject({success: false, data: err.message})
+                }
+    
+                console.log('DB query successful') 
+                //console.log('rows: ', rows)
+                return resolve({success: true, data: rows})
+    
+            })
+        })
+    }
+
     return new Promise((resolve, reject) => {
-        return db.run('UPDATE Friendship SET accepted = ?, wait = ? WHERE friendshipId = ?', [accept, false, messageId], function(err) {
+
+        return db.get(query, [data], function(err, row) {
+
+            if (err) {
+                console.error('DB query failed')
+                return reject({success: false, data: err.message})
+            }
+
+            console.log('DB query successful') 
+            //console.log('row: ', row)
+            return resolve({success: true, data: row})
+
+        })
+    })
+}
+
+function updateFriendship(accept, friendshipId) {
+
+    return new Promise((resolve, reject) => {
+        return db.run('UPDATE Friendship SET accepted = ?, wait = ? WHERE friendshipId = ?', [accept, false, friendshipId], function(err) {
 
             if (err) {
                 console.error('DB update failed')
@@ -41,10 +86,7 @@ function updateFriendship(accept, messageId) {
             }
 
             console.log('DB update successful') 
-            const test = this.changes
             const lastId = this.lastID
-
-            console.log('aaa: ', test)
 
             db.get('SELECT * FROM Friendship WHERE friendshipId = ?', [lastId], function (err, row) {
 
@@ -61,8 +103,13 @@ function updateFriendship(accept, messageId) {
     })
 }
 
+function deleteFriendship(friendshipId) {
+
+}
 
 module.exports = {
     createFriendship,
-    updateFriendship
+    updateFriendship,
+    readFriendship,
+    deleteFriendship
 }

@@ -48,13 +48,15 @@ db.serialize(() => {
     db.run(`
         CREATE TABLE Friendship(
             friendshipId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            user1 INTEGER NOT NULL,
-            user2 INTEGER NOT NULL,
-            sent_by INTEGER NOT NULL,
+            from_user INTEGER NOT NULL,
+            to_user INTEGER NOT NULL,
             accepted BOOLEAN,
             wait BOOLEAN,
-            FOREIGN KEY(user1) REFERENCES Users(userId),
-            FOREIGN KEY(user2) REFERENCES Users(userId)
+            lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN from_user ELSE to_user END),
+            bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN to_user ELSE from_user END),
+            UNIQUE(lesser_id, bigger_id),
+            FOREIGN KEY(from_user) REFERENCES Users(userId),
+            FOREIGN KEY(to_user) REFERENCES Users(userId)
         ); 
     `, (err) => {
         if (err) {

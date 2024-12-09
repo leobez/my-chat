@@ -54,14 +54,6 @@ app.use('/api/friendship', friendshipRoutes)
 app.get('', (req, res) => res.status(404).json({message: 'not found'})) // 404 ROUTE
 
 
-
-
-
-
-
-
-
-
 // WEBSOCKET
 const http = require('node:http')
 const socketIO = require('socket.io')

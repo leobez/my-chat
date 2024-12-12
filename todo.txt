@@ -1,10 +1,19 @@
--> REACT/NODE FOR WEB.
--> API WITH DATABASE.
--> JAVA FOR DESKTOP.  
+-> REAL TIME CHAT APP
+-> SERVER / REST API / FRONTEND PAGE    -> NODE, REACT
+-> EVENTUALLY JAVA FOR DESKTOP  
 
 --/--
 
 TODO: 
+    -> BETTER ROUTER, CONTROLLER, SERVICES, MODELS.
+    -> SORTA OF 'GLOBAL' TRYCATCH + ERROR LOGGER
+    -> UNIT TESTS (JEST?)
+    -> CUSTOMERROR CLASS (BETTER...)
+    -> FIX USERIDVERIFIER BULLSHIT (SIMPLY USE USER DATA FROM REQ)
+    -> RATE LIMITER
+
+    THEN... 
+
     -> WHEN FRIEND REQUEST GETS DENIED -> DELETE FROM DATABASE
     -> CREATE DELETE FRIEND ROUTE...
     -> IMPLEMENT ON FRONTEND -> IMPLEMENT VIA WEBSOCKET
@@ -15,8 +24,3 @@ TODO:
     ACCOUNT:
     -> FORGOT PASSWORD
     -> GUEST ACCOUNT
-
-
-MAYBE...
-    -> Instead of comparing session_token with req.body, just use session token right away... (remove userIdVerifier)
-    -> User more of TokenVerifier (already sets req.data = userData)

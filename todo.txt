@@ -20,7 +20,8 @@ TODO:
         -> ONLINE STATUS
         -> NOTIFICATION
         -> PROFILE PAGE 
-        
+    -> COOKIES HANDLING ON FRONTEND       
+
     ACCOUNT:
     -> FORGOT PASSWORD
     -> GUEST ACCOUNT

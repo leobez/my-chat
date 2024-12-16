@@ -11,7 +11,7 @@ const tokenValidator = require('../middlewares/tokenValidator')
 const FriendshipController = require('../controllers/FriendshipController')
 
 // Express-validator
-const { body, cookie, param } = require('express-validator')
+const { cookie, param } = require('express-validator')
 
 // ROUTES
 router.get(

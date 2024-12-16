@@ -1,167 +1,144 @@
-// Express-validator
-const { validationResult, matchedData } = require('express-validator')
+// Service
+const FriendshipService = require('../services/FriendshipService')
 
-const {
-    createFriendship,
-    updateFriendship,
-    readFriendship
-} = require('../utils/friendshipWrapper')
-
-const {
-    readUser,
-} = require('../utils/userWrapper')
-
-/* CONTROLLER */
+// Controller
 class FriendshipController {
 
     static getSentFriendRequests = async(req, res) => {
 
-        // Validate data
-        const userData = req.data
-
         try {
-
-            // Validate if friend thats being added exists
-            const result_1 = await readFriendship({by: 'from_user', data: userData.userId})
-            if (result_1.success) return res.status(200).json({message: 'Data retrieved', data: result_1.data})
             
+            const user = req.user
+            const sentRequests = await FriendshipService.getSentFriendRequests(user.userId)
+
+            return res.status(201).json({
+                message: 'Data retrieved',
+                data: sentRequests
+            })
+
         } catch (error) {
 
-            //onsole.log(error)
-
-            if (error.data.includes('SQLITE_CONSTRAINT: UNIQUE constraint failed: Friendship.lesser_id, Friendship.bigger_id')) {
-                return res.status(400).json({message: 'Bad request', details: ['Friendship request already exists']})
-            }
-
-            return res.status(500).json({message: 'Server error', details: ['Error while inserting on DB']})
-
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
         }
 
     }
 
     static getReceivedFriendRequests = async(req, res) => {
 
-        // Validate data
-        const userData = req.data
-
         try {
+            
+            const user = req.user
+            const receivedRequests = await FriendshipService.getReceivedFriendRequests(user.userId)
 
-            // Validate if friend thats being added exists
-            const result_1 = await readFriendship({by: 'to_user', data: userData.userId})
-            if (result_1.success) return res.status(200).json({message: 'Data retrieved', data: result_1.data})
+            return res.status(201).json({
+                message: 'Data retrieved',
+                data: receivedRequests
+            })
 
         } catch (error) {
 
-            //onsole.log(error)
-
-            if (error.data.includes('SQLITE_CONSTRAINT: UNIQUE constraint failed: Friendship.lesser_id, Friendship.bigger_id')) {
-                return res.status(400).json({message: 'Bad request', details: ['Friendship request already exists']})
-            }
-
-            return res.status(500).json({message: 'Server error', details: ['Error while inserting on DB']})
-
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
         }
 
     }
 
     static sendFriendRequest = async(req, res) => {
-        
-        // Validate data
-        const errors = validationResult(req)
-
-        if (!errors.isEmpty()) {
-            return res.status(422).json({message: 'Bad request', details: errors})
-        }
-         
-        // Get data
-        const {from, to} = matchedData(req)
-
-        if (Number(from) === Number(to)) {
-            return res.status(400).json({message: 'Bad request', details: ['User cant add himself']})
-        }
 
         try {
-
-            // Validate if friend thats being added exists
-            const result_1 = await readUser({by: 'userId', data: to})
-            if (result_1 && !result_1.data) return res.status(400).json({message: 'Bad request', details: ['Friend request being sent to non-existent user']})
             
-            // Create friendship on database
-            const result_2 = await createFriendship(from, to)
-            if (result_2.success) return res.status(200).json({message: 'Friendship request saved on DB', data: result_2.data})
+            const from = req.user.userId
+            const {id:to} = req.params
+
+            const friendshipData = {
+                from: Number(from),
+                to: Number(to)
+            }
+
+            const sentFriendRequest = await FriendshipService.sendFriendRequest(friendshipData)
+
+            //console.log(sentFriendRequest)
+
+            return res.status(201).json({
+                message: 'Friendship request sent',
+                data: sentFriendRequest
+            })
 
         } catch (error) {
 
-            //onsole.log(error)
-
-            if (error.data.includes('SQLITE_CONSTRAINT: UNIQUE constraint failed: Friendship.lesser_id, Friendship.bigger_id')) {
-                return res.status(400).json({message: 'Bad request', details: ['Friendship request already exists']})
-            }
-
-            return res.status(500).json({message: 'Server error', details: ['Error while inserting on DB']})
-
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
         }
 
     }
 
     static acceptFriendRequest = async(req, res) => {
 
-        // Validate data
-        const errors = validationResult(req)
-
-        if (!errors.isEmpty()) {
-            return res.status(422).json({message: 'Bad request', details: errors})
-        }
-            
-        // Get data
-        const {friendshipId, from} = matchedData(req)
-
         try {
+            
+            const user = req.user
+            const {id:friendshipId} = req.params
 
-            // Verify if friendship exists
-            const result_1 = await readFriendship({by: 'byid', data: friendshipId})
-            if (!result_1.data) return res.status(400).json({message: 'Bad request', details: ['FriendshipId does not exist']})
+            const friendshipData = {
+                userThatsAccepting: user,
+                friendshipId: friendshipId
+            }
 
-            // Verify if 'from' is equal to friendships to_user (only them can accept)
-            if (Number(result_1.data.to_user) !== Number(from)) return res.status(400).json({message: 'Bad request', details: ['Friendship request was not sent to this user']})
+            const acceptedRequest = await FriendshipService.acceptFriendRequest(friendshipData)
 
-            const result_2 = await updateFriendship(true, friendshipId)
-            if (result_2.success) return res.status(200).json({message: 'Friendship status updated', data: result_2.data})
+            return res.status(201).json({
+                message: 'Friendship accepted',
+                data: acceptedRequest
+            })
 
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({message: 'Server error', details: ['Error while manipulating DB']})
+
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
         }
+
     }
 
     static denyFriendRequest = async(req, res) => {
 
-        // Validate data
-        const errors = validationResult(req)
-
-        if (!errors.isEmpty()) {
-            return res.status(422).json({message: 'Bad request', details: errors})
-        }
-            
-        // Get data
-        const {friendshipId, from} = matchedData(req)
-
         try {
+            
+            const user = req.user
+            const {id:friendshipId} = req.params
 
-            // Verify if friendship exists
-            const result_1 = await readFriendship({by: 'byid', data: friendshipId})
-            if (!result_1.data) return res.status(400).json({message: 'Bad request', details: ['FriendshipId does not exist']})
+            const friendshipData = {
+                userThatsDenying: user,
+                friendshipId: friendshipId
+            }
 
-            // Verify if 'from' is equal to friendships to_user (only them can deny)
-            if (Number(result_1.data.to_user) !== Number(from)) return res.status(400).json({message: 'Bad request', details: ['Friendship request was not sent to this user']})
+            await FriendshipService.denyFriendRequest(friendshipData)
 
-            const result_2 = await updateFriendship(false, friendshipId)
-            if (result_2.success) return res.status(200).json({message: 'Friendship status updated', data: result_2.data})
+            return res.status(201).json({
+                message: 'Friendship denied',
+            })
 
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({message: 'Server error', details: ['Error while manipulating DB']})
+
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
         }
+        
     }
 }
 

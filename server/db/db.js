@@ -34,7 +34,8 @@ db.serialize(() => {
             socketId VARCHAR(255) UNIQUE, 
             email VARCHAR(255) UNIQUE NOT NULL,
             username VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
+            password VARCHAR(255) NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `, (err) => {
         if (err) {
@@ -54,6 +55,7 @@ db.serialize(() => {
             wait BOOLEAN,
             lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN from_user ELSE to_user END),
             bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN to_user ELSE from_user END),
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(lesser_id, bigger_id),
             FOREIGN KEY(from_user) REFERENCES Users(userId),
             FOREIGN KEY(to_user) REFERENCES Users(userId)

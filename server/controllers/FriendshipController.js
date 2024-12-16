@@ -4,6 +4,27 @@ const FriendshipService = require('../services/FriendshipService')
 // Controller
 class FriendshipController {
 
+    static getFriends = async(req, res) => {
+        try {
+            
+            const user = req.user
+
+            const friendsList = await FriendshipService.getFriends(user.userId)
+
+            return res.status(201).json({
+                message: 'Data retrieved',
+                data: friendsList
+            })
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+    }
+
     static getSentFriendRequests = async(req, res) => {
 
         try {
@@ -131,7 +152,6 @@ class FriendshipController {
             })
 
         } catch (error) {
-
             //console.error('CONTROLLER ERROR: ', error)
             return res.status(error.status).json({
                 message: error.message,
@@ -140,6 +160,7 @@ class FriendshipController {
         }
         
     }
+
 }
 
 module.exports = FriendshipController

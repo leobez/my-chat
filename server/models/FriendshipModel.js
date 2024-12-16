@@ -42,6 +42,11 @@ class  FriendshipModel {
             nData = [data]
         }
 
+        if (by === 'userId') {
+            query = 'SELECT * FROM Friendship WHERE ((from_user = ?) OR (to_user = ?)) AND accepted = TRUE'
+            nData = [data, data]
+        }
+
         if (!query) return;
 
         // Get multiple lines

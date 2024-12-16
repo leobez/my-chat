@@ -8,6 +8,26 @@ const CustomError = require('../utils/CustomError')
 // Service
 class FriendshipService {
 
+    static async getFriends(userId) {
+
+        try {
+
+            const friedsList = await FriendshipModel.read({by: 'userId', all: true, data: userId})
+
+            return friedsList
+
+        } catch (error) {
+
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+
+            throw error; // Passing errors to controller
+        }
+
+    }
+
     static async getSentFriendRequests(userId) {
 
         try {
@@ -114,8 +134,8 @@ class FriendshipService {
             const friendship = await FriendshipModel.read({by: 'id', data: friendshipData.friendshipId})
 
             if (!friendship) throw new CustomError(400, 'Bad request', ['Friendship request with this id does not exist'])
-
-            if (Number(friendshipData.userThatsAccepting.userId) !== Number(friendship.to_user)) throw new CustomError(403, 'Forbidden', ['This friend request was not sent to you'])
+            
+            if (Number(friendshipData.userThatsDenying.userId) !== Number(friendship.to_user)) throw new CustomError(403, 'Forbidden', ['This friend request was not sent to you'])
             
             // Doesnt need to be updated because it will be deleted anyways. Leaving it here just in case the solution
             // changes tho. 
@@ -139,6 +159,7 @@ class FriendshipService {
         }
 
     }
+ 
 }
 
 module.exports = FriendshipService

@@ -15,6 +15,20 @@ const { cookie, param } = require('express-validator')
 
 // ROUTES
 router.get(
+    '/',
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    FriendshipController.getFriends
+)
+
+
+router.get(
     '/sent',
     
     cookie('jwt')

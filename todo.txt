@@ -5,9 +5,8 @@
 --/--
 
 TODO: 
-    -> TEST ALL FRIENDSHIP ROUTES
     -> BETTER LOGIC FOR WEBSOCKETS (?)
-
+    --/--
     -> SORTA OF 'GLOBAL' TRYCATCH
     -> ERROR LOGGER
     -> UNIT TESTS (JEST?)

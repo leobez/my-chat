@@ -39,11 +39,11 @@ class  UserModel {
     }
 
     static update() {
-        
+        /* ... */
     }
 
     static delete() {
-        
+        /* ... */
     }
 }
 

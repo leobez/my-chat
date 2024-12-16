@@ -16,17 +16,46 @@ const { body, cookie, param } = require('express-validator')
 // UNPROTECTED ROUTES
 router.post(
     '/register',
-    body('username').exists().withMessage('Missing username').trim().notEmpty().withMessage('Empty username').escape(),
-    body('email').exists().withMessage('Missing email').trim().notEmpty().withMessage('Empty email').isEmail().withMessage('Invalid Email').escape(),
-    body('password').exists().withMessage('Missing password').trim().notEmpty().withMessage('Empty password').escape(),
+
+    body('username')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing username')
+        .notEmpty().withMessage('Empty username'),
+
+    body('email')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing email')
+        .notEmpty().withMessage('Empty email')
+        .isEmail().withMessage('Invalid Email'),
+
+    body('password')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing password')
+        .notEmpty().withMessage('Empty password'),
+
     dataValidator, 
     UserController.register
 )
 
 router.post(
     '/login',
-    body('email').exists().withMessage('Missing email').trim().notEmpty().withMessage('Empty email').escape(),
-    body('password').exists().withMessage('Missing password').trim().notEmpty().withMessage('Empty password').escape(),
+
+    body('email')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing email')
+        .notEmpty().withMessage('Empty email')
+        .isEmail().withMessage('Invalid Email'),
+
+    body('password')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing password')
+        .notEmpty().withMessage('Empty password'),
+
     dataValidator,
     UserController.login
 )
@@ -35,7 +64,12 @@ router.post(
 // PROTECTED ROUTES
 router.post(
     '/logout',
-    cookie('jwt').exists().withMessage('Missing JWT on cookies').trim().notEmpty().withMessage('Empty JWT on cookies').escape(),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
     dataValidator,
     tokenValidator,
     UserController.logout
@@ -43,7 +77,12 @@ router.post(
 
 router.get(
     '/me',
-    cookie('jwt').exists().withMessage('Missing JWT on cookies').trim().notEmpty().withMessage('Empty JWT on cookies').escape(),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
     dataValidator,
     tokenValidator,
     UserController.profile
@@ -51,8 +90,18 @@ router.get(
 
 router.get(
     '/byid/:id',
-    cookie('jwt').exists().withMessage('Missing JWT on cookies').trim().notEmpty().withMessage('Empty JWT on cookies').escape(),
-    param('id').exists().withMessage('Missing id').trim().notEmpty().withMessage('Empty id').isNumeric().withMessage('Invalid id'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+        
     dataValidator,
     tokenValidator,
     UserController.getById

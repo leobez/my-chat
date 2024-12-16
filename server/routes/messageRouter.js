@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // Session management
-const tokenVerifier = require('../middlewares/TokenVerifier')
+const tokenVerifier = require('../middlewares/TokenValidator')
 
 // Middleware to verify if 'from' on POST req.body is equal to userId found in session token
 // Case: A user with userId=1 sends message={from: 2, to: 3, content: 'whatever'}.

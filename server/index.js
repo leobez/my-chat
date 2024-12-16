@@ -37,21 +37,29 @@ app.use(cookieParser())
 const jwt = require('jsonwebtoken')
 
 // MIDDLEWARE THAT VALIDATES SYNTAX ERRORS ON JSON THAT WAS SENT BY USER
-const JsonVerifier = require('./middlewares/JsonVerifier')
-app.use(JsonVerifier) 
+app.use(require('./middlewares/JsonVerifier')) 
 
 //INITIATE DB
 require('./db/db') 
 
 // ROUTES
-const userRoutes = require('./routes/userRoutes')
-const messageRoutes = require('./routes/messageRouter')
-const friendshipRoutes = require('./routes/friendshipRouter')
+const router = require('./routes/router')
+app.use(router)
 
-app.use('/api/user', userRoutes)
-app.use('/api/message', messageRoutes)
-app.use('/api/friendship', friendshipRoutes)
-app.get('', (req, res) => res.status(404).json({message: 'not found'})) // 404 ROUTE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // WEBSOCKET

@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // Session management
-const tokenVerifier = require('../middlewares/TokenVerifier')
+const tokenVerifier = require('../middlewares/TokenValidator')
 
 // Controller
 const FriendshipController = require('../controllers/FriendshipController')

@@ -21,7 +21,7 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
 
 // Default password for testing (TO REMOVE)
 const salt = bcrypt.genSaltSync(12)
-const hash = bcrypt.hashSync('password_test', salt)
+const hash = bcrypt.hashSync('123', salt)
 
 // Run commands in order
 db.serialize(() => {
@@ -88,20 +88,20 @@ db.serialize(() => {
 
     // Insert some data for testing (Users) (TO REMOVE)
     /* 
-        email_test@email.com    password_test     
-        email_test2@email.com   password_test
-        email_test3@email.com   password_test
+        user1@email.com   123     
+        user2@email.com   123
+        user3@email.com   123
     */
     db.run(`
         
         INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
 
-    `, ['email_test@email.com', 'username_test', hash], (err) => {
+    `, ['user1@email.com', 'user1', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added')
+            console.log('Test data added to database: user1@email.com, user1, 123')
         }
     }),
 
@@ -109,12 +109,12 @@ db.serialize(() => {
         
         INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
 
-    `, ['email_test2@email.com', 'username_test2', hash], (err) => {
+    `, ['user2@email.com', 'user2', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added')
+            console.log('Test data added to database: user2@email.com, user2, 123')
         }
     }),
 
@@ -122,12 +122,12 @@ db.serialize(() => {
         
         INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
 
-    `, ['email_test3@email.com', 'username_test3', hash], (err) => {
+    `, ['user3@email.com', 'user3', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added')
+            console.log('Test data added to database: user3@email.com, user3, 123')
         }
     }),
 

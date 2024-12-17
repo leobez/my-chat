@@ -2,13 +2,13 @@ const express = require('express')
 const router = express.Router()
 
 // Extracts the result of the validation and determines if there are errors or not
-const dataValidator = require('../middlewares/dataValidator')
+const dataValidator = require('../../middlewares/dataValidator')
 
 // Validates if user has token or not
-const tokenValidator = require('../middlewares/tokenValidator') 
+const tokenValidator = require('../../middlewares/tokenValidator') 
 
 // Controller
-const FriendshipController = require('../controllers/FriendshipController')
+const FriendshipController = require('../../controllers/FriendshipController')
 
 // Express-validator
 const { cookie, param } = require('express-validator')

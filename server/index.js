@@ -22,7 +22,7 @@ const cors = require('cors')
 
 const corsOptions = {
     origin: ['http://localhost:3000', 'http://localhost:5173'],
-    methods: ['GET'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // IMPORTANT -> ALLOWS TO ATTACH JWT TOKEN TO USER COOKIES //
 }
@@ -33,7 +33,6 @@ app.use(cors(corsOptions))
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
-
 // MIDDLEWARE THAT VALIDATES SYNTAX ERRORS ON JSON THAT WAS SENT BY USER
 app.use(require('./middlewares/JsonVerifier')) 
 
@@ -41,7 +40,7 @@ app.use(require('./middlewares/JsonVerifier'))
 require('./db/db') 
 
 // API ROUTES
-const apiRouter = require('./routes/apiRouter/router')
+const apiRouter = require('./routes/router')
 app.use(apiRouter)
 
 // WEBSOCKET
@@ -49,9 +48,13 @@ const http = require('node:http')
 const socketIO = require('socket.io')
 
 const httpServer = http.createServer(app) // implement HTTP server to support websockets
-const io = new socketIO.Server(httpServer)
+const io = new socketIO.Server(httpServer, {
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 2*60*1000
+    }
+})
 
-const {handleWsMiddlewares, handleWsRoutes} = require('./routes/wsRouter/router')
+const {handleWsMiddlewares, handleWsRoutes} = require('./utils/handleWs')
 handleWsMiddlewares(io)
 handleWsRoutes(io)
 

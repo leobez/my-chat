@@ -38,8 +38,22 @@ class  UserModel {
         })
     }
 
-    static update() {
-        /* ... */
+    static update(socketId, userId) {
+        return new Promise((resolve, reject) => {
+            return db.run('UPDATE Users SET socketId = ? WHERE userId = ?', [socketId, userId], function(err) {
+                if (err) {
+                    return reject({type: 'model', error: err.message})
+                }
+                const lastId = this.lastID
+
+                db.get('SELECT * FROM Users WHERE userId = ?', lastId, function(err, row) {
+                    if (err) {
+                        return reject({type: 'model', error: err.message})
+                    }
+                    return resolve(row)
+                })
+            })
+        })
     }
 
     static delete() {

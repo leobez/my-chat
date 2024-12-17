@@ -38,7 +38,7 @@ class UserService {
             const user = await UserModel.create(newUserData)
 
             // Generate session token
-            const token = jwt.sign(user, SECRET, {expiresIn: '1h'})
+            const token = jwt.sign(user, SECRET, {expiresIn: '12h'})
 
             return {
                 user: user,
@@ -70,7 +70,7 @@ class UserService {
             if (!isPasswordCorrect) throw new CustomError(400, 'Bad request', ['Wrong password'])
 
             // Generate session token
-            const token = jwt.sign(user, SECRET, {expiresIn: '1h'})
+            const token = jwt.sign(user, SECRET, {expiresIn: '12h'})
             
             return {
                 user: user,

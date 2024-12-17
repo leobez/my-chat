@@ -1,24 +1,32 @@
 // Service
 // ...
-const {getSocketInfo, getSocketIdByUserId, updateSocketId} = require('./utils/userWrapper')
+
+// Model
+const UserModel = require("../models/UserModel");
+
+// Custom error
+const CustomError = require("../utils/CustomError");
 
 // Controller
 class SocketController {
 
-    static sendPrivateMessage = async({message}) => {
-
-        const receiverUserId = message.to_user
+    static sendPrivateMessage = async(data) => {
 
         try {
-            const receiverSockerId = await getSocketIdByUserId(receiverUserId)
-            console.log(`Transmitting message [${message.content}] to socket: ${receiverSockerId.socketId}`)
-            return socket.to(receiverSockerId.socketId).emit('private message', message)
+            // Find socketId of user thats receiving the message
+            const receivingUser = await UserModel.read({by: 'id', data: data.data.to_user})
+
+            // User doesnt have a socket, which means he inst online at the moment
+            if (!receivingUser.socketId) return;
+
+            console.log('Transmitting: ', data)
+            return socket.to(receivingUser.socketId).emit('private message', data)
+
         } catch (error) {
-            console.log(error)
-            const err = new Error('Server error')
-            err.data = {details: error}
-            return socket.to(message.from_user).emit('connect_error', err)
-        }
+            // Add error logger here
+            const err = new CustomError(500, 'Server error', ['Try again later'])
+            return socket.to(message.from_user).emit('private message error', err)
+        } 
 
     }
 

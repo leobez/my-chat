@@ -33,8 +33,8 @@ const Login = () => {
 
     // Just to make login easier (REMOVE)
     useEffect(() => {
-        setEmail('email_test@email.com')
-        setPassword('password_test')
+        setEmail('user1@email.com')
+        setPassword('123')
     }, [])
 
     return (

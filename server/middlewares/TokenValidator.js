@@ -8,6 +8,10 @@ function tokenValidator (req, res, next) {
 
         const token = req.cookies.jwt
         const userDecoded = jwt.verify(token, SECRET)
+
+        // Validate that user exists on DB
+        // ...
+
         req.user = userDecoded
         next()
 

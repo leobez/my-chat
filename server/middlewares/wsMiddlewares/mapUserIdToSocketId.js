@@ -1,16 +1,17 @@
-const {getSocketInfo, getSocketIdByUserId, updateSocketId} = require('../../utils/userWrapper')
+// Models
+const UserModel = require('../../models/UserModel')
+const CustomError = require('../../utils/CustomError')
 
-// Map userId to their corresponding socketId
+// Map userId to their corresponding socketId on Database
 const mapUserIdToSocketId = async(socket, next) => {
-    // Add socketId on database
+
     try {
         console.log(`Mapping [userId: ${socket.user.userId}] to [socketId: ${socket.id}]`)
-        await updateSocketId(socket.user.userId, socket.id)
-        await getSocketInfo()
+        await UserModel.update(socket.id, socket.user.userId)
     } catch (error) {
-        const err = new Error('Server error')
-        err.data = {details: ['Failed to map userId to socketId']}
-        return next(err)
+        // Add error logger here
+        const err = new CustomError(500, 'Server error', ['Try again later'])
+        next(err)
     }
     next()
 }

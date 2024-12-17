@@ -16,8 +16,14 @@ const handleWsRoutes = (io) => {
         console.log('A new socket has connected: ', socket.id)
         console.log('Socket belongs to: ', socket.user)
 
+        // Broadcast to socket friends that he is online
+        SocketController.notifyFriendsOnline(socket, io)
+
         // Common events
-        socket.on('disconnect', () => SocketController.disconnect(socket))
+        socket.on('disconnect', () => {
+            SocketController.notifyFriendsOffline(socket, io)
+            SocketController.disconnect(socket)
+        })
 
         // Message events
         socket.on('private message', (data) => SocketController.sendPrivateMessage(socket, data))

@@ -32,6 +32,11 @@ class  MessageModel {
             nData = [data.user1, data.user2, data.user2, data.user1]
         }
 
+        if (by === 'id') {
+            query = 'SELECT * FROM Messages WHERE messageId = ?'
+            nData = [data]
+        }
+
         if (!query) return;
 
         // Get multiple lines

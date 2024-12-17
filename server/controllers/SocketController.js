@@ -1,8 +1,5 @@
 // Service
-// ...
-
-// Model
-const UserModel = require("../models/UserModel");
+const SocketService = require('../services/SocketService')
 
 // Custom error
 const CustomError = require("../utils/CustomError");
@@ -10,16 +7,34 @@ const CustomError = require("../utils/CustomError");
 // Controller
 class SocketController {
 
-    static disconnect = async(socket) => {
+    static notifyFriendsOnline = async(socket, io) => {
         try {
-            console.log(`User: ${socket.user.userId} DISCONNECTED.`)
-            await UserModel.update(null, socket.user.userId)
+            await SocketService.notifyFriendsOnline(socket.user.userId, io, true)
             return;
         } catch (error) {
             // Add error logger here
-            //const err = new CustomError(500, 'Server error', ['Try again later'])
-            //return socket.to(message.from_user).emit('private message error', err)
+            return socket.emit('error', error)
+        }  
+    }
+
+    static notifyFriendsOffline = async(socket, io) => {
+        try {
+            await SocketService.notifyFriendsOnline(socket.user.userId, io, false)
             return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        }  
+
+    }
+
+    static disconnect = async(socket) => {
+        try {
+            await SocketService.disconnect(socket.user.userId)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
         }  
 
     }
@@ -27,26 +42,12 @@ class SocketController {
     static sendPrivateMessage = async(socket, {data}) => {
 
         try {
-
-            // Find socketId of user thats receiving the message
-            const receivingUser = await UserModel.read({by: 'id', data: data.to_user})
-
-            // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser.socketId) return;
-
-            console.log('Transmitting: ', data)
-            return socket.to(receivingUser.socketId).emit('private message', data)
-
+            await SocketService.sendPrivateMessage(socket, data)
+            console.log('Transmitting message')
+            return;
         } catch (error) {
-
             // Add error logger here
-            const err = new CustomError(500, 'Server error', ['Try again later'])
-
-            // Find socketId of user thats sending the message (notify him of error)
-            const sendingUser = await UserModel.read({by: 'id', data: data.from_user})
-            if (!sendingUser.socketId) return;
-            //console.log('testing error: ', sendingUser.socketId)
-            return socket.to(sendingUser.socketId).emit('private message error', err)
+            return socket.emit('error', error)
         } 
 
     }
@@ -54,26 +55,12 @@ class SocketController {
     static sendFriendRequest = async(socket, {data}) => {
 
         try {
-
-            // Find socketId of user thats receiving the friend request
-            const receivingUser = await UserModel.read({by: 'id', data: data.to_user})
-
-            // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser.socketId) return;
-
-            console.log('Transmitting: ', data)
-            return socket.to(receivingUser.socketId).emit('friend request', data)
-
+            await SocketService.sendFriendRequest(socket, data)
+            console.log('Transmitting friend request')
+            return;
         } catch (error) {
-
             // Add error logger here
-            const err = new CustomError(500, 'Server error', ['Try again later'])
-
-            // Find socketId of user thats sending the message (notify him of error)
-            const sendingUser = await UserModel.read({by: 'id', data: data.from_user})
-            if (!sendingUser.socketId) return;
-            //console.log('testing error: ', sendingUser.socketId)
-            return socket.to(sendingUser.socketId).emit('friend request error', err)
+            return socket.emit('error', error)
         } 
 
     }

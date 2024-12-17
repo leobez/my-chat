@@ -1,13 +1,13 @@
 // Service
 const SocketService = require('../services/SocketService')
 
-// Custom error
-const CustomError = require("../utils/CustomError");
-
 // Controller
 class SocketController {
 
     static notifyFriendsOnline = async(socket, io) => {
+        
+        console.log(`notifying friends of ${socket.user.userId} that he is online`)
+
         try {
             await SocketService.notifyFriendsDisponibility(socket.user.userId, io, true)
             return;

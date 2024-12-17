@@ -27,6 +27,7 @@ const hash = bcrypt.hashSync('123', salt)
 db.serialize(() => {
 
     // Create tables
+    
     // Table 'Users'
     db.run(`
         CREATE TABLE Users(
@@ -153,6 +154,33 @@ db.serialize(() => {
         INSERT INTO Messages(from_user, to_user, content) VALUES (?, ?, ?)
 
     `, [2, 1, 'de boa man user1, e você?'], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    })
+
+    // Insert some data for testing (Friendship) (TO REMOVE)
+    db.run(`
+        
+        INSERT INTO Friendship(from_user, to_user, accepted, wait) VALUES (?, ?, ?, ?)
+
+    `, [1, 2, true, false], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    }),
+
+    db.run(`
+        
+        INSERT INTO Friendship(from_user, to_user, accepted, wait) VALUES (?, ?, ?, ?)
+
+    `, [1, 3, true, false], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)

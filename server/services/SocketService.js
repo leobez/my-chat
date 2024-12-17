@@ -18,8 +18,8 @@ class SocketService {
 
             // Get every socketId of userId friends
             const socketIdList = friendsList.map((friend) => friend.socketId)
-            
-            socketIdList.array.forEach(socketId => {
+
+            socketIdList.forEach(socketId => {
                 io.to(socketId).emit('online status', {
                     user: userId,
                     online: status

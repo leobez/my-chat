@@ -12,9 +12,32 @@ class FriendshipService {
 
         try {
 
+            // Get every friend of user
             const friedsList = await FriendshipModel.read({by: 'userId', all: true, data: userId})
+            if (!friedsList) return []
 
-            return friedsList
+            // Get the id of each friend
+            let friendsId = []
+            friedsList.forEach(friend => {
+                if (friend.from_user === userId) {
+                    friendsId.push(friend.to_user)
+                } else {
+                    friendsId.push(friend.from_user)
+                }
+            });
+
+            // Get the user object of each friend
+            let friendsfinal = []
+            for (let a=0; a<friendsId.length; a++) {
+                const friend = await UserModel.read({by: 'id', data: friendsId[a]})
+                friendsfinal.push({
+                    userId: friend.userId,
+                    socketId: friend.socketId,
+                    username: friend.username,
+                })
+            }
+
+            return friendsfinal
 
         } catch (error) {
 

@@ -4,6 +4,7 @@ const router = express.Router()
 router.use('/api/user', require('./userRouter'))
 router.use('/api/message', require('./messageRouter'))
 router.use('/api/friendship', require('./friendshipRouter'))
+router.use('/api/group', require('./groupRouter'))
 
 // TEST ROUTE
 router.get('/', (req, res) => {

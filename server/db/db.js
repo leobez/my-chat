@@ -42,6 +42,7 @@ db.serialize(() => {
         if (err) {
             console.log('Error while creating "Users" table', err.message)
         } else {
+            console.log('------')
             console.log('Table Users created')
         }
     }),
@@ -69,7 +70,7 @@ db.serialize(() => {
         }
     }),
 
-    // Table 'Messages'
+    // Table 'Messages' (Private messages)
     db.run(`
         CREATE TABLE Messages(
             messageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -88,6 +89,65 @@ db.serialize(() => {
         }
     }),
 
+    // Table 'Groups'
+    db.run(`
+        CREATE TABLE Groups(
+            groupId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            creator INTEGER NOT NULL,
+            description VARCHAR(500) NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(creator) REFERENCES Users(userId)
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Groups" table', err.message)
+        } else {
+            console.log('Table Groups created')
+        }
+    }),
+
+    /* Add 'role' here */
+    // Table 'Users_groups'
+    db.run(`
+        CREATE TABLE Users_groups(
+            userGroupId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            groupId INTEGER NOT NULL,
+            userId INTEGER NOT NULL,
+            accepted BOOLEAN,
+            wait BOOLEAN, 
+            lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN userId ELSE groupId END),
+            bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN groupId ELSE userId END),
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(lesser_id, bigger_id),
+            FOREIGN KEY(groupId) REFERENCES Groups(groupId),
+            FOREIGN KEY(userId) REFERENCES Users(userId)
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Users_groups" table', err.message)
+        } else {
+            console.log('Table Users_groups created')
+        }
+    }),
+
+    // Table 'GroupMessages'
+    db.run(`
+        CREATE TABLE GroupMessages(
+            groupMessageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            from_user INTEGER NOT NULL,
+            to_group INTEGER NOT NULL,
+            content VARCHAR(500) NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(from_user) REFERENCES Users(userId),
+            FOREIGN KEY(to_group) REFERENCES Groups(groupId)
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "GroupMessages" table', err.message)
+        } else {
+            console.log('Table GroupMessages created')
+        }
+    }),
 
     // Insert some data for testing (Users) (TO REMOVE)
     /* 
@@ -134,7 +194,6 @@ db.serialize(() => {
         }
     }),
 
-    
     // Insert some data for testing (Messages) (TO REMOVE)
     db.run(`
         
@@ -186,6 +245,7 @@ db.serialize(() => {
             console.log('Error while inserting test data: ', err.message)
         } else {
             console.log('Test data added')
+            console.log('------')
         }
     })
 

@@ -9,7 +9,7 @@ class SocketController {
 
     static notifyFriendsOnline = async(socket, io) => {
         try {
-            await SocketService.notifyFriendsOnline(socket.user.userId, io, true)
+            await SocketService.notifyFriendsDisponibility(socket.user.userId, io, true)
             return;
         } catch (error) {
             // Add error logger here
@@ -19,7 +19,7 @@ class SocketController {
 
     static notifyFriendsOffline = async(socket, io) => {
         try {
-            await SocketService.notifyFriendsOnline(socket.user.userId, io, false)
+            await SocketService.notifyFriendsDisponibility(socket.user.userId, io, false)
             return;
         } catch (error) {
             // Add error logger here
@@ -39,11 +39,9 @@ class SocketController {
 
     }
 
-    static sendPrivateMessage = async(socket, {data}) => {
-
+    static sendPrivateMessage = async(socket, {messageId}) => {
         try {
-            await SocketService.sendPrivateMessage(socket, data)
-            console.log('Transmitting message')
+            await SocketService.sendPrivateMessage(socket, messageId)
             return;
         } catch (error) {
             // Add error logger here
@@ -52,11 +50,20 @@ class SocketController {
 
     }
 
-    static sendFriendRequest = async(socket, {data}) => {
-
+    static sendFriendRequest = async(socket, {friendshipId}) => {
         try {
-            await SocketService.sendFriendRequest(socket, data)
-            console.log('Transmitting friend request')
+            await SocketService.sendFriendRequest(socket, friendshipId)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        } 
+
+    }
+
+    static acceptFriendRequest = async(socket, {friendshipId}) => {
+        try {
+            await SocketService.acceptFriendRequest(socket, friendshipId)
             return;
         } catch (error) {
             // Add error logger here

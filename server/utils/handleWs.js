@@ -26,10 +26,11 @@ const handleWsRoutes = (io) => {
         })
 
         // Message events
-        socket.on('private message', (data) => SocketController.sendPrivateMessage(socket, data))
+        socket.on('private message', (messageId) => SocketController.sendPrivateMessage(socket, messageId))
 
         // Friendship events
-        socket.on('friend request', (data) => SocketController.sendFriendRequest(socket, data))
+        socket.on('friend request', (friendshipId) => SocketController.sendFriendRequest(socket, friendshipId))
+        socket.on('accept friend request', (friendshipId) => SocketController.acceptFriendRequest(socket, friendshipId))
 
     })
 }

@@ -32,7 +32,7 @@ function tokenValidator (req, res, next) {
         }
 
         // Add error logger here
-        console.error(error)
+        //console.error(error)
 
         return res.status(500).json({
             message: 'Server error',

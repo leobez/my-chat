@@ -15,20 +15,44 @@ const wsTokenValidator = (socket, next) => {
         return next(err)
     }
 
-    const userData = jwt.verify(token, SECRET)
+    try {
 
-    // Validate that user exists on DB
-    // ....
+        const userData = jwt.verify(token, SECRET)
 
-    const newUserData = {
-        userId: userData.userId,
-        username: userData.username,
-        email: userData.email
+        // Validate that user exists on DB
+        // ....
+    
+        const newUserData = {
+            userId: userData.userId,
+            username: userData.username,
+            email: userData.email
+        }
+    
+        socket.user = newUserData
+    
+        next()
+
+    } catch (error) {
+
+        // Add error logger here
+        //console.error(error)
+
+        if (error.name === 'TokenExpiredError') {
+            const err = new CustomError(403, 'Forbidden', ['Token expired'])
+            return next(err)
+        }
+
+        if (error.name === 'JsonWebTokenError') {
+            const err = new CustomError(401, 'Unauthorized', ['Token invalid'])
+            return next(err)
+        }
+
+        const err = new CustomError(500, 'Server error', ['Something went wrong. Try again later'])
+        return next(err)
+
     }
 
-    socket.user = newUserData
 
-    next()
 }
 
 module.exports = wsTokenValidator

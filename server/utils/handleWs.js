@@ -16,11 +16,15 @@ const handleWsRoutes = (io) => {
         console.log('A new socket has connected: ', socket.id)
         console.log('Socket belongs to: ', socket.user)
 
+        // Common events
+        socket.on('disconnect', () => SocketController.disconnect(socket))
+
         // Message events
-        socket.on('private message', SocketController.sendPrivateMessage)
+        socket.on('private message', (data) => SocketController.sendPrivateMessage(socket, data))
 
         // Friendship events
-        // ...
+        socket.on('friend request', (data) => SocketController.sendFriendRequest(socket, data))
+
     })
 }
 

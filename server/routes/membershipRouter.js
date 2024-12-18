@@ -15,18 +15,18 @@ const { param, cookie } = require('express-validator')
 
 // ROUTES (STILL HAS TO TEST ALL BTW)
 /*  
-    GET     [DONE]   list groups im a part of
-    GET     [DONE]   list groups i sent a request to be a part of
-    GET     [DONE]   list memebers in a group
+    GET     [DONE]   list my accepted memberships im a part of
+    GET     [DONE]   list my membership requests
+    GET     [DONE]   list all memberships of a group
     GET     [DONE]   list requests in a group (must be owner or admin to see)
     POST    [DONE]   send request to be a part of group
-    PUT     [... ]   accept request to be part of group  (needs to be owner or admin)
-    DELETE  [... ]   deny request to be part of group  (needs to be owner or admin)
-    DELETE  [... ]   remove user from group (needs to be owner or admin)
-    PUT     [... ]   change role of a group member
+    PUT     [DONE]   accept request to be part of group  (needs to be owner or admin)
+    DELETE  [DONE]   deny request to be part of group  (needs to be owner or admin)
+    DELETE  [... ]   remove membership from group. delete membership (needs to be owner or admin)
+    PUT     [... ]   change role of a group member (needs to be owner or admin)
 */
 
-// LIST GROUPS IM IN
+// LIST MY ACCEPTED MEMBERSHIPS IM IN
 router.get(
     '/me/accepted',
 
@@ -54,7 +54,7 @@ router.get(
     MembershipController.listMembershipRequests
 ) 
 
-// LIST ALL MEMBERS OF A GROUP
+// LIST ALL MEMBERSHIPS OF A GROUP
 router.get(
     '/members/:id',
 
@@ -135,33 +135,24 @@ router.put(
 )
 
 // DENY REQUEST TO BE A PART OF GROUP (MUST BE OWNER OR ADMIN)
+router.delete(
+    '/deny/:id',
 
-// ...
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
 
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
 
+    dataValidator,
+    tokenValidator,
+    MembershipController.denyRequestToJoinGroup
+) 
 
-
-
-
-
-/* 
-router.post(
-        '/deny/:id',
-
-        param('id')
-            .trim()
-            .exists().withMessage('Missing id')
-            .notEmpty().withMessage('Empty id')
-            .isNumeric().withMessage('Invalid id'),
-
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
-
-        dataValidator,
-        tokenValidator,
-        GroupController.denyRequestToJoinGroup
-    ) */
 
 module.exports = router

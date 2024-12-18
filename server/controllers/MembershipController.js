@@ -9,7 +9,7 @@ class MembershipController {
         try {
             
             const user = req.user
-            const accptedMemberships = await UserGroupService.listAcceptedMemberships(user.userId)
+            const accptedMemberships = await MembershipService.listAcceptedMemberships(user.userId)
 
             return res.status(200).json({
                 message: 'Data retrieved',
@@ -17,7 +17,7 @@ class MembershipController {
             }) 
 
         } catch (error) {
-            //console.error('CONTROLLER ERROR: ', error)
+            console.error('CONTROLLER ERROR: ', error)
             return res.status(error.status).json({
                 message: error.message,
                 details: error.details
@@ -30,7 +30,7 @@ class MembershipController {
         try {
             
             const user = req.user
-            const requestsSent = await UserGroupService.listGroupsISentRequestTo(user.userId)
+            const requestsSent = await MembershipService.listGroupsISentRequestTo(user.userId)
 
             return res.status(200).json({
                 message: 'Data retrieved',
@@ -50,7 +50,7 @@ class MembershipController {
         try {
             
             const {id:groupId} = req.params
-            const acceptedMembers = await UserGroupService.listMembersOfGroup(groupId)
+            const acceptedMembers = await MembershipService.listMembersOfGroup(groupId)
 
             return res.status(200).json({
                 message: 'Data retrieved',
@@ -71,7 +71,7 @@ class MembershipController {
             
             const user = req.user
             const {id:groupId} = req.params
-            const requests = await UserGroupService.listRequestsOfGroup(groupId, user.userId)
+            const requests = await MembershipService.listRequestsOfGroup(groupId, user.userId)
 
             return res.status(200).json({
                 message: 'Data retrieved',
@@ -94,7 +94,7 @@ class MembershipController {
             const user = req.user
             const {id:groupId} = req.params
 
-            const createdRequest = await UserGroupService.sendRequestToJoinGroup(user.userId, groupId)
+            const createdRequest = await MembershipService.sendRequestToJoinGroup(user.userId, groupId)
 
             return res.status(201).json({
                 message: 'Request sent',
@@ -117,7 +117,7 @@ class MembershipController {
             const user = req.user
             const {id:requestId} = req.params
 
-            const acceptedRequest = await UserGroupService.acceptRequestToJoinGroup(user.userId, requestId)
+            const acceptedRequest = await MembershipService.acceptRequestToJoinGroup(user.userId, requestId)
 
             return res.status(201).json({
                 message: 'Request accepted',
@@ -133,20 +133,18 @@ class MembershipController {
         }
     }
 
-
-    /*     
     static async denyRequestToJoinGroup (req, res) {
 
         try {
             
             const user = req.user
-            const {id:groupId} = req.params
+            const {id:requestId} = req.params
 
-            const requestCreated = await GroupService.denyRequestToJoinGroup(user.userId, groupId)
+            const deniedRequest = await MembershipService.denyRequestToJoinGroup(user.userId, requestId)
 
             return res.status(201).json({
-                message: 'Request sent',
-                data: requestCreated
+                message: 'Request denied',
+                data: deniedRequest
             }) 
 
         } catch (error) {
@@ -156,7 +154,7 @@ class MembershipController {
                 details: error.details
             })
         }
-    } */
+    } 
 }
 
 module.exports = MembershipController

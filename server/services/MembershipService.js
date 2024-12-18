@@ -139,10 +139,9 @@ class MembershipService {
             return createdRequest
 
         } catch (error) {
-
             if (error.type === 'model') {
                 // Add error logger here
-                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Users_groups.lesser_id, Users_groups.bigger_id")) {
+                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Membership.lesser_id, Membership.bigger_id")) {
                     throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
                 } else {
                     // Add error logger here
@@ -160,9 +159,14 @@ class MembershipService {
         try {
 
             // Validate that requestId exists
-            const membershipRequest = await UserGroupModel.read({by: 'membershipId', data: requestId})
-            if (!membershipRequest) throw new Error(404, 'Not found', ['Request with this id does not exist'])
+            const membershipRequest = await MembershipModel.read({by: 'membershipId', data: requestId})
+            if (!membershipRequest) throw new CustomError(404, 'Not found', ['Request with this id does not exist'])
             
+            // Validate that this request isnt already accepted
+            if (membershipRequest.accepted) {
+                throw new CustomError(400, 'Bad request', ['Membership request with this id is already accepted'])
+            }
+
             // Validate that userId is an owner or admin of groupId
             const groupId = membershipRequest.groupId
             const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
@@ -190,10 +194,68 @@ class MembershipService {
             }
 
         } catch (error) {
-
             if (error.type === 'model') {
                 // Add error logger here
-                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Users_groups.lesser_id, Users_groups.bigger_id")) {
+                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Membership.lesser_id, Membership.bigger_id")) {
+                    throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
+                } else {
+                    // Add error logger here
+                    throw new CustomError(500, 'Server error', ['Try again later'])
+
+                }
+            }
+
+            throw error; // Passing errors to controller
+        }
+    } 
+
+    static async denyRequestToJoinGroup(userId, requestId) {
+
+        try {
+
+            // Validate that requestId exists
+            const membershipRequest = await MembershipModel.read({by: 'membershipId', data: requestId})
+            if (!membershipRequest) throw new CustomError(404, 'Not found', ['Request with this id does not exist'])
+            
+            // Validate that this request isnt accepted
+            if (membershipRequest.accepted) {
+                throw new CustomError(400, 'Bad request', ['Membership request with this id is already accepted'])
+            }
+
+            // Validate that userId is an owner or admin of groupId
+            const groupId = membershipRequest.groupId
+            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+
+            let relevantMembership = null
+            for (let a=0; a<userMemberships.length; a++) {
+                if (Number(userMemberships[a].groupId) === Number(groupId)) {
+                    relevantMembership = userMemberships[a]
+                }
+            }
+
+            if (!relevantMembership) {
+                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
+            }
+
+            // Validate that user is either owner or admin of group
+            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
+
+                // Update membership status
+                const deniedMembership = await MembershipModel.update(requestId, false)
+
+                // Delete from database (current only solution)
+                await MembershipModel.delete(requestId)
+
+                return deniedMembership
+    
+            } else {
+                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])
+            }
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Membership.lesser_id, Membership.bigger_id")) {
                     throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
                 } else {
                     // Add error logger here

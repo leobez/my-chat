@@ -87,8 +87,15 @@ class MembershipModel {
         })
     }
 
-    static delete() {
-        /* ... */
+    static delete(membershipId) {
+        return new Promise((resolve, reject) => {
+            return db.run('DELETE FROM Membership WHERE membershipId = ?', [membershipId], function(err) {
+                if (err) {
+                    return reject({type: 'model', error: err.message})
+                }
+                return resolve(true)
+            })
+        })
     }
 
 }

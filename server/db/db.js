@@ -93,10 +93,11 @@ db.serialize(() => {
     db.run(`
         CREATE TABLE Groups(
             groupId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            creator INTEGER NOT NULL,
-            description VARCHAR(500) NOT NULL,
+            name VARCHAR(40) NOT NULL,
+            owner INTEGER NOT NULL,
+            description VARCHAR(200) NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(creator) REFERENCES Users(userId)
+            FOREIGN KEY(owner) REFERENCES Users(userId)
         )
     `, (err) => {
         if (err) {
@@ -106,7 +107,6 @@ db.serialize(() => {
         }
     }),
 
-    /* Add 'role' here */
     // Table 'Users_groups'
     db.run(`
         CREATE TABLE Users_groups(
@@ -115,6 +115,7 @@ db.serialize(() => {
             userId INTEGER NOT NULL,
             accepted BOOLEAN,
             wait BOOLEAN, 
+            role TEXT NOT NULL CHECK (role IN ('user', 'owner', 'admin')),
             lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN userId ELSE groupId END),
             bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN groupId ELSE userId END),
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -240,6 +241,33 @@ db.serialize(() => {
         INSERT INTO Friendship(from_user, to_user, accepted, wait) VALUES (?, ?, ?, ?)
 
     `, [1, 3, true, false], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    })
+
+    // Insert some data for testing (Groups and User_groups) (TO REMOVE)
+    db.run(`
+        
+        INSERT INTO Groups(name, owner, description) VALUES (?, ?, ?)
+
+    `, ['Group 1', 1, 'Description 1'], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    }),
+
+    db.run(`
+        
+        INSERT INTO Users_groups(groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)
+
+    `, [1, 1, true, false, 'owner'], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)

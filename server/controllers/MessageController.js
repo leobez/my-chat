@@ -21,7 +21,7 @@ class MessageController {
 
             const message = await MessageService.createMessage(messageData)
 
-            return res.status(200).json({
+            return res.status(201).json({
                 message: 'Message sent', 
                 data: message
             })

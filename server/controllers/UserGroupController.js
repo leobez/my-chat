@@ -11,7 +11,7 @@ class UserGroupController {
             const user = req.user
             const groupsImPartOf = await UserGroupService.listGroupsImPartOf(user.userId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: groupsImPartOf
             }) 
@@ -32,7 +32,7 @@ class UserGroupController {
             const user = req.user
             const requestsSent = await UserGroupService.listGroupsISentRequestTo(user.userId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: requestsSent
             }) 
@@ -52,7 +52,7 @@ class UserGroupController {
             const {id:groupId} = req.params
             const acceptedMembers = await UserGroupService.listMembersOfGroup(groupId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: acceptedMembers
             }) 
@@ -73,7 +73,7 @@ class UserGroupController {
             const {id:groupId} = req.params
             const requests = await UserGroupService.listRequestsOfGroup(groupId, user.userId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: requests
             }) 
@@ -87,7 +87,7 @@ class UserGroupController {
         }
     }
 
-    
+
 /*     
     
 

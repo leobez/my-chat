@@ -94,7 +94,7 @@ class UserController {
         }
 
         // Send back to client
-        return res.status(201).json({
+        return res.status(200).json({
             message: 'Data retrieved',
             data: filteredUserData
         })
@@ -115,7 +115,7 @@ class UserController {
                 username: user.username
             }
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: userInfo
             })

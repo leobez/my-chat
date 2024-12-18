@@ -4,7 +4,7 @@ const GroupService = require('../services/GroupService')
 // Controller
 class GroupController {
 
-    // Create a group // TODO
+    // Create a group
     static async createGroup (req, res) {
 
         try {
@@ -13,9 +13,6 @@ class GroupController {
             const user = req.user
 
             const createdGroup = await GroupService.createGroup(groupData, user.userId)
-
-            // Automatically insert user into group (UserGroupService)
-            // ...
 
             return res.status(201).json({
                 message: 'Group created',

@@ -11,7 +11,7 @@ class FriendshipController {
 
             const friendsList = await FriendshipService.getFriends(user.userId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: friendsList
             })
@@ -32,7 +32,7 @@ class FriendshipController {
             const user = req.user
             const sentRequests = await FriendshipService.getSentFriendRequests(user.userId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: sentRequests
             })
@@ -55,7 +55,7 @@ class FriendshipController {
             const user = req.user
             const receivedRequests = await FriendshipService.getReceivedFriendRequests(user.userId)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Data retrieved',
                 data: receivedRequests
             })

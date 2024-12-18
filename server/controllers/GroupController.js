@@ -4,6 +4,7 @@ const GroupService = require('../services/GroupService')
 // Controller
 class GroupController {
 
+    // Create a group // TODO
     static async createGroup (req, res) {
 
         try {
@@ -12,6 +13,9 @@ class GroupController {
             const user = req.user
 
             const createdGroup = await GroupService.createGroup(groupData, user.userId)
+
+            // Automatically insert user into group (UserGroupModel)
+            // ...
 
             return res.status(201).json({
                 message: 'Group created',
@@ -28,7 +32,18 @@ class GroupController {
 
     }
 
-    static async listCreatedGroups (req, res) {
+    // Update a group
+    static async updateGroup (req, res) {
+
+    }
+
+    // Delete a group 
+    static async deleteGroup (req, res) {
+
+    }
+
+    // list all groups
+    static async listAllGroups (req, res) {
 
         try {
             
@@ -50,7 +65,8 @@ class GroupController {
         }
     }
 
-    static async listGroupsImPartOf (req, res) {
+    // get group by id
+    static async getGroupById (req, res) {
 
         try {
             
@@ -72,7 +88,8 @@ class GroupController {
         }
     }
 
-    static async listGroupsISentRequestTo (req, res) {
+    // get all groups i created
+    static async listGroupsCreatedBy (req, res) {
 
         try {
             
@@ -94,98 +111,6 @@ class GroupController {
         }
     }
 
-    static async listRequestsOfThisGroup (req, res) {
-
-        try {
-            
-            const user = req.user
-            const {id:groupId} = req.params
-
-            const requestsToJoinGroup = await GroupService.listRequestsOfThisGroup(user.userId, groupId)
-
-            return res.status(201).json({
-                message: 'Data retrieved',
-                data: requestsToJoinGroup
-            }) 
-
-        } catch (error) {
-            //console.error('CONTROLLER ERROR: ', error)
-            return res.status(error.status).json({
-                message: error.message,
-                details: error.details
-            })
-        }
-    }
-
-    static async sendRequestToJoinGroup (req, res) {
-
-        try {
-            
-            const user = req.user
-            const {id:groupId} = req.params
-
-            const requestCreated = await GroupService.sendRequestToJoinGroup(user.userId, groupId)
-
-            return res.status(201).json({
-                message: 'Request sent',
-                data: requestCreated
-            }) 
-
-        } catch (error) {
-            //console.error('CONTROLLER ERROR: ', error)
-            return res.status(error.status).json({
-                message: error.message,
-                details: error.details
-            })
-        }
-    }
-
-    // Still do these
-    static async acceptRequestToJoinGroup (req, res) {
-
-        try {
-            
-            const user = req.user
-            const {id:groupId} = req.params
-
-            const requestCreated = await GroupService.acceptRequestToJoinGroup(user.userId, groupId)
-
-            return res.status(201).json({
-                message: 'Request sent',
-                data: requestCreated
-            }) 
-
-        } catch (error) {
-            //console.error('CONTROLLER ERROR: ', error)
-            return res.status(error.status).json({
-                message: error.message,
-                details: error.details
-            })
-        }
-    }
-
-    static async denyRequestToJoinGroup (req, res) {
-
-        try {
-            
-            const user = req.user
-            const {id:groupId} = req.params
-
-            const requestCreated = await GroupService.denyRequestToJoinGroup(user.userId, groupId)
-
-            return res.status(201).json({
-                message: 'Request sent',
-                data: requestCreated
-            }) 
-
-        } catch (error) {
-            //console.error('CONTROLLER ERROR: ', error)
-            return res.status(error.status).json({
-                message: error.message,
-                details: error.details
-            })
-        }
-    }
 }
 
 module.exports = GroupController

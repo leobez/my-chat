@@ -2,27 +2,29 @@
 const GroupModel = require('../models/GroupModel')
 const UserGroupModel = require('../models/UserGroupModel')
 
-// Custom error
+//
 const CustomError = require('../utils/CustomError')
 
 // Service
 class GroupService {
 
-    // Create group
     static async createGroup(groupData, userId) {
 
         try {
 
             // User can have at most 2 created groups
             const maxGroups = 2
-            const {total:userGroupCount} = await GroupModel.read({by: 'count_byowner', data: userId})
+            const {total:howManyGroupsHasThisUserCreated} = await GroupModel.read({by: 'count_byowner', data: userId})
 
-            if (userGroupCount >= maxGroups) {
+            if (howManyGroupsHasThisUserCreated >= maxGroups) {
                 throw new CustomError(403, 'Forbidden', ['User already has created 2 groups (max)'])
             }
 
             // Create group
             const createdGroup = await GroupModel.create(groupData, userId)
+
+            // Automatically add owner to group
+            await UserGroupModel.create(createdGroup.groupId, userId, true, 'owner')
 
             return createdGroup
 
@@ -37,19 +39,12 @@ class GroupService {
         }
     }
 
-    // Update group (needs to be owned by userId) (TODO)
-    static async updateGroup(newGroupData, groupId, userId) {
+    static async listCreatedGroups(userId) {
 
         try {
 
-            // Verify that group exists
-            // ...
-
-            // Verify that group is owned by userId
-            // ...
-
-            // Update
-            // ...
+            const createdGroups = await GroupModel.read({by: 'owner', all: true, data: userId})
+            return createdGroups
 
         } catch (error) {
 
@@ -62,18 +57,12 @@ class GroupService {
         }
     }
 
-    // Delete group (needs to be owned by userId) (TODO)
-    static async deleteGroup(groupId, userId) {
+    static async listGroupsImPartOf(userId) {
         try {
 
-            // Verify that group exists
-            // ...
-
-            // Verify that group is owned by userId
-            // ...
-
-            // delete
-            // ...
+            const allGroupsImAssociatedWith = await UserGroupModel.read({by: 'userId', all: true, data: userId})
+            const groupsImPartOf = allGroupsImAssociatedWith.filter((association) => association.accepted)
+            return groupsImPartOf
 
         } catch (error) {
             if (error.type === 'model') {
@@ -85,8 +74,7 @@ class GroupService {
         }
     }
 
-    // List all groups
-    static async listAllGroups(userId) {
+    static async listGroupsISentRequestTo(userId) {
         try {
 
             const allGroupsImAssociatedWith = await UserGroupModel.read({by: 'userId', all: true, data: userId})
@@ -103,8 +91,7 @@ class GroupService {
         }
     }
 
-    // Get group by id
-    static async getGroupById(groupId) {
+    static async listRequestsOfThisGroup(userId, groupId) {
         try {
 
             // Validate that userId is a part of this gruop
@@ -138,8 +125,7 @@ class GroupService {
         }
     }
 
-    // List groups created by userId
-    static async listGroupsCreatedBy(userId) {
+    static async sendRequestToJoinGroup(userId, groupId) {
 
         try {
 

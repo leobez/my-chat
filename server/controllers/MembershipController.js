@@ -1,19 +1,19 @@
 // Service
-const UserGroupService = require('../services/UserGroupService')
+const MembershipService = require('../services/MembershipService')
 
 // Controller
-class UserGroupController {
+class MembershipController {
 
-    static async listGroupsImPartOf (req, res) {
+    static async listAcceptedMemberships (req, res) {
 
         try {
             
             const user = req.user
-            const groupsImPartOf = await UserGroupService.listGroupsImPartOf(user.userId)
+            const accptedMemberships = await UserGroupService.listAcceptedMemberships(user.userId)
 
             return res.status(200).json({
                 message: 'Data retrieved',
-                data: groupsImPartOf
+                data: accptedMemberships
             }) 
 
         } catch (error) {
@@ -25,7 +25,7 @@ class UserGroupController {
         }
     }
 
-    static async listGroupsRequestSent (req, res) {
+    static async listMembershipRequests (req, res) {
 
         try {
             
@@ -159,4 +159,4 @@ class UserGroupController {
     } */
 }
 
-module.exports = UserGroupController
+module.exports = MembershipController

@@ -1,6 +1,6 @@
 // Models
 const GroupModel = require('../models/GroupModel')
-const UserGroupModel = require('../models/UserGroupModel')
+const UserGroupModel = require('../models/MembershipModel')
 
 // Custom error
 const CustomError = require('../utils/CustomError')

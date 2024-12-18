@@ -8,10 +8,10 @@ const dataValidator = require('../middlewares/dataValidator')
 const tokenValidator = require('../middlewares/tokenValidator') 
 
 // Controller
-const UserGroupController = require('../controllers/UserGroupController')
+const MembershipController = require('../controllers/MembershipController')
 
 // Express-validator
-const { body, param, cookie } = require('express-validator')
+const { param, cookie } = require('express-validator')
 
 // ROUTES (STILL HAS TO TEST ALL BTW)
 /*  
@@ -20,7 +20,7 @@ const { body, param, cookie } = require('express-validator')
     GET     [DONE]   list memebers in a group
     GET     [DONE]   list requests in a group (must be owner or admin to see)
     POST    [DONE]   send request to be a part of group
-    PUT    [... ]   accept request to be part of group  (needs to be owner or admin)
+    PUT     [... ]   accept request to be part of group  (needs to be owner or admin)
     DELETE  [... ]   deny request to be part of group  (needs to be owner or admin)
     DELETE  [... ]   remove user from group (needs to be owner or admin)
     PUT     [... ]   change role of a group member
@@ -28,7 +28,7 @@ const { body, param, cookie } = require('express-validator')
 
 // LIST GROUPS IM IN
 router.get(
-    '/list/accepted',
+    '/me/accepted',
 
     cookie('jwt')
         .trim()
@@ -37,12 +37,12 @@ router.get(
 
     dataValidator,
     tokenValidator,
-    UserGroupController.listGroupsImPartOf
+    MembershipController.listAcceptedMemberships
 ) 
 
-// LIST GROUPS REQUESTS I SENT (STILL WAITING TO BE ACCEPTED)
+// LIST MY MEMBERSHIP REQUESTS
 router.get(
-    '/list/wait',
+    '/me/requests',
 
     cookie('jwt')
         .trim()
@@ -51,12 +51,12 @@ router.get(
 
     dataValidator,
     tokenValidator,
-    UserGroupController.listGroupsRequestSent
+    MembershipController.listMembershipRequests
 ) 
 
-// LIST ALL MEMBERS IN A GROUP
+// LIST ALL MEMBERS OF A GROUP
 router.get(
-    '/list/members/:id',
+    '/members/:id',
 
     param('id')
         .trim()
@@ -71,12 +71,12 @@ router.get(
 
     dataValidator,
     tokenValidator,
-    UserGroupController.listMembersOfGroup
+    MembershipController.listMembersOfGroup
 ) 
 
-// LIST ALL (STILL NOT ACCEPTED) REQUESTS TO A GROUP
+// LIST ALL MEMBERSHIP REQUESTS OF A GROUP
 router.get(
-    '/list/requests/:id',
+    '/requests/:id',
 
     param('id')
         .trim()
@@ -91,10 +91,10 @@ router.get(
 
     dataValidator,
     tokenValidator,
-    UserGroupController.listRequestsOfGroup
+    MembershipController.listRequestsOfGroup
 ) 
 
-// SEND REQUEST TO BE A PART OF GROUP
+// SEND REQUEST TO JOIN A GROUP
 router.post(
     '/send/:id',
 
@@ -111,7 +111,7 @@ router.post(
 
     dataValidator,
     tokenValidator,
-    UserGroupController.sendRequestToJoinGroup
+    MembershipController.sendRequestToJoinGroup
 )
 
 // ACCEPT REQUEST TO BE A PART OF GROUP (MUST BE OWNER OR ADMIN)
@@ -131,12 +131,12 @@ router.put(
 
     dataValidator,
     tokenValidator,
-    UserGroupController.acceptRequestToJoinGroup
+    MembershipController.acceptRequestToJoinGroup
 )
 
 // DENY REQUEST TO BE A PART OF GROUP (MUST BE OWNER OR ADMIN)
 
-
+// ...
 
 
 

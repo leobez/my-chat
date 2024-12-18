@@ -107,10 +107,10 @@ db.serialize(() => {
         }
     }),
 
-    // Table 'Users_groups'
+    // Table 'Membership'
     db.run(`
-        CREATE TABLE Users_groups(
-            userGroupId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        CREATE TABLE Membership(
+            membershipId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             groupId INTEGER NOT NULL,
             userId INTEGER NOT NULL,
             accepted BOOLEAN,
@@ -125,9 +125,9 @@ db.serialize(() => {
         )
     `, (err) => {
         if (err) {
-            console.log('Error while creating "Users_groups" table', err.message)
+            console.log('Error while creating "Membership" table', err.message)
         } else {
-            console.log('Table Users_groups created')
+            console.log('Table Membership created')
         }
     }),
 
@@ -249,7 +249,7 @@ db.serialize(() => {
         }
     })
 
-    // Insert some data for testing (Groups and User_groups) (TO REMOVE)
+    // Insert some data for testing (Groups and Membership) (TO REMOVE)
     db.run(`
         
         INSERT INTO Groups(name, owner, description) VALUES (?, ?, ?)
@@ -265,7 +265,7 @@ db.serialize(() => {
 
     db.run(`
         
-        INSERT INTO Users_groups(groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)
+        INSERT INTO Membership(groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)
 
     `, [1, 1, true, false, 'owner'], (err) => {
         

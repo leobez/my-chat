@@ -1,17 +1,17 @@
 const db = require('../db/db')
 
-class UserGroupModel {
+class MembershipModel {
 
     static create(groupId, userId, accepted, role) {
 
         return new Promise((resolve, reject) => {
-            return db.run('INSERT INTO Users_groups (groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)', [groupId, userId, accepted, !accepted, role], function(err) {
+            return db.run('INSERT INTO Membership (groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)', [groupId, userId, accepted, !accepted, role], function(err) {
                 if (err) {
                     return reject({type: 'model', error: err.message})
                 }
                 const lastId = this.lastID
 
-                db.get('SELECT * FROM Users_groups WHERE userGroupId = ?', lastId, function(err, row) {
+                db.get('SELECT * FROM Membership WHERE membershipId = ?', lastId, function(err, row) {
                     if (err) {
                         return reject({type: 'model', error: err.message})
                     }
@@ -28,17 +28,17 @@ class UserGroupModel {
         let nData = []
 
         if (by === 'groupId') {
-            query = 'SELECT * FROM Users_groups WHERE groupId = ?'
+            query = 'SELECT * FROM Membership WHERE groupId = ?'
             nData = [data]
         }
 
         if (by === 'userId') {
-            query = 'SELECT * FROM Users_groups WHERE userId = ?'
+            query = 'SELECT * FROM Membership WHERE userId = ?'
             nData = [data]
         }
 
-        if (by === 'requestId') {
-            query = 'SELECT * FROM Users_groups WHERE userGroupId = ?'
+        if (by === 'membershipId') {
+            query = 'SELECT * FROM Membership WHERE membershipId = ?'
             nData = [data]
         }
 
@@ -71,13 +71,13 @@ class UserGroupModel {
 
     static update(membershipId, accepted) {
         return new Promise((resolve, reject) => {
-            return db.run('UPDATE Users_groups SET accepted = ?, wait = ? WHERE userGroupId = ?', [accepted, false, membershipId], function(err) {
+            return db.run('UPDATE Membership SET accepted = ?, wait = ? WHERE membershipId = ?', [accepted, false, membershipId], function(err) {
                 
                 if (err) {
                     return reject({type: 'model', error: err.message})
                 }
 
-                db.get('SELECT * FROM Users_groups WHERE userGroupId = ?', membershipId, function(err, row) {
+                db.get('SELECT * FROM Membership WHERE membershipId = ?', membershipId, function(err, row) {
                     if (err) {
                         return reject({type: 'model', error: err.message})
                     }
@@ -93,4 +93,4 @@ class UserGroupModel {
 
 }
 
-module.exports = UserGroupModel
+module.exports = MembershipModel

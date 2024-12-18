@@ -1,19 +1,19 @@
 // Models
-const UserGroupModel = require('../models/UserGroupModel')
+const MembershipModel = require('../models/MembershipModel')
 const GroupModel = require('../models/GroupModel')
 
 // Custom error
 const CustomError = require('../utils/CustomError')
 
 // Service
-class UserGroupService {
+class MembershipService {
 
-    static async listGroupsImPartOf(userId) {
+    static async listAcceptedMemberships(userId) {
         try {
 
-            const groupsISentRequestTo = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const groupsIWasAcceptedIn = groupsISentRequestTo.filter((group) => group.accepted)
-            return groupsIWasAcceptedIn
+            const memberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+            const acceptedMemberships = memberships.filter((membership) => membership.accepted)
+            return acceptedMemberships
 
         } catch (error) {
             if (error.type === 'model') {
@@ -28,9 +28,9 @@ class UserGroupService {
     static async listGroupsISentRequestTo(userId) {
         try {
 
-            const groupsISentRequestTo = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const groupsImNotAcceptedInYet = groupsISentRequestTo.filter((association) => !association.accepted)
-            return groupsImNotAcceptedInYet
+            const memberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+            const requests = memberships.filter((membership) => !membership.accepted)
+            return requests
 
         } catch (error) {
             if (error.type === 'model') {
@@ -48,10 +48,11 @@ class UserGroupService {
             // Validate that group exists
             const group = await GroupModel.read({by: 'groupId', data: groupId})
             if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
-
-            const groupRequests = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
-            const acceptedMembers = groupRequests.filter((request) => request.accepted)
-            return acceptedMembers
+            
+            // Get accepted memberships in this group
+            const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
+            const members = memberships.filter((membership) => membership.accepted)
+            return members
 
         } catch (error) {
             if (error.type === 'model') {
@@ -71,19 +72,24 @@ class UserGroupService {
             if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
 
             // Validate that userId is a part of this group
-            const userGroups = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const groupAtHand = userGroups.filter((group) => Number(group.groupId) === Number(groupId))
-            if (!groupAtHand || groupAtHand.length === 0) {
+            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+
+            let relevantMembership = null
+            for (let a=0; a<userMemberships.length; a++) {
+                if (Number(userMemberships[a].groupId) === Number(groupId)) {
+                    relevantMembership = userMemberships[a]
+                }
+            }
+
+            if (!relevantMembership) {
                 throw new CustomError(403, 'Frobidden', ['User is not in this group'])
             }
 
-            let relevantGroup = groupAtHand[0]
-
             // Validate that user is either owner or admin of group
-            if (relevantGroup.role === 'owner' || relevantGroup.role === 'admin') {
+            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
 
-                const groupRequests = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
-                const requests = groupRequests.filter((request) => !request.accepted)
+                const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
+                const requests = memberships.filter((membership) => !membership.accepted)
                 return requests
     
             } else {
@@ -111,24 +117,25 @@ class UserGroupService {
             if (!group) throw new CustomError(404, 'Not found', ['Group with this groupId does not exist'])
             
             // Validate that this user isnt already in this group
-            const groupsUserIsIn = await UserGroupModel.read({by: 'userId', all: true, userId})
-            for (let a=0; a<groupsUserIsIn.length; a++) {
-                if (groupId === groupsUserIsIn[a].groupId) {
-                    throw new CustomError(403, 'Frobidden', ['User is already in this group or user has already send request to join this group'])
+            const userMemberships = await MembershipModel.read({by: 'userId', all: true, userId})
+
+            for (let a=0; a<userMemberships.length; a++) {
+                if (groupId === userMemberships[a].groupId) {
+                    throw new CustomError(403, 'Frobidden', ['User is already in this group or has already send request to join this group'])
                 }
             }
 
             // Validate that group hasnt reached maximum capacity yet (max: 100) // STILL HAS TO TEST THIS
             const maximumGroupLength = 3
-            const amountOfUsersInGroup = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
-            const acceptedUsersInGroup = amountOfUsersInGroup.filter((association) => association.accepted)   
-            if (acceptedUsersInGroup >= maximumGroupLength) {
+            const groupMemberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
+            const acceptedGroupMemberships = groupMemberships.filter((membership) => membership.accepted)   
+
+            if (acceptedGroupMemberships.length >= maximumGroupLength) {
                 throw new CustomError(403, 'Forbidden', ['Group has already reached maximum size'])
             }         
 
-            // Create association between user and group in database (must be accepeted by owner of group still)
-            const createdRequest = await UserGroupModel.create(groupId, userId, false, 'user')
-
+            // Create membership request in database (must be accepeted by owner of group still)
+            const createdRequest = await MembershipModel.create(groupId, userId, false, 'user')
             return createdRequest
 
         } catch (error) {
@@ -153,21 +160,29 @@ class UserGroupService {
         try {
 
             // Validate that requestId exists
-            const membershipRequest = await UserGroupModel.read({by: 'requestId', data: requestId})
+            const membershipRequest = await UserGroupModel.read({by: 'membershipId', data: requestId})
             if (!membershipRequest) throw new Error(404, 'Not found', ['Request with this id does not exist'])
             
-            // Validate that userId is a owner or admin of groupId
+            // Validate that userId is an owner or admin of groupId
             const groupId = membershipRequest.groupId
-            const userMemberships = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const membershipAtHand = userMemberships.filter((memebership) => memebership.groupId === groupId)
-            if (!membershipAtHand.length) throw new CustomError(403, 'Forbidden', ['You arent even a memeber of this group'])
-            const relevantMembership = membershipAtHand[0]
+            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+
+            let relevantMembership = null
+            for (let a=0; a<userMemberships.length; a++) {
+                if (Number(userMemberships[a].groupId) === Number(groupId)) {
+                    relevantMembership = userMemberships[a]
+                }
+            }
+
+            if (!relevantMembership) {
+                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
+            }
 
             // Validate that user is either owner or admin of group
             if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
 
                 // Update membership status
-                const updatedMembership = await UserGroupModel.update(requestId, true)
+                const updatedMembership = await MembershipModel.update(requestId, true)
                 return updatedMembership
     
             } else {
@@ -192,4 +207,4 @@ class UserGroupService {
     } 
 }
 
-module.exports = UserGroupService
+module.exports = MembershipService

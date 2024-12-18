@@ -87,22 +87,18 @@ class UserGroupController {
         }
     }
 
-
-/*     
-    
-
     static async sendRequestToJoinGroup (req, res) {
 
         try {
-            
+
             const user = req.user
             const {id:groupId} = req.params
 
-            const requestCreated = await GroupService.sendRequestToJoinGroup(user.userId, groupId)
+            const createdRequest = await UserGroupService.sendRequestToJoinGroup(user.userId, groupId)
 
             return res.status(201).json({
                 message: 'Request sent',
-                data: requestCreated
+                data: createdRequest
             }) 
 
         } catch (error) {
@@ -112,20 +108,20 @@ class UserGroupController {
                 details: error.details
             })
         }
-    } */
+    } 
 
-/*     static async acceptRequestToJoinGroup (req, res) {
+    static async acceptRequestToJoinGroup (req, res) {
 
         try {
             
             const user = req.user
-            const {id:groupId} = req.params
+            const {id:requestId} = req.params
 
-            const requestCreated = await GroupService.acceptRequestToJoinGroup(user.userId, groupId)
+            const acceptedRequest = await UserGroupService.acceptRequestToJoinGroup(user.userId, requestId)
 
             return res.status(201).json({
-                message: 'Request sent',
-                data: requestCreated
+                message: 'Request accepted',
+                data: acceptedRequest
             }) 
 
         } catch (error) {
@@ -137,6 +133,8 @@ class UserGroupController {
         }
     }
 
+
+    /*     
     static async denyRequestToJoinGroup (req, res) {
 
         try {

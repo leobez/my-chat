@@ -19,15 +19,16 @@ const { body, param, cookie } = require('express-validator')
     GET     [DONE]   list groups i sent a request to be a part of
     GET     [DONE]   list memebers in a group
     GET     [DONE]   list requests in a group (must be owner or admin to see)
-    POST    [... ]   send request to be a part of group
-    POST    [... ]   accept request to be part of group  (needs to be owner or admin)
+    POST    [DONE]   send request to be a part of group
+    PUT    [... ]   accept request to be part of group  (needs to be owner or admin)
     DELETE  [... ]   deny request to be part of group  (needs to be owner or admin)
     DELETE  [... ]   remove user from group (needs to be owner or admin)
+    PUT     [... ]   change role of a group member
 */
 
-// LIST GROUPS IM A PART OF
+// LIST GROUPS IM IN
 router.get(
-    '/list/groups-partof',
+    '/list/accepted',
 
     cookie('jwt')
         .trim()
@@ -39,9 +40,9 @@ router.get(
     UserGroupController.listGroupsImPartOf
 ) 
 
-// LIST GROUPS REQUESTS I SENT
+// LIST GROUPS REQUESTS I SENT (STILL WAITING TO BE ACCEPTED)
 router.get(
-    '/list/request-sent',
+    '/list/wait',
 
     cookie('jwt')
         .trim()
@@ -94,8 +95,44 @@ router.get(
 ) 
 
 // SEND REQUEST TO BE A PART OF GROUP
+router.post(
+    '/send/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    UserGroupController.sendRequestToJoinGroup
+)
 
 // ACCEPT REQUEST TO BE A PART OF GROUP (MUST BE OWNER OR ADMIN)
+router.put(
+    '/accept/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    UserGroupController.acceptRequestToJoinGroup
+)
 
 // DENY REQUEST TO BE A PART OF GROUP (MUST BE OWNER OR ADMIN)
 
@@ -108,44 +145,6 @@ router.get(
 
 
 /* 
-router.post(
-        '/join/:id',
-
-        param('id')
-            .trim()
-            .exists().withMessage('Missing id')
-            .notEmpty().withMessage('Empty id')
-            .isNumeric().withMessage('Invalid id'),
-
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
-
-        dataValidator,
-        tokenValidator,
-        GroupController.sendRequestToJoinGroup
-    )
-
-router.post(
-        '/accept/:id',
-
-        param('id')
-            .trim()
-            .exists().withMessage('Missing id')
-            .notEmpty().withMessage('Empty id')
-            .isNumeric().withMessage('Invalid id'),
-
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
-
-        dataValidator,
-        tokenValidator,
-        GroupController.acceptRequestToJoinGroup
-    )
-
 router.post(
         '/deny/:id',
 

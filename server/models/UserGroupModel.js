@@ -37,6 +37,12 @@ class UserGroupModel {
             nData = [data]
         }
 
+        if (by === 'requestId') {
+            query = 'SELECT * FROM Users_groups WHERE userGroupId = ?'
+            nData = [data]
+        }
+
+
         if (!query) return;
 
         // Get multiple lines
@@ -63,8 +69,22 @@ class UserGroupModel {
 
     }
 
-    static update() {
-        /* ... */
+    static update(membershipId, accepted) {
+        return new Promise((resolve, reject) => {
+            return db.run('UPDATE Users_groups SET accepted = ?, wait = ? WHERE userGroupId = ?', [accepted, false, membershipId], function(err) {
+                
+                if (err) {
+                    return reject({type: 'model', error: err.message})
+                }
+
+                db.get('SELECT * FROM Users_groups WHERE userGroupId = ?', membershipId, function(err, row) {
+                    if (err) {
+                        return reject({type: 'model', error: err.message})
+                    }
+                    return resolve(row)
+                })
+            })
+        })
     }
 
     static delete() {

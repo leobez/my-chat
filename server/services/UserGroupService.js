@@ -102,8 +102,6 @@ class UserGroupService {
         }
     }
 
-    
-    /*     
     static async sendRequestToJoinGroup(userId, groupId) {
 
         try {
@@ -134,7 +132,7 @@ class UserGroupService {
             return createdRequest
 
         } catch (error) {
-            console.log(error)
+
             if (error.type === 'model') {
                 // Add error logger here
                 if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Users_groups.lesser_id, Users_groups.bigger_id")) {
@@ -148,7 +146,50 @@ class UserGroupService {
 
             throw error; // Passing errors to controller
         }
-    } */
+    } 
+
+    static async acceptRequestToJoinGroup(userId, requestId) {
+
+        try {
+
+            // Validate that requestId exists
+            const membershipRequest = await UserGroupModel.read({by: 'requestId', data: requestId})
+            if (!membershipRequest) throw new Error(404, 'Not found', ['Request with this id does not exist'])
+            
+            // Validate that userId is a owner or admin of groupId
+            const groupId = membershipRequest.groupId
+            const userMemberships = await UserGroupModel.read({by: 'userId', all: true, data: userId})
+            const membershipAtHand = userMemberships.filter((memebership) => memebership.groupId === groupId)
+            if (!membershipAtHand.length) throw new CustomError(403, 'Forbidden', ['You arent even a memeber of this group'])
+            const relevantMembership = membershipAtHand[0]
+
+            // Validate that user is either owner or admin of group
+            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
+
+                // Update membership status
+                const updatedMembership = await UserGroupModel.update(requestId, true)
+                return updatedMembership
+    
+            } else {
+                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to accept this request'])
+            }
+
+        } catch (error) {
+
+            if (error.type === 'model') {
+                // Add error logger here
+                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Users_groups.lesser_id, Users_groups.bigger_id")) {
+                    throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
+                } else {
+                    // Add error logger here
+                    throw new CustomError(500, 'Server error', ['Try again later'])
+
+                }
+            }
+
+            throw error; // Passing errors to controller
+        }
+    } 
 }
 
 module.exports = UserGroupService

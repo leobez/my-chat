@@ -15,113 +15,48 @@ const { body, param, cookie } = require('express-validator')
 
 // ROUTES
 /*  
-    POST    [... ]   create a group
-    PUT     [... ]   update a group (needs to be owner)
-    DELETE  [... ]   delete a group (needs to be owner)
-    GET     [... ]   list all groups
-    GET     [... ]   get group by id
-    GET     [... ]   list all groups created by me
+    POST    [DONE]   create a group
+    PUT     [DONE]   update a group (needs to be owner)
+    DELETE  [DONE]   delete a group (needs to be owner)
+    GET     [DONE]   list all groups
+    GET     [DONE]   get group by id
+    GET     [DONE]   list all groups created by me
 */
-
-// CREATE A GROUP
-router.post(
-        '/create',
-
-        body('name')
-            .trim()
-            .escape()
-            .exists().withMessage('Missing name')
-            .notEmpty().withMessage('Empty name')
-            .isLength({max: 30}).withMessage('Maximum length for name: 30'),
-
-        body('description')
-            .trim()
-            .escape()
-            .exists().withMessage('Missing description')
-            .notEmpty().withMessage('Empty description')
-            .isLength({max: 150}).withMessage('Maximum length for description: 300'),
-
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
-
-        dataValidator,
-        tokenValidator,
-        GroupController.createGroup
-    )
-
-// UPDATE A GROUP
-router.put(
-        '/update/:id',
-
-        param('id')
-            .trim()
-            .exists().withMessage('Missing id')
-            .notEmpty().withMessage('Empty id')
-            .isNumeric().withMessage('Invalid id'),
-
-        body('name')
-            .trim()
-            .escape()
-            .exists().withMessage('Missing name')
-            .notEmpty().withMessage('Empty name')
-            .isLength({max: 30}).withMessage('Maximum length for name: 30'),
-
-        body('description')
-            .trim()
-            .escape()
-            .exists().withMessage('Missing description')
-            .notEmpty().withMessage('Empty description')
-            .isLength({max: 150}).withMessage('Maximum length for description: 300'),
-
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
-
-        dataValidator,
-        tokenValidator,
-        GroupController.updateGroup
-    )
-
-// DELETE A GROUP
-router.delete(
-        '/delete/:id',
-
-        param('id')
-            .trim()
-            .exists().withMessage('Missing id')
-            .notEmpty().withMessage('Empty id')
-            .isNumeric().withMessage('Invalid id'),
-
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
-
-        dataValidator,
-        tokenValidator,
-        GroupController.deleteGroup
-    )
 
 // LIST ALL GROUPS
 router.get(
-        '/list/all',
 
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
+    '/list/all',
 
-        dataValidator,
-        tokenValidator,
-        GroupController.listAllGroups
-    )
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    GroupController.listAllGroups
+)
+
+// LIST ALL GROUP CREATED BY ME
+router.get(
+    '/list/own',
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    GroupController.listGroupsCreatedByMe
+)
 
 // GET GROUP BY ID
 router.get(
+
     '/list/:id',
+
     param('id')
         .trim()
         .exists().withMessage('Missing id')
@@ -136,20 +71,88 @@ router.get(
     dataValidator,
     tokenValidator,
     GroupController.getGroupById
-    )
+)
 
-// LIST ALL GROUP CREATED BY ME
-router.get(
-        '/list/own',
+// CREATE A GROUP
+router.post(
+    '/create',
 
-        cookie('jwt')
-            .trim()
-            .exists().withMessage('Missing JWT on cookies')
-            .notEmpty().withMessage('Empty JWT on cookies'),
+    body('name')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing name')
+        .notEmpty().withMessage('Empty name')
+        .isLength({max: 30}).withMessage('Maximum length for name: 30'),
 
-        dataValidator,
-        tokenValidator,
-        GroupController.listGroupsCreatedBy
-    )
+    body('description')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing description')
+        .notEmpty().withMessage('Empty description')
+        .isLength({max: 150}).withMessage('Maximum length for description: 300'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    GroupController.createGroup
+)
+
+// UPDATE A GROUP
+router.put(
+    '/update/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    body('name')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing name')
+        .notEmpty().withMessage('Empty name')
+        .isLength({max: 30}).withMessage('Maximum length for name: 30'),
+
+    body('description')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing description')
+        .notEmpty().withMessage('Empty description')
+        .isLength({max: 150}).withMessage('Maximum length for description: 300'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    GroupController.updateGroup
+)
+
+// DELETE A GROUP
+router.delete(
+    '/delete/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    GroupController.deleteGroup
+)
 
 module.exports = router

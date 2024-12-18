@@ -24,6 +24,9 @@ class GroupService {
             // Create group
             const createdGroup = await GroupModel.create(groupData, userId)
 
+            // Insert owner into group
+            await UserGroupModel.create(createdGroup.groupId, userId, true, 'owner')
+
             return createdGroup
 
         } catch (error) {
@@ -37,19 +40,24 @@ class GroupService {
         }
     }
 
-    // Update group (needs to be owned by userId) (TODO)
+    // Update group (needs to be owned by userId)
     static async updateGroup(newGroupData, groupId, userId) {
 
         try {
 
             // Verify that group exists
-            // ...
+            const group = await GroupModel.read({by: 'groupId', data: groupId})
+            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
 
             // Verify that group is owned by userId
-            // ...
+            if (Number(group.owner) !== Number(userId)) {
+                throw new CustomError(403, 'Forbidden', ['Users does not have the privilege to update this group'])
+            }
 
             // Update
-            // ...
+            const updatedGroup = await GroupModel.update(newGroupData, groupId)
+
+            return updatedGroup
 
         } catch (error) {
 
@@ -67,15 +75,21 @@ class GroupService {
         try {
 
             // Verify that group exists
-            // ...
+            const group = await GroupModel.read({by: 'groupId', data: groupId})
+            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
 
             // Verify that group is owned by userId
-            // ...
+            if (Number(group.owner) !== Number(userId)) {
+                throw new CustomError(403, 'Forbidden', ['Users does not have the privilege to update this group'])
+            }
 
-            // delete
-            // ...
+            // Delete
+            await GroupModel.delete(groupId)
+
+            return group
 
         } catch (error) {
+
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])
@@ -86,12 +100,11 @@ class GroupService {
     }
 
     // List all groups
-    static async listAllGroups(userId) {
+    static async listAllGroups() {
         try {
 
-            const allGroupsImAssociatedWith = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const requestsSent = allGroupsImAssociatedWith.filter((association) => !association.accepted)
-            return requestsSent
+            const allGroups = await GroupModel.read({by: 'all', all: true})
+            return allGroups
 
         } catch (error) {
             if (error.type === 'model') {
@@ -107,28 +120,12 @@ class GroupService {
     static async getGroupById(groupId) {
         try {
 
-            // Validate that userId is a part of this gruop
-            const groupsOfUser = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const groupAtHand = groupsOfUser.filter((group) => Number(group.groupId) === Number(groupId))
-            if (!groupAtHand || groupAtHand.length === 0) throw new CustomError(403, 'Frobidden', ['User is not in this group'])
-
-            console.log(groupAtHand[0])
-            console.log(groupAtHand[0].role !== 'owner', groupAtHand[0].role !== 'admin')
-
-            // Validate that user is either owner or admin of group
-            if (groupAtHand[0].role === 'owner' || groupAtHand[0].role === 'admin') {
-
-                // List requests of group
-                const requestsOfGroup = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
-                const notAcceptedRequests = requestsOfGroup.filter((request) => !request.accepted)
-                return notAcceptedRequests
-                
-            } else {
-                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to see this information'])
-            }
-
-
+            const group = await GroupModel.read({by: 'groupId', data: groupId})
+            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
+            return group
+            
         } catch (error) {
+            //console.log(error)
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])
@@ -143,42 +140,14 @@ class GroupService {
 
         try {
 
-            // Validate that groupId exists
-            const group = await GroupModel.read({by: 'groupId', all: true, data: groupId})
-            if (!group) throw new CustomError(404, 'Not found', ['Group with this groupId does not exist'])
-            
-            // Validate that this user isnt already in this group
-            const groupsUserIsIn = await UserGroupModel.read({by: 'userId', all: true, userId})
-            for (let a=0; a<groupsUserIsIn.length; a++) {
-                if (groupId === groupsUserIsIn[a].groupId) {
-                    throw new CustomError(403, 'Frobidden', ['User is already in this group or user has already send request to join this group'])
-                }
-            }
-
-            // Validate that group hasnt reached maximum capacity yet (max: 100) // STILL HAS TO TEST THIS
-            const maximumGroupLength = 3
-            const amountOfUsersInGroup = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
-            const acceptedUsersInGroup = amountOfUsersInGroup.filter((association) => association.accepted)   
-            if (acceptedUsersInGroup >= maximumGroupLength) {
-                throw new CustomError(403, 'Forbidden', ['Group has already reached maximum size'])
-            }         
-
-            // Create association between user and group in database (must be accepeted by owner of group still)
-            const createdRequest = await UserGroupModel.create(groupId, userId, false, 'user')
-
-            return createdRequest
+            const groups = await GroupModel.read({by: 'owner', all: true, data: userId})
+            return groups;
 
         } catch (error) {
-            console.log(error)
+            //console.log(error)
             if (error.type === 'model') {
                 // Add error logger here
-                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Users_groups.lesser_id, Users_groups.bigger_id")) {
-                    throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
-                } else {
-                    // Add error logger here
-                    throw new CustomError(500, 'Server error', ['Try again later'])
-
-                }
+                throw new CustomError(500, 'Server error', ['Try again later'])
             }
 
             throw error; // Passing errors to controller

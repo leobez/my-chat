@@ -42,6 +42,11 @@ class GroupModel {
             nData = [data]
         }
 
+        if (by === 'all') {
+            query = 'SELECT * FROM Groups'
+            nData = []
+        }
+
         if (!query) return;
 
         // Get multiple lines
@@ -68,12 +73,32 @@ class GroupModel {
 
     }
 
-    static update() {
-        /* ... */
+    static update(newGroupData, groupId) {
+        return new Promise((resolve, reject) => {
+            return db.run('UPDATE Groups SET name = ?, description = ? WHERE groupId = ?', [newGroupData.name, newGroupData.description, groupId], function(err) {
+                if (err) {
+                    return reject({type: 'model', error: err.message})
+                }
+
+                db.get('SELECT * FROM Groups WHERE groupId = ?', groupId, function(err, row) {
+                    if (err) {
+                        return reject({type: 'model', error: err.message})
+                    }
+                    return resolve(row)
+                })
+            })
+        })
     }
 
-    static delete() {
-        /* ... */
+    static delete(groupId) {
+        return new Promise((resolve, reject) => {
+            return db.run('DELETE FROM Groups WHERE groupId = ?', [groupId], function(err) {
+                if (err) {
+                    return reject({type: 'model', error: err.message})
+                }
+                return resolve(true)
+            })
+        })
     }
 
 }

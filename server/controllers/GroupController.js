@@ -14,7 +14,7 @@ class GroupController {
 
             const createdGroup = await GroupService.createGroup(groupData, user.userId)
 
-            // Automatically insert user into group (UserGroupModel)
+            // Automatically insert user into group (UserGroupService)
             // ...
 
             return res.status(201).json({
@@ -34,26 +34,61 @@ class GroupController {
 
     // Update a group
     static async updateGroup (req, res) {
+        try {
+            
+            const groupData = req.body
+            const user = req.user
+            const {id:groupId} = req.params
 
+            const updatedGroup = await GroupService.updateGroup(groupData, groupId, user.userId)
+
+            return res.status(201).json({
+                message: 'Group updated',
+                data: updatedGroup
+            }) 
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
     }
 
     // Delete a group 
     static async deleteGroup (req, res) {
+        try {
+            
+            const user = req.user
+            const {id:groupId} = req.params
 
+            const deletedGroup = await GroupService.deleteGroup(groupId, user.userId)
+
+            return res.status(201).json({
+                message: 'Group deleted',
+                data: deletedGroup
+            }) 
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
     }
 
     // list all groups
     static async listAllGroups (req, res) {
 
         try {
-            
-            const user = req.user
 
-            const createdGroups = await GroupService.listCreatedGroups(user.userId)
+            const allGroups = await GroupService.listAllGroups()
 
             return res.status(201).json({
                 message: 'Data retrieved',
-                data: createdGroups
+                data: allGroups
             }) 
 
         } catch (error) {
@@ -70,13 +105,13 @@ class GroupController {
 
         try {
             
-            const user = req.user
+            const {id:groupId} = req.params
 
-            const partOfGroups = await GroupService.listGroupsImPartOf(user.userId)
+            const group = await GroupService.getGroupById(groupId)
 
             return res.status(201).json({
                 message: 'Data retrieved',
-                data: partOfGroups
+                data: group
             }) 
 
         } catch (error) {
@@ -89,17 +124,17 @@ class GroupController {
     }
 
     // get all groups i created
-    static async listGroupsCreatedBy (req, res) {
+    static async listGroupsCreatedByMe (req, res) {
 
         try {
             
             const user = req.user
 
-            const requestsSent = await GroupService.listGroupsISentRequestTo(user.userId)
+            const groupsCreatedByMe = await GroupService.listGroupsCreatedBy(user.userId)
 
             return res.status(201).json({
                 message: 'Data retrieved',
-                data: requestsSent
+                data: groupsCreatedByMe
             }) 
 
         } catch (error) {

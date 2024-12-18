@@ -19,6 +19,7 @@ const { body, param, cookie } = require('express-validator')
     GET     [... ]   list groups i sent a request to be a part of
     GET     [... ]   list all accepted users in a group
     GET     [... ]   list all non-accepted users in a group (requests) (needs to be owner or admin)
+    
     POST    [... ]   send request to be a part of group
     POST    [... ]   accept request to be part of group  (needs to be owner or admin)
     DELETE  [... ]   deny request to be part of group  (needs to be owner or admin)

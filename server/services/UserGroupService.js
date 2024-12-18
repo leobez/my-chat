@@ -1,68 +1,19 @@
 // Models
-const GroupModel = require('../models/GroupModel')
 const UserGroupModel = require('../models/UserGroupModel')
+const GroupModel = require('../models/GroupModel')
 
-//
+// Custom error
 const CustomError = require('../utils/CustomError')
 
 // Service
-class GroupService {
-
-    static async createGroup(groupData, userId) {
-
-        try {
-
-            // User can have at most 2 created groups
-            const maxGroups = 2
-            const {total:howManyGroupsHasThisUserCreated} = await GroupModel.read({by: 'count_byowner', data: userId})
-
-            if (howManyGroupsHasThisUserCreated >= maxGroups) {
-                throw new CustomError(403, 'Forbidden', ['User already has created 2 groups (max)'])
-            }
-
-            // Create group
-            const createdGroup = await GroupModel.create(groupData, userId)
-
-            // Automatically add owner to group
-            await UserGroupModel.create(createdGroup.groupId, userId, true, 'owner')
-
-            return createdGroup
-
-        } catch (error) {
-
-            if (error.type === 'model') {
-                // Add error logger here
-                throw new CustomError(500, 'Server error', ['Try again later'])
-            }
-
-            throw error; // Passing errors to controller
-        }
-    }
-
-    static async listCreatedGroups(userId) {
-
-        try {
-
-            const createdGroups = await GroupModel.read({by: 'owner', all: true, data: userId})
-            return createdGroups
-
-        } catch (error) {
-
-            if (error.type === 'model') {
-                // Add error logger here
-                throw new CustomError(500, 'Server error', ['Try again later'])
-            }
-
-            throw error; // Passing errors to controller
-        }
-    }
+class UserGroupService {
 
     static async listGroupsImPartOf(userId) {
         try {
 
-            const allGroupsImAssociatedWith = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const groupsImPartOf = allGroupsImAssociatedWith.filter((association) => association.accepted)
-            return groupsImPartOf
+            const groupsISentRequestTo = await UserGroupModel.read({by: 'userId', all: true, data: userId})
+            const groupsIWasAcceptedIn = groupsISentRequestTo.filter((group) => group.accepted)
+            return groupsIWasAcceptedIn
 
         } catch (error) {
             if (error.type === 'model') {
@@ -77,9 +28,9 @@ class GroupService {
     static async listGroupsISentRequestTo(userId) {
         try {
 
-            const allGroupsImAssociatedWith = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const requestsSent = allGroupsImAssociatedWith.filter((association) => !association.accepted)
-            return requestsSent
+            const groupsISentRequestTo = await UserGroupModel.read({by: 'userId', all: true, data: userId})
+            const groupsImNotAcceptedInYet = groupsISentRequestTo.filter((association) => !association.accepted)
+            return groupsImNotAcceptedInYet
 
         } catch (error) {
             if (error.type === 'model') {
@@ -91,31 +42,57 @@ class GroupService {
         }
     }
 
-    static async listRequestsOfThisGroup(userId, groupId) {
+    static async listMembersOfGroup(groupId) {
         try {
 
-            // Validate that userId is a part of this gruop
-            const groupsOfUser = await UserGroupModel.read({by: 'userId', all: true, data: userId})
-            const groupAtHand = groupsOfUser.filter((group) => Number(group.groupId) === Number(groupId))
-            if (!groupAtHand || groupAtHand.length === 0) throw new CustomError(403, 'Frobidden', ['User is not in this group'])
+            // Validate that group exists
+            const group = await GroupModel.read({by: 'groupId', data: groupId})
+            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
 
-            console.log(groupAtHand[0])
-            console.log(groupAtHand[0].role !== 'owner', groupAtHand[0].role !== 'admin')
+            const groupRequests = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
+            const acceptedMembers = groupRequests.filter((request) => request.accepted)
+            return acceptedMembers
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+
+            throw error; // Passing errors to controller
+        }
+    }
+
+    static async listRequestsOfGroup(groupId, userId) {
+        try {
+
+            // Validate that group exists
+            const group = await GroupModel.read({by: 'groupId', data: groupId})
+            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
+
+            // Validate that userId is a part of this group
+            const userGroups = await UserGroupModel.read({by: 'userId', all: true, data: userId})
+            const groupAtHand = userGroups.filter((group) => Number(group.groupId) === Number(groupId))
+            if (!groupAtHand || groupAtHand.length === 0) {
+                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
+            }
+
+            let relevantGroup = groupAtHand[0]
 
             // Validate that user is either owner or admin of group
-            if (groupAtHand[0].role === 'owner' || groupAtHand[0].role === 'admin') {
+            if (relevantGroup.role === 'owner' || relevantGroup.role === 'admin') {
 
-                // List requests of group
-                const requestsOfGroup = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
-                const notAcceptedRequests = requestsOfGroup.filter((request) => !request.accepted)
-                return notAcceptedRequests
-                
+                const groupRequests = await UserGroupModel.read({by: 'groupId', all: true, data: groupId})
+                const requests = groupRequests.filter((request) => !request.accepted)
+                return requests
+    
             } else {
                 throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to see this information'])
             }
-
+            
 
         } catch (error) {
+            console.log(error)
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])
@@ -125,6 +102,8 @@ class GroupService {
         }
     }
 
+    
+    /*     
     static async sendRequestToJoinGroup(userId, groupId) {
 
         try {
@@ -169,7 +148,7 @@ class GroupService {
 
             throw error; // Passing errors to controller
         }
-    }
+    } */
 }
 
-module.exports = GroupService
+module.exports = UserGroupService

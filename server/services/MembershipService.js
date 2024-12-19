@@ -128,11 +128,15 @@ class MembershipService {
             await validateGroup(groupId)
             
             // Validate that this user isnt already in this group
-            const userMemberships = await MembershipModel.read({by: 'userId', all: true, userId})
-
-            for (let a=0; a<userMemberships.length; a++) {
-                if (groupId === userMemberships[a].groupId) {
-                    throw new CustomError(403, 'Frobidden', ['User is already in this group or has already send request to join this group'])
+            const memberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+            
+            for (let a=0; a<memberships.length; a++) {
+                if (Number(groupId) === Number(memberships[a].groupId)) {
+                    throw new CustomError(
+                        403, 
+                        'Frobidden', 
+                        ['User is already in this group or has already sent a request to join this group']
+                    )
                 }
             }
 
@@ -279,9 +283,9 @@ class MembershipService {
             if (!membership) throw new CustomError(404, 'Not found', ['Membership with this id does not exist'])
             
             // Validate that userId can actually use this
-            const allowed = await validateRole(userId, membershipRequest.groupId)
+            const allowed = await validateRole(userId, membership.groupId)
 
-            if (!allowed && Number(relevantMembership.userId) !== Number(userId)) {
+            if (!allowed && Number(membership.userId) !== Number(userId)) {
                 throw new CustomError(
                     403, 
                     'Forbidden', 
@@ -303,7 +307,7 @@ class MembershipService {
             const revokedMembership = await MembershipModel.update({
                 set: 'accepted', 
                 data: false, 
-                membershipId: requestId
+                membershipId: membershipId
             })
 
             // Delete from database (current only solution)
@@ -338,7 +342,7 @@ class MembershipService {
             if (!membership) throw new CustomError(404, 'Not found', ['Membership with this id does not exist'])
             
             // Validate that userId can actually use this
-            const allowed = await validateRole(userId, membershipRequest.groupId)
+            const allowed = await validateRole(userId, membership.groupId)
 
             if (!allowed) {
                 throw new CustomError(

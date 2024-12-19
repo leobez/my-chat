@@ -42,7 +42,6 @@ class MembershipModel {
             nData = [data]
         }
 
-
         if (!query) return;
 
         // Get multiple lines

@@ -20,33 +20,76 @@ class  UserModel {
         })
     }
 
-    static read({by, data}) {
+    static read({by, all=false, data}) {
 
         let query = ''
-        if (by === 'username') query = 'SELECT * FROM Users WHERE username = ?'
-        if (by === 'email') query = 'SELECT * FROM Users WHERE email = ?'
-        if (by === 'id') query = 'SELECT * FROM Users WHERE userId = ?'
+        let nData = []
+
+        if (by === 'username') {
+             query = 'SELECT * FROM Users WHERE username = ?'
+             nData=[data]
+        }
+
+        if (by === 'email') {
+            query = 'SELECT * FROM Users WHERE email = ?'
+            nData=[data]
+        }
+
+        if (by === 'id') {
+            query = 'SELECT * FROM Users WHERE userId = ?'
+            nData=[data]
+        }
+        
+        if (by === 'all') {
+            query = 'SELECT userId, socketId, username, created_at, updated_at FROM Users'
+            nData=[]
+        }
+
         if (!query) return;
 
-        return new Promise((resolve, reject) => {
-            return db.get(query, [data], function(err, row) {
-                if (err) {
-                    return reject({type: 'model', error: err.message})
-                }
-                return resolve(row)
+        if (all) {
+            return new Promise((resolve, reject) => {
+                return db.all(query, nData, function(err, rows) {
+                    if (err) {
+                        return reject({type: 'model', error: err.message})
+                    }
+                    return resolve(rows)
+                })
             })
-        })
+        } else {
+            return new Promise((resolve, reject) => {
+                return db.get(query, nData, function(err, row) {
+                    if (err) {
+                        return reject({type: 'model', error: err.message})
+                    }
+                    return resolve(row)
+                })
+            })
+        }
+
     }
 
-    static update(socketId, userId) {
+    // BEING USED IN: WSMAPMIDDLEWARE, SOCKERSERVICE, USERSERVICE
+    static update({fieldsToBeUpdated=[], newData=[], whereUserId}) {
+
+        if (!fieldsToBeUpdated.length) return;
+        if (!newData.length) return;
+        if (fieldsToBeUpdated.length !== newData.length) return;
+        if (!whereUserId) return;
+
+        let checkedFields = fieldsToBeUpdated.map((field) => `${field}=?`)
+        const joinedFields = checkedFields.join(', ')
+
+        let query = `UPDATE Users SET ${joinedFields} WHERE userId = ?`
+        let nData = [...newData, whereUserId]
+
         return new Promise((resolve, reject) => {
-            return db.run('UPDATE Users SET socketId = ? WHERE userId = ?', [socketId, userId], function(err) {
+            return db.run(query, nData, function(err) {
                 if (err) {
                     return reject({type: 'model', error: err.message})
                 }
-                const lastId = this.lastID
 
-                db.get('SELECT * FROM Users WHERE userId = ?', lastId, function(err, row) {
+                db.get('SELECT * FROM Users WHERE userId = ?', whereUserId, function(err, row) {
                     if (err) {
                         return reject({type: 'model', error: err.message})
                     }

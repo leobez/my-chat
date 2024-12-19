@@ -105,6 +105,84 @@ class UserService {
         }
     }
 
+    static async getAllUsers() {
+
+        try {
+
+            const users = await UserModel.read({by: 'all', all: true})
+            console.log('users: ', users)
+            return users
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Error logger
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+            throw error; // Passing errors to controller
+        }
+    }
+    
+    static async updateUser(user, newUserData, userToBeUpdated) {
+
+        try {   
+
+            // Validate that this user can actually make this changes
+            if (Number(userToBeUpdated) !== Number(user.userId)) {
+                throw new CustomError(403, 'Forbidden', 
+                    [
+                        'Not allowed to update this user', 
+                        'User can only update himself'
+                    ]
+                )
+            }
+
+            // Hash && salt password
+            const salt = bcrypt.genSaltSync(saltRounds)
+            const hash = bcrypt.hashSync(newUserData.password, salt)
+
+            const updatedUser = await UserModel.update({
+                fieldsToBeUpdated: ['email', 'username', 'password'],
+                newData: [newUserData.email, newUserData.username, hash],
+                whereUserId: user.userId
+            })
+
+            // Generate session token
+            const token = jwt.sign(updatedUser, SECRET, {expiresIn: '10h'})
+
+            const userDataToSend = {
+                userId: updatedUser.userId,
+                email: updatedUser.email,
+                username: updatedUser.username,
+                created_at: updatedUser.created_at,
+                updated_at: updatedUser.updated_at
+            }
+
+            return {
+                updatedUser: userDataToSend,
+                token: token
+            };
+
+        } catch (error) {
+
+            console.log(error)
+
+            if (error.type === 'model') {
+
+                // Error logger
+                if (error.error.includes("UNIQUE constraint failed: Users.email")) {
+                    throw new CustomError(400, 'Bad request', ['Email already used'])
+
+                } else if (error.error.includes("UNIQUE constraint failed: Users.username")) {
+                    throw new CustomError(400, 'Bad request', ['Username already used'])
+
+                } else {
+                    // Add error logger here
+                    throw new CustomError(500, 'Server error', ['Try again later'])
+                }
+            }
+            throw error; // Passing errors to controller
+        }
+    }
 }
 
 module.exports = UserService

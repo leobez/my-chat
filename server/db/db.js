@@ -38,7 +38,8 @@ db.serialize(() => {
             email VARCHAR(255) UNIQUE NOT NULL,
             username VARCHAR(255) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `, (err) => {
         if (err) {
@@ -46,6 +47,24 @@ db.serialize(() => {
         } else {
             console.log('------')
             console.log('Table Users created')
+        }
+    }),
+
+    db.run(`
+        CREATE TRIGGER IF NOT EXISTS update_users_updated_at
+        AFTER UPDATE ON Users
+        FOR EACH ROW
+        BEGIN
+            UPDATE Users
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE userId = OLD.userId;
+        END;
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Users" update trigger', err.message)
+        } else {
+            console.log('Trigger for Users created')
         }
     }),
 
@@ -59,7 +78,8 @@ db.serialize(() => {
             wait BOOLEAN,
             lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN from_user ELSE to_user END),
             bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN to_user ELSE from_user END),
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(lesser_id, bigger_id),
             FOREIGN KEY(from_user) REFERENCES Users(userId),
             FOREIGN KEY(to_user) REFERENCES Users(userId)
@@ -69,6 +89,23 @@ db.serialize(() => {
             console.log('Error while creating "Friendship" table', err.message)
         } else {
             console.log('Table Friendship created')
+        }
+    }),
+    db.run(`
+        CREATE TRIGGER IF NOT EXISTS update_friendship_updated_at
+        AFTER UPDATE ON Friendship
+        FOR EACH ROW
+        BEGIN
+            UPDATE Friendship
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE friendshipId = OLD.friendshipId;
+        END;
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Friendship" update trigger', err.message)
+        } else {
+            console.log('Trigger for Friendship created')
         }
     }),
 
@@ -98,7 +135,8 @@ db.serialize(() => {
             name VARCHAR(40) NOT NULL,
             owner INTEGER NOT NULL,
             description VARCHAR(200) NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(owner) REFERENCES Users(userId)
         )
     `, (err) => {
@@ -106,6 +144,23 @@ db.serialize(() => {
             console.log('Error while creating "Groups" table', err.message)
         } else {
             console.log('Table Groups created')
+        }
+    }),
+    db.run(`
+        CREATE TRIGGER IF NOT EXISTS update_groups_updated_at
+        AFTER UPDATE ON Groups
+        FOR EACH ROW
+        BEGIN
+            UPDATE Groups
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE groupId = OLD.groupId;
+        END;
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Groups" update trigger', err.message)
+        } else {
+            console.log('Trigger for Groups created')
         }
     }),
 
@@ -120,7 +175,8 @@ db.serialize(() => {
             role TEXT NOT NULL CHECK (role IN ('user', 'owner', 'admin')),
             lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN userId ELSE groupId END),
             bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN groupId ELSE userId END),
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(lesser_id, bigger_id),
             FOREIGN KEY(groupId) REFERENCES Groups(groupId) ON DELETE CASCADE,
             FOREIGN KEY(userId) REFERENCES Users(userId)
@@ -132,6 +188,24 @@ db.serialize(() => {
             console.log('Table Membership created')
         }
     }),
+    db.run(`
+        CREATE TRIGGER IF NOT EXISTS update_membership_updated_at
+        AFTER UPDATE ON Membership
+        FOR EACH ROW
+        BEGIN
+            UPDATE Membership
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE membershipId = OLD.membershipId;
+        END;
+        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Membership" update trigger', err.message)
+        } else {
+            console.log('Trigger for Membership created')
+        }
+    }),
+
 
     // Table 'GroupMessages'
     db.run(`

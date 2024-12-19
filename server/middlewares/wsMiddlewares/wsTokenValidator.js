@@ -30,6 +30,16 @@ const wsTokenValidator = async(socket, next) => {
             return next(err)
         }
 
+        if (
+            userFromDb.userId !== userData.userId ||
+            userFromDb.email !== userData.email ||
+            userFromDb.username !== userData.username ||
+            userFromDb.updated_at !== userData.updated_at
+        ) {
+            const err = new CustomError(400, 'Bad request', ['User decoded from JWT is not the same as the on in the database'])
+            return next(err)
+        }
+
         const newUserData = {
             userId: userData.userId,
             username: userData.username,

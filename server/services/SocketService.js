@@ -40,8 +40,15 @@ class SocketService {
     static async disconnect(userId) {
 
         try {
-            await UserModel.update(null, userId)
+
+            await UserModel.update({
+                fieldsToBeUpdated: ['socketId'],
+                newData: [null],
+                whereUserId: userId
+            })
+
             return true
+            
         } catch (error) {
             if (error.type === 'model') {
                 // Add error logger here

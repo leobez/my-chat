@@ -16,12 +16,24 @@ const tokenValidator = async (req, res, next) => {
         const userFromDb = await UserModel.read({by: 'id', data: userDecoded.userId})
 
         if (!userFromDb) {
-            return res.status(400).json({
-                message: 'Bad request',
+            return res.status(401).json({
+                message: 'Unauthorized',
                 details: ['JWT gets decoded to an non existent user']
             })
         }
 
+        if (
+            userFromDb.userId !== userDecoded.userId ||
+            userFromDb.email !== userDecoded.email ||
+            userFromDb.username !== userDecoded.username ||
+            userFromDb.updated_at !== userDecoded.updated_at
+        ) { 
+            return res.status(401).json({
+                message: 'Unauthorized',
+                details: ['User decoded from JWT is not the same as the on in the database']
+            })
+        }
+        
         req.user = userDecoded
         next()
 

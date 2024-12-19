@@ -11,9 +11,9 @@ const tokenValidator = require('../middlewares/tokenValidator')
 const MembershipController = require('../controllers/MembershipController')
 
 // Express-validator
-const { param, cookie } = require('express-validator')
+const { param, cookie, body } = require('express-validator')
 
-// ROUTES (STILL HAS TO TEST ALL BTW)
+// ROUTES
 /*  
     GET     [DONE]   list my accepted memberships im a part of
     GET     [DONE]   list my membership requests
@@ -22,8 +22,8 @@ const { param, cookie } = require('express-validator')
     POST    [DONE]   send request to be a part of group
     PUT     [DONE]   accept request to be part of group  (needs to be owner or admin)
     DELETE  [DONE]   deny request to be part of group  (needs to be owner or admin)
-    DELETE  [... ]   remove membership from group. delete membership (needs to be owner or admin)
-    PUT     [... ]   change role of a group member (needs to be owner or admin)
+    DELETE  [DONE]   remove membership from group. delete membership (needs to be owner, admin or user himself)
+    PUT     [DONE]   change role of a group member (needs to be owner or admin)
 */
 
 // LIST MY ACCEPTED MEMBERSHIPS IM IN
@@ -154,5 +154,51 @@ router.delete(
     MembershipController.denyRequestToJoinGroup
 ) 
 
+// REVOKE MEMBERSHIP OF A USER (MUST BE OWNER, ADMIN OR THE USER HIMSELF)
+router.delete(
+    '/revoke/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    MembershipController.revokeMembership
+) 
+
+// CHANGE ROLE A CERTAIN MEMBERSHIP (MUST BE OWNER)
+router.put(
+    '/updateRole/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    body('newRole')
+        .trim()
+        .escape()
+        .exists().withMessage('Missing newRole')
+        .notEmpty().withMessage('Empty newRole')
+        .isIn(['admin', 'user']).withMessage('newRole must be user or admin'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    MembershipController.updateRole
+)
 
 module.exports = router

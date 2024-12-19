@@ -69,9 +69,25 @@ class MembershipModel {
 
     }
 
-    static update(membershipId, accepted) {
+    static update({set, data, membershipId}) {
+
+        let query = ''
+        let nData = []
+
+        if (set === 'accepted') {
+            query = 'UPDATE Membership SET accepted = ?, wait = ? WHERE membershipId = ?'
+            nData = [data, false, membershipId]
+        }
+
+        if (set === 'role') {
+            query = 'UPDATE Membership SET role = ? WHERE membershipId = ?'
+            nData = [data, membershipId]
+        }
+
+        if (!query) return
+
         return new Promise((resolve, reject) => {
-            return db.run('UPDATE Membership SET accepted = ?, wait = ? WHERE membershipId = ?', [accepted, false, membershipId], function(err) {
+            return db.run(query, nData, function(err) {
                 
                 if (err) {
                     return reject({type: 'model', error: err.message})

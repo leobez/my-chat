@@ -273,6 +273,32 @@ db.serialize(() => {
             console.log('Error while inserting test data: ', err.message)
         } else {
             console.log('Test data added')
+        }
+    })
+
+    db.run(`
+        
+        INSERT INTO Membership(groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)
+
+    `, [1, 2, true, false, 'admin'], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
+        }
+    })
+
+    db.run(`
+        
+        INSERT INTO Membership(groupId, userId, accepted, wait, role) VALUES (?, ?, ?, ?, ?)
+
+    `, [1, 3, true, false, 'user'], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added')
             console.log('------')
         }
     })

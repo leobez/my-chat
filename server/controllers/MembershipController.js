@@ -155,6 +155,52 @@ class MembershipController {
             })
         }
     } 
+
+    static async revokeMembership (req, res) {
+
+        try {
+            
+            const user = req.user
+            const {id:membershipId} = req.params
+
+            const revokedMembership = await MembershipService.revokeMembership(user.userId, membershipId)
+
+            return res.status(201).json({
+                message: 'Membership revoked. User has been removed from group',
+                data: revokedMembership
+            }) 
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+    } 
+
+    static async updateRole(req, res) {
+        try {
+            
+            const user = req.user
+            const {id:membershipId} = req.params
+            const {newRole} = req.body
+
+            const updatedMembership = await MembershipService.updateMembershipRole(user.userId, membershipId, newRole)
+
+            return res.status(201).json({
+                message: 'Membership updated',
+                data: updatedMembership
+            }) 
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+    }
 }
 
 module.exports = MembershipController

@@ -186,7 +186,7 @@ class MembershipService {
             if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
 
                 // Update membership status
-                const updatedMembership = await MembershipModel.update(requestId, true)
+                const updatedMembership = await MembershipModel.update({set: 'accepted', data: true, membershipId: requestId})
                 return updatedMembership
     
             } else {
@@ -241,12 +241,136 @@ class MembershipService {
             if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
 
                 // Update membership status
-                const deniedMembership = await MembershipModel.update(requestId, false)
+                const deniedMembership = await MembershipModel.update({set: 'accepted', data: false, membershipId: requestId})
 
                 // Delete from database (current only solution)
                 await MembershipModel.delete(requestId)
 
                 return deniedMembership
+    
+            } else {
+                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])
+            }
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Membership.lesser_id, Membership.bigger_id")) {
+                    throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
+                } else {
+                    // Add error logger here
+                    throw new CustomError(500, 'Server error', ['Try again later'])
+
+                }
+            }
+
+            throw error; // Passing errors to controller
+        }
+    } 
+
+    static async revokeMembership(userId, membershipId) {
+
+        try {
+
+            // Validate that membershipId exists
+            const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
+            if (!membership) throw new CustomError(404, 'Not found', ['Membership with this id does not exist'])
+            
+            // Validate that this membership is actually accepted
+            if (!membership.accepted) {
+                throw new CustomError(400, 'Bad request', ['Membership request with this id isnt even accepted yet'])
+            }
+
+            // Validate that this membership doesnt belong to owner
+            if (membership.role === 'owner') {
+                throw new CustomError(403, 'Forbidden', ['Cant revoke owner membership'])
+            }
+
+            // Validate that userId is an owner, admin of groupId OR the user himself
+            const groupId = membership.groupId
+            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+
+            let relevantMembership = null
+            for (let a=0; a<userMemberships.length; a++) {
+                if (Number(userMemberships[a].groupId) === Number(groupId)) {
+                    relevantMembership = userMemberships[a]
+                }
+            }
+
+            if (!relevantMembership) {
+                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
+            }
+
+            // Validate that user is owner, admin of group or the user himself
+            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin' || relevantMembership.userId === userId) {
+
+                // Update membership status
+                const deniedMembership = await MembershipModel.update({set: 'accepted', data: false, membershipId: requestId})
+
+                // Delete from database (current only solution)
+                await MembershipModel.delete(membershipId)
+
+                return deniedMembership
+    
+            } else {
+                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])
+            }
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Membership.lesser_id, Membership.bigger_id")) {
+                    throw new CustomError(400, 'Bad request', ['Association between this user and this group already exists'])
+                } else {
+                    // Add error logger here
+                    throw new CustomError(500, 'Server error', ['Try again later'])
+
+                }
+            }
+
+            throw error; // Passing errors to controller
+        }
+    } 
+
+    static async updateMembershipRole(userId, membershipId, newRole) {
+
+        try {
+
+            // Validate that membershipId exists
+            const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
+            if (!membership) throw new CustomError(404, 'Not found', ['Membership with this id does not exist'])
+            
+            // Validate that this membership is actually accepted
+            if (!membership.accepted) {
+                throw new CustomError(400, 'Bad request', ['Membership request with this id isnt even accepted yet'])
+            }
+
+            // Validate that this membership doesnt belong to owner
+            if (membership.role === 'owner') {
+                throw new CustomError(403, 'Forbidden', ['Cant update owner membership'])
+            }
+
+            // Validate that userId is an owner or admin of groupId 
+            const groupId = membership.groupId
+            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+
+            let relevantMembership = null
+            for (let a=0; a<userMemberships.length; a++) {
+                if (Number(userMemberships[a].groupId) === Number(groupId)) {
+                    relevantMembership = userMemberships[a]
+                }
+            }
+
+            if (!relevantMembership) {
+                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
+            }
+
+            // Validate that user is owner, admin of group or the user himself
+            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
+
+                // Update membership status
+                const updatedMembership = await MembershipModel.update({set: 'role', data: newRole, membershipId: membershipId})
+                return updatedMembership
     
             } else {
                 throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])

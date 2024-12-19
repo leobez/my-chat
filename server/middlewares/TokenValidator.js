@@ -2,7 +2,10 @@
 const jwt = require('jsonwebtoken')
 const SECRET = process.env.SECRET_KEY
 
-function tokenValidator (req, res, next) {
+// Model
+const UserModel = require('../models/UserModel')
+
+const tokenValidator = async (req, res, next) => {
 
     try {
 
@@ -10,12 +13,21 @@ function tokenValidator (req, res, next) {
         const userDecoded = jwt.verify(token, SECRET)
 
         // Validate that user exists on DB
-        // ...
+        const userFromDb = await UserModel.read({by: 'id', data: userDecoded.userId})
+
+        if (!userFromDb) {
+            return res.status(400).json({
+                message: 'Bad request',
+                details: ['JWT gets decoded to an non existent user']
+            })
+        }
 
         req.user = userDecoded
         next()
 
     } catch (error) {
+
+        console.log(error)
 
         if (error.name === 'TokenExpiredError') {
             return res.status(403).json({

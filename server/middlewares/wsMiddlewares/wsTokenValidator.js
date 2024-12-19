@@ -2,10 +2,13 @@ const jwt = require('jsonwebtoken')
 
 const CustomError = require("../../utils/CustomError")
 
+// Model
+const UserModel = require('../../models/UserModel')
+
 // Envirment variables
 const SECRET = process.env.SECRET_KEY
 
-const wsTokenValidator = (socket, next) => {
+const wsTokenValidator = async(socket, next) => {
 
     // Verify if token exists on connection headers
     const token = socket.handshake.headers.auth_jwt
@@ -20,8 +23,13 @@ const wsTokenValidator = (socket, next) => {
         const userData = jwt.verify(token, SECRET)
 
         // Validate that user exists on DB
-        // ....
-    
+        const userFromDb = await UserModel.read({by: 'id', data: userData.userId})
+
+        if (!userFromDb) {
+            const err = new CustomError(400, 'Bad request', ['JWT gets decoded into a non existent user'])
+            return next(err)
+        }
+
         const newUserData = {
             userId: userData.userId,
             username: userData.username,

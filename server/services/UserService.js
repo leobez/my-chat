@@ -201,7 +201,6 @@ class UserService {
             return true
 
         } catch (error) {
-            console.log(error)
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])

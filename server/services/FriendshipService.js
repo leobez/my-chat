@@ -182,7 +182,36 @@ class FriendshipService {
         }
 
     }
- 
+
+    static async deleteFriendRequest(userId, friendshipId) {
+
+        try {
+
+
+            // Validate that friendship exists
+            const friendship = await FriendshipModel.read({by: 'id', data: friendshipId})
+            if (!friendship) throw new CustomError(400, 'Bad request', ['Friendship  with this id does not exist'])
+
+            // Validate that the user thats deleting this friendship can do so
+            if (Number(userId)!==Number(friendship.from_user) && Number(userId)!==Number(friendship.to_user)) {
+                throw new CustomError(403, 'Forbidden', ['You do not have the privilege to delete this friendship'])
+            }
+            
+            await FriendshipModel.delete(friendshipId)
+
+            return friendship
+
+        } catch (error) {
+
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+
+            throw error; // Passing errors to controller
+        }
+
+    }
 }
 
 module.exports = FriendshipService

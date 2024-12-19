@@ -161,6 +161,30 @@ class FriendshipController {
         
     }
 
+    static deleteFriendship = async(req, res) => {
+
+        try {
+            
+            const user = req.user
+            const {id:friendshipId} = req.params
+
+            const deletedfriendship = await FriendshipService.deleteFriendRequest(user.userId, friendshipId)
+
+            return res.status(201).json({
+                message: 'Friendship deleted',
+                data: deletedfriendship
+            })
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+        
+    }
+
 }
 
 module.exports = FriendshipController

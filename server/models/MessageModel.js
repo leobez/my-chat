@@ -28,7 +28,7 @@ class  MessageModel {
         let nData = []
 
         if (by === 'history') {
-            query = 'SELECT * FROM Messages WHERE (from_user = ? AND to_user = ?) OR (from_user = ? AND to_user = ?) ORDER BY timestamp'
+            query = 'SELECT * FROM Messages WHERE (from_user = ? AND to_user = ?) OR (from_user = ? AND to_user = ?) ORDER BY created_at'
             nData = [data.user1, data.user2, data.user2, data.user1]
         }
 

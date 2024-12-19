@@ -116,7 +116,7 @@ db.serialize(() => {
             from_user INTEGER NOT NULL,
             to_user INTEGER NOT NULL,
             content VARCHAR(500) NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(from_user) REFERENCES Users(userId),
             FOREIGN KEY(to_user) REFERENCES Users(userId)
         )

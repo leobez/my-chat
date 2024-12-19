@@ -28,12 +28,12 @@ class  FriendshipModel {
         let nData = []
 
         if (by === 'sent') {
-            query = 'SELECT * FROM Friendship WHERE from_user = ? ORDER BY timestamp'
+            query = 'SELECT * FROM Friendship WHERE from_user = ? ORDER BY created_at'
             nData = [data]
         }
 
         if (by === 'received') {
-            query = 'SELECT * FROM Friendship WHERE to_user = ? ORDER BY timestamp'
+            query = 'SELECT * FROM Friendship WHERE to_user = ? ORDER BY created_at'
             nData = [data]
         }
 

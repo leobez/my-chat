@@ -99,8 +99,15 @@ class  UserModel {
         })
     }
 
-    static delete() {
-        /* ... */
+    static delete(userId) {
+        return new Promise((resolve, reject) => {
+            return db.run('DELETE FROM Users WHERE userId = ?', [userId], function(err) {
+                if (err) {
+                    return reject({type: 'model', error: err.message})
+                }
+                return resolve(true)
+            })
+        })
     }
 }
 

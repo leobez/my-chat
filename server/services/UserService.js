@@ -164,8 +164,6 @@ class UserService {
 
         } catch (error) {
 
-            console.log(error)
-
             if (error.type === 'model') {
 
                 // Error logger
@@ -179,6 +177,35 @@ class UserService {
                     // Add error logger here
                     throw new CustomError(500, 'Server error', ['Try again later'])
                 }
+            }
+            throw error; // Passing errors to controller
+        }
+    }
+
+    static async deleteUser(user, userToBeDeleted) {
+
+        try {   
+
+            // Validate that this user can actually make this changes
+            if (Number(userToBeDeleted) !== Number(user.userId)) {
+                throw new CustomError(403, 'Forbidden', 
+                    [
+                        'Not allowed to delete this user', 
+                        'User can only delete himself'
+                    ]
+                )
+            }
+
+            await UserModel.delete(userToBeDeleted)
+
+            return true
+
+        } catch (error) {
+            console.log(error)
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+                
             }
             throw error; // Passing errors to controller
         }

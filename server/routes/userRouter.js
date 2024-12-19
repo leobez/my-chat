@@ -159,4 +159,23 @@ router.put(
     UserController.updateUser
 )
 
+router.delete(
+    '/delete/:id',
+
+    param('id')
+        .trim()
+        .exists().withMessage('Missing id')
+        .notEmpty().withMessage('Empty id')
+        .isNumeric().withMessage('Invalid id'),
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),   
+
+    dataValidator,
+    tokenValidator,
+    UserController.deleteUser
+)
+
 module.exports = router

@@ -182,6 +182,28 @@ class UserController {
         }
     } 
 
+    static deleteUser = async(req, res) => {
+
+        try {
+            
+            const user = req.user
+            const {id:userToBeDeleted} = req.params
+
+            const deletedUser = await UserService.deleteUser(user, userToBeDeleted)
+
+            return res.status(201).json({
+                message: 'User deleted',
+                data: deletedUser
+            })
+
+        } catch (error) {
+
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+    } 
 }
 
 module.exports = UserController

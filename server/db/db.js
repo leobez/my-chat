@@ -81,8 +81,8 @@ db.serialize(() => {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(lesser_id, bigger_id),
-            FOREIGN KEY(from_user) REFERENCES Users(userId),
-            FOREIGN KEY(to_user) REFERENCES Users(userId)
+            FOREIGN KEY(from_user) REFERENCES Users(userId) ON DELETE CASCADE,
+            FOREIGN KEY(to_user) REFERENCES Users(userId) ON DELETE CASCADE
         ); 
     `, (err) => {
         if (err) {
@@ -117,8 +117,8 @@ db.serialize(() => {
             to_user INTEGER NOT NULL,
             content VARCHAR(500) NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(from_user) REFERENCES Users(userId),
-            FOREIGN KEY(to_user) REFERENCES Users(userId)
+            FOREIGN KEY(from_user) REFERENCES Users(userId) ON DELETE CASCADE,
+            FOREIGN KEY(to_user) REFERENCES Users(userId) ON DELETE CASCADE
         )
     `, (err) => {
         if (err) {
@@ -137,7 +137,7 @@ db.serialize(() => {
             description VARCHAR(200) NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(owner) REFERENCES Users(userId)
+            FOREIGN KEY(owner) REFERENCES Users(userId) ON DELETE CASCADE
         )
     `, (err) => {
         if (err) {
@@ -179,7 +179,7 @@ db.serialize(() => {
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(lesser_id, bigger_id),
             FOREIGN KEY(groupId) REFERENCES Groups(groupId) ON DELETE CASCADE,
-            FOREIGN KEY(userId) REFERENCES Users(userId)
+            FOREIGN KEY(userId) REFERENCES Users(userId) ON DELETE CASCADE
         )
     `, (err) => {
         if (err) {
@@ -205,7 +205,6 @@ db.serialize(() => {
             console.log('Trigger for Membership created')
         }
     }),
-
 
     // Table 'GroupMessages'
     db.run(`

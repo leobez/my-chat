@@ -5,6 +5,34 @@ const GroupModel = require('../models/GroupModel')
 // Custom error
 const CustomError = require('../utils/CustomError')
 
+// Validate group existence
+const validateGroup = async(groupId) => {
+    const group = await GroupModel.read({by: 'groupId', data: groupId})
+    if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
+    return group
+}
+
+// Validate role
+const validateRole = async(userId, groupId) => {
+
+    const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+
+    let relevantMembership = null
+
+    for (let a=0; a<userMemberships.length; a++) {
+        if (Number(userMemberships[a].groupId) === Number(groupId)) {
+            relevantMembership = userMemberships[a]
+        }
+    }
+
+    if (!relevantMembership) {
+        throw new CustomError(403, 'Frobidden', ['Not allowed to see this'])
+    }
+
+    if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') return true
+    return false
+}
+
 // Service
 class MembershipService {
 
@@ -46,9 +74,8 @@ class MembershipService {
         try {
 
             // Validate that group exists
-            const group = await GroupModel.read({by: 'groupId', data: groupId})
-            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
-            
+            await validateGroup(groupId)
+
             // Get accepted memberships in this group
             const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
             const members = memberships.filter((membership) => membership.accepted)
@@ -64,38 +91,23 @@ class MembershipService {
         }
     }
 
+    // Only owner and admins of group can see it
     static async listRequestsOfGroup(groupId, userId) {
         try {
 
             // Validate that group exists
-            const group = await GroupModel.read({by: 'groupId', data: groupId})
-            if (!group) throw new CustomError(404, 'Not found', ['Group with this id not found'])
+            await validateGroup(groupId)
 
-            // Validate that userId is a part of this group
-            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+            // Validate that userId can actually use this
+            const allowed = await validateRole(userId, groupId)
 
-            let relevantMembership = null
-            for (let a=0; a<userMemberships.length; a++) {
-                if (Number(userMemberships[a].groupId) === Number(groupId)) {
-                    relevantMembership = userMemberships[a]
-                }
+            if (!allowed) {
+                throw new CustomError(403, 'Forbidden', ['User doesnt have the necessary role to access this route'])
             }
-
-            if (!relevantMembership) {
-                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
-            }
-
-            // Validate that user is either owner or admin of group
-            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
-
-                const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
-                const requests = memberships.filter((membership) => !membership.accepted)
-                return requests
-    
-            } else {
-                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to see this information'])
-            }
-            
+        
+            const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
+            const requests = memberships.filter((membership) => !membership.accepted)
+            return requests
 
         } catch (error) {
             console.log(error)
@@ -108,13 +120,12 @@ class MembershipService {
         }
     }
 
-    static async sendRequestToJoinGroup(userId, groupId) {
+    static async sendRequestToJoinGroup(groupId, userId) {
 
         try {
 
             // Validate that groupId exists
-            const group = await GroupModel.read({by: 'groupId', all: true, data: groupId})
-            if (!group) throw new CustomError(404, 'Not found', ['Group with this groupId does not exist'])
+            await validateGroup(groupId)
             
             // Validate that this user isnt already in this group
             const userMemberships = await MembershipModel.read({by: 'userId', all: true, userId})
@@ -154,6 +165,7 @@ class MembershipService {
         }
     } 
 
+    // Only owner and admins of group accept it
     static async acceptRequestToJoinGroup(userId, requestId) {
 
         try {
@@ -162,36 +174,31 @@ class MembershipService {
             const membershipRequest = await MembershipModel.read({by: 'membershipId', data: requestId})
             if (!membershipRequest) throw new CustomError(404, 'Not found', ['Request with this id does not exist'])
             
+            // Validate that userId can actually use this
+            const allowed = await validateRole(userId, membershipRequest.groupId)
+
+            if (!allowed) {
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['User doesnt have the necessary role to access this route']
+                )
+            }
+
             // Validate that this request isnt already accepted
             if (membershipRequest.accepted) {
                 throw new CustomError(400, 'Bad request', ['Membership request with this id is already accepted'])
             }
 
-            // Validate that userId is an owner or admin of groupId
-            const groupId = membershipRequest.groupId
-            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+            // Update membership status
+            const updatedMembership = await MembershipModel.update({
+                set: 'accepted', 
+                data: true, 
+                membershipId: requestId
+            })
 
-            let relevantMembership = null
-            for (let a=0; a<userMemberships.length; a++) {
-                if (Number(userMemberships[a].groupId) === Number(groupId)) {
-                    relevantMembership = userMemberships[a]
-                }
-            }
-
-            if (!relevantMembership) {
-                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
-            }
-
-            // Validate that user is either owner or admin of group
-            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
-
-                // Update membership status
-                const updatedMembership = await MembershipModel.update({set: 'accepted', data: true, membershipId: requestId})
-                return updatedMembership
+            return updatedMembership
     
-            } else {
-                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to accept this request'])
-            }
 
         } catch (error) {
             if (error.type === 'model') {
@@ -209,6 +216,7 @@ class MembershipService {
         }
     } 
 
+    // Only owner and admins of group can deny it
     static async denyRequestToJoinGroup(userId, requestId) {
 
         try {
@@ -217,40 +225,33 @@ class MembershipService {
             const membershipRequest = await MembershipModel.read({by: 'membershipId', data: requestId})
             if (!membershipRequest) throw new CustomError(404, 'Not found', ['Request with this id does not exist'])
             
+            // Validate that userId can actually use this
+            const allowed = await validateRole(userId, membershipRequest.groupId)
+
+            if (!allowed) {
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['User doesnt have the necessary role to access this route']
+                )
+            }
+
             // Validate that this request isnt accepted
             if (membershipRequest.accepted) {
                 throw new CustomError(400, 'Bad request', ['Membership request with this id is already accepted'])
             }
 
-            // Validate that userId is an owner or admin of groupId
-            const groupId = membershipRequest.groupId
-            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
+            // Update membership status
+            const deniedMembership = await MembershipModel.update({
+                set: 'accepted', 
+                data: false, 
+                membershipId: requestId
+            })
 
-            let relevantMembership = null
-            for (let a=0; a<userMemberships.length; a++) {
-                if (Number(userMemberships[a].groupId) === Number(groupId)) {
-                    relevantMembership = userMemberships[a]
-                }
-            }
+            // Delete from database (current only solution)
+            await MembershipModel.delete(requestId)
 
-            if (!relevantMembership) {
-                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
-            }
-
-            // Validate that user is either owner or admin of group
-            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
-
-                // Update membership status
-                const deniedMembership = await MembershipModel.update({set: 'accepted', data: false, membershipId: requestId})
-
-                // Delete from database (current only solution)
-                await MembershipModel.delete(requestId)
-
-                return deniedMembership
-    
-            } else {
-                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])
-            }
+            return deniedMembership
 
         } catch (error) {
             if (error.type === 'model') {
@@ -268,6 +269,7 @@ class MembershipService {
         }
     } 
 
+    // Only owner, admin or user himself can revoke it
     static async revokeMembership(userId, membershipId) {
 
         try {
@@ -276,9 +278,15 @@ class MembershipService {
             const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
             if (!membership) throw new CustomError(404, 'Not found', ['Membership with this id does not exist'])
             
-            // Validate that this membership is actually accepted
-            if (!membership.accepted) {
-                throw new CustomError(400, 'Bad request', ['Membership request with this id isnt even accepted yet'])
+            // Validate that userId can actually use this
+            const allowed = await validateRole(userId, membershipRequest.groupId)
+
+            if (!allowed && Number(relevantMembership.userId) !== Number(userId)) {
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['User doesnt have the necessary role to access this route']
+                )
             }
 
             // Validate that this membership doesnt belong to owner
@@ -286,36 +294,24 @@ class MembershipService {
                 throw new CustomError(403, 'Forbidden', ['Cant revoke owner membership'])
             }
 
-            // Validate that userId is an owner, admin of groupId OR the user himself
-            const groupId = membership.groupId
-            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
-
-            let relevantMembership = null
-            for (let a=0; a<userMemberships.length; a++) {
-                if (Number(userMemberships[a].groupId) === Number(groupId)) {
-                    relevantMembership = userMemberships[a]
-                }
+            // Validate that this membership is actually accepted
+            if (!membership.accepted) {
+                throw new CustomError(400, 'Bad request', ['Membership request with this id isnt even accepted yet'])
             }
 
-            if (!relevantMembership) {
-                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
-            }
+            // Update membership status
+            const revokedMembership = await MembershipModel.update({
+                set: 'accepted', 
+                data: false, 
+                membershipId: requestId
+            })
 
-            // Validate that user is owner, admin of group or the user himself
-            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin' || relevantMembership.userId === userId) {
+            // Delete from database (current only solution)
+            await MembershipModel.delete(membershipId)
 
-                // Update membership status
-                const deniedMembership = await MembershipModel.update({set: 'accepted', data: false, membershipId: requestId})
-
-                // Delete from database (current only solution)
-                await MembershipModel.delete(membershipId)
-
-                return deniedMembership
+            return revokedMembership
     
-            } else {
-                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])
-            }
-
+ 
         } catch (error) {
             if (error.type === 'model') {
                 // Add error logger here
@@ -332,6 +328,7 @@ class MembershipService {
         }
     } 
 
+    // Only owner and admins of group can update it
     static async updateMembershipRole(userId, membershipId, newRole) {
 
         try {
@@ -340,9 +337,15 @@ class MembershipService {
             const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
             if (!membership) throw new CustomError(404, 'Not found', ['Membership with this id does not exist'])
             
-            // Validate that this membership is actually accepted
-            if (!membership.accepted) {
-                throw new CustomError(400, 'Bad request', ['Membership request with this id isnt even accepted yet'])
+            // Validate that userId can actually use this
+            const allowed = await validateRole(userId, membershipRequest.groupId)
+
+            if (!allowed) {
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['User doesnt have the necessary role to access this route']
+                )
             }
 
             // Validate that this membership doesnt belong to owner
@@ -350,31 +353,20 @@ class MembershipService {
                 throw new CustomError(403, 'Forbidden', ['Cant update owner membership'])
             }
 
-            // Validate that userId is an owner or admin of groupId 
-            const groupId = membership.groupId
-            const userMemberships = await MembershipModel.read({by: 'userId', all: true, data: userId})
-
-            let relevantMembership = null
-            for (let a=0; a<userMemberships.length; a++) {
-                if (Number(userMemberships[a].groupId) === Number(groupId)) {
-                    relevantMembership = userMemberships[a]
-                }
+            // Validate that this membership is actually accepted
+            if (!membership.accepted) {
+                throw new CustomError(400, 'Bad request', ['Membership request with this id isnt even accepted yet'])
             }
 
-            if (!relevantMembership) {
-                throw new CustomError(403, 'Frobidden', ['User is not in this group'])
-            }
 
-            // Validate that user is owner, admin of group or the user himself
-            if (relevantMembership.role === 'owner' || relevantMembership.role === 'admin') {
-
-                // Update membership status
-                const updatedMembership = await MembershipModel.update({set: 'role', data: newRole, membershipId: membershipId})
-                return updatedMembership
-    
-            } else {
-                throw new CustomError(403, 'Forbidden', ['User is not owner or admin of this group. Forbidden to deny this request'])
-            }
+            // Update membership status
+            const updatedMembership = await MembershipModel.update({
+                set: 'role', 
+                data: newRole, 
+                membershipId: membershipId
+            })
+            
+            return updatedMembership
 
         } catch (error) {
             if (error.type === 'model') {

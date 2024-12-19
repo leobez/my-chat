@@ -94,7 +94,7 @@ class MembershipController {
             const user = req.user
             const {id:groupId} = req.params
 
-            const createdRequest = await MembershipService.sendRequestToJoinGroup(user.userId, groupId)
+            const createdRequest = await MembershipService.sendRequestToJoinGroup(groupId, user.userId)
 
             return res.status(201).json({
                 message: 'Request sent',

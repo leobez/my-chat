@@ -51,7 +51,11 @@ class GroupService {
 
             // Verify that group is owned by userId
             if (Number(group.owner) !== Number(userId)) {
-                throw new CustomError(403, 'Forbidden', ['Users does not have the privilege to update this group'])
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['Users does not have the privilege to access this route']
+                )
             }
 
             // Update
@@ -80,7 +84,11 @@ class GroupService {
 
             // Verify that group is owned by userId
             if (Number(group.owner) !== Number(userId)) {
-                throw new CustomError(403, 'Forbidden', ['Users does not have the privilege to update this group'])
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['Users does not have the privilege to access this route']
+                )
             }
 
             // Delete
@@ -89,7 +97,7 @@ class GroupService {
             return group
 
         } catch (error) {
-
+            console.log(error)
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])

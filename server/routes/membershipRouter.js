@@ -28,6 +28,19 @@ const { param, cookie, body } = require('express-validator')
 
 // LIST MY ACCEPTED MEMBERSHIPS IM IN
 router.get(
+    '/',
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    MembershipController.listAllMemberships
+) 
+
+router.get(
     '/me/accepted',
 
     cookie('jwt')

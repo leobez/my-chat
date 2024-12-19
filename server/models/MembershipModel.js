@@ -42,6 +42,11 @@ class MembershipModel {
             nData = [data]
         }
 
+        if (by === 'all') {
+            query = 'SELECT * FROM Membership'
+            nData = []
+        }
+
         if (!query) return;
 
         // Get multiple lines

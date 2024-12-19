@@ -26,8 +26,10 @@ const hash = bcrypt.hashSync('123', salt)
 // Run commands in order
 db.serialize(() => {
 
+    // Enable 'ON DELETE CASCADE'
+    db.run("PRAGMA foreign_keys = ON"),
+
     // Create tables
-    
     // Table 'Users'
     db.run(`
         CREATE TABLE Users(
@@ -120,7 +122,7 @@ db.serialize(() => {
             bigger_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN userId < groupId THEN groupId ELSE userId END),
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(lesser_id, bigger_id),
-            FOREIGN KEY(groupId) REFERENCES Groups(groupId),
+            FOREIGN KEY(groupId) REFERENCES Groups(groupId) ON DELETE CASCADE,
             FOREIGN KEY(userId) REFERENCES Users(userId)
         )
     `, (err) => {

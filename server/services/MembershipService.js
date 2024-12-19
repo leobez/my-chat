@@ -36,6 +36,22 @@ const validateRole = async(userId, groupId) => {
 // Service
 class MembershipService {
 
+    static async listAllMemberships() {
+        try {
+
+            const memberships = await MembershipModel.read({by: 'all', all: true, data: false})
+            return memberships
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+
+            throw error; // Passing errors to controller
+        }
+    }
+
     static async listAcceptedMemberships(userId) {
         try {
 

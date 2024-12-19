@@ -4,6 +4,27 @@ const MembershipService = require('../services/MembershipService')
 // Controller
 class MembershipController {
 
+
+    static async listAllMemberships (req, res) {
+
+        try {
+            
+            const allMemberships = await MembershipService.listAllMemberships()
+
+            return res.status(200).json({
+                message: 'Data retrieved',
+                data: allMemberships
+            }) 
+
+        } catch (error) {
+            console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+    }
+
     static async listAcceptedMemberships (req, res) {
 
         try {

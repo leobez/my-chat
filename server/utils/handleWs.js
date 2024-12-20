@@ -110,7 +110,7 @@ const handleWsRoutes = (io) => {
         })
 
         // Membership
-        socket.on('membership ', (membershipId) => {
+        socket.on('membership', (membershipId) => {
             SocketController.handleMembership(socket, io, membershipId)
         })
 

@@ -245,6 +245,7 @@ class SocketService {
             const validMemberships = await MembershipService.listOwnerAndAdminsOfGroup(membership.groupId)
             const validIds = validMemberships.map((membership) => Number(membership.userId))
 
+
             if (
                 Number(socket.user.userId) !== (userThatWantsToJoinId) &&
                 !validIds.includes(Number(socket.user.userId))
@@ -255,19 +256,19 @@ class SocketService {
                     ['You are not a part of this membership']
                 );
             }
-
+            
             // Find out who is going to receive this (user or adm group)
-
             if (!membership.accepted) {
                 // This means membership is being sent by USER to the ADM_ROOM
                 const roomName = `${membership.groupId}_adm_room`
-                return io.to(roomName).emit('membership', membership)
+                io.to(roomName).emit('membership', membership)
 
             } else {
                 // This means membership is being sent by ADM_ROOM to USER
                 const receivingUser = await UserModel.read({by: 'id', data: membership.userId})
                 const socketId = receivingUser.socketId
-                return socket.to(socketId).emit('membership', membership)
+                socket.to(socketId).emit('membership', membership)
+
             }
 
         } catch (error) {

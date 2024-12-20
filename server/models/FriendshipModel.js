@@ -47,6 +47,11 @@ class  FriendshipModel {
             nData = [data, data]
         }
 
+        if (by === 'all') {
+            query = 'SELECT * FROM Friendship'
+            nData = []
+        }
+
         if (!query) return;
 
         // Get multiple lines

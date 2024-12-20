@@ -51,6 +51,26 @@ class FriendshipService {
 
     }
 
+    static async listAllFriendships() {
+
+        try {
+
+            // Get every friend of user
+            const allFriendships = await FriendshipModel.read({by: 'all', all: true, data: false})
+            return allFriendships
+
+        } catch (error) {
+
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+
+            throw error; // Passing errors to controller
+        }
+
+    }
+
     static async getSentFriendRequests(userId) {
 
         try {

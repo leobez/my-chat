@@ -27,6 +27,18 @@ router.get(
     FriendshipController.getFriends
 )
 
+router.get(
+    '/all',
+
+    cookie('jwt')
+        .trim()
+        .exists().withMessage('Missing JWT on cookies')
+        .notEmpty().withMessage('Empty JWT on cookies'),
+
+    dataValidator,
+    tokenValidator,
+    FriendshipController.listAllFriendships
+)
 
 router.get(
     '/sent',
@@ -129,4 +141,6 @@ router.delete(
     tokenValidator,
     FriendshipController.deleteFriendship
 )
+
+
 module.exports = router

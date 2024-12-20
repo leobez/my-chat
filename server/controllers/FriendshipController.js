@@ -25,6 +25,25 @@ class FriendshipController {
         }
     }
 
+    static listAllFriendships = async(req, res) => {
+        try {
+            
+            const allFriendships = await FriendshipService.listAllFriendships()
+
+            return res.status(200).json({
+                message: 'Data retrieved',
+                data: allFriendships
+            })
+
+        } catch (error) {
+            //console.error('CONTROLLER ERROR: ', error)
+            return res.status(error.status).json({
+                message: error.message,
+                details: error.details
+            })
+        }
+    }
+
     static getSentFriendRequests = async(req, res) => {
 
         try {

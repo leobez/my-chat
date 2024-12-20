@@ -6,9 +6,12 @@ const MembershipModel = require("../models/MembershipModel");
 const CustomError = require("../utils/CustomError");
 
 const FriendshipService = require("./FriendshipService");
+const GroupService = require("./GroupService");
+const MembershipService = require("./MembershipService");
 
 class SocketService {
 
+    // friends online status
     static async notifyFriendsDisponibility(userId, io, status) {
 
         try {
@@ -19,9 +22,10 @@ class SocketService {
 
             // Get every socketId of userId friends
             const socketIdList = friendsList.map((friend) => friend.socketId)
+            console.log('notifying friends: ', socketIdList)
 
             socketIdList.forEach(socketId => {
-                io.to(socketId).emit('online status', {
+                io.to(socketId).emit('friends online status', {
                     user: userId,
                     online: status
                 })
@@ -59,7 +63,7 @@ class SocketService {
         }
     }
 
-    // Friendship
+    // Private message 
     static async sendPrivateMessage(socket, messageId) {
 
         try {
@@ -93,69 +97,70 @@ class SocketService {
 
     }
 
-    static async sendFriendRequest(socket, friendshipId) {
+    // Friendship
+    static async friendship(socket, friendshipId) {
 
         try {
+
             // Validate that friendshipId exists
             const friendship = await FriendshipModel.read({by: 'id', data: friendshipId})
-            if (!friendship) throw new CustomError(404, 'Not found', ['Friendship request with this friendshipId was not found']);
 
-            // Validate that friendshipId was sent by (from_user) socket.user.userId
-            if (Number(friendship.from_user) !== socket.user.userId) {
-                throw new CustomError(403, 'Forbidden', ['This friendship request was not sent by you']);
+            if (!friendship) throw new CustomError(
+                404, 
+                'Not found', 
+                ['Friendship request with this friendshipId was not found']
+            );
+
+            // Validate that socket accessing this event is a part of the friendship thats being handled
+            if (
+                Number(friendship.from_user) !== socket.user.userId &&
+                Number(friendship.to_user) !== socket.user.userId
+            ) {
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['You are not a part of this friendship']
+                );
             }
 
             // Find socketId of user thats receiving the request
-            const receivingUser = await UserModel.read({by: 'id', data: friendship.to_user})
+            let receivingUser
+
+            if (!friendship.accepted) {
+                receivingUser = await UserModel.read({by: 'id', data: friendship.to_user})
+            } else {
+                receivingUser = await UserModel.read({by: 'id', data: friendship.from_user})
+            }
+
+            // User doesnt exist
+            if (!receivingUser) {
+                throw new CustomError(
+                    404, 
+                    'Not found', 
+                    ['User thats receiving this request doesnt exist']
+                )
+            }
 
             // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser) throw new CustomError(404, 'Not found', ['User thats receiving the message doesnt exist']);
+            if (!receivingUser.socketId) {
+                throw new CustomError(
+                    404, 
+                    'Not found', 
+                    ['User thats receiving the request isnt logged at this moment']
+                )
+            }
 
-            // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser.socketId) throw new CustomError(404, 'Not found', ['User thats receiving the request isnt logged at this moment']);
-
-            return socket.to(receivingUser.socketId).emit('friend request', friendship)
+            return socket.to(receivingUser.socketId).emit('friendship', friendship)
 
         } catch (error) {
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])
             }
+
             throw error; // Passing errors to controller
         }
 
-    }
-
-    static async acceptFriendRequest(socket, friendshipId) {
-
-        try {
-            // Validate that friendshipId exists
-            const friendship = await FriendshipModel.read({by: 'id', data: friendshipId})
-            if (!friendship) throw new CustomError(404, 'Not found', ['Friendship request with this friendshipId was not found']);
-
-            // Validate that friendshipId was sent to (to_user) socket.user.userId
-            if (Number(friendship.to_user) !== socket.user.userId) {
-                throw new CustomError(403, 'Forbidden', ['This friendship request was not sent to you']);
-            }
-
-            // Find socketId of user thats sent the request
-            const receivingUser = await UserModel.read({by: 'id', data: friendship.from_user})
-
-            // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser) throw new CustomError(404, 'Not found', ['User thats receiving the request doesnt exist']);
-
-            // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser.socketId) throw new CustomError(404, 'Not found', ['User thats receiving the request isnt logged at this moment']);
-
-            return socket.to(receivingUser.socketId).emit('accept friend request', friendship)
-
-        } catch (error) {
-            if (error.type === 'model') {
-                // Add error logger here
-                throw new CustomError(500, 'Server error', ['Try again later'])
-            }
-            throw error; // Passing errors to controller
-        }
     }
 
     // Group
@@ -216,23 +221,54 @@ class SocketService {
     }
 
     // Membership
-    static async sendMembershipRequest(socket, membershipId, io) {
+    static async membership(socket, membershipId, io) {
 
         try {
 
             // Validate that membershipId exists
             const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
-            if (!membership) throw new CustomError(404, 'Not found', ['Membership request with this id was not found']);
 
-            // Validate that this was sent by user thats in this membership request (userId)
-            if (Number(membership.userId) !== socket.user.userId) {
-                throw new CustomError(403, 'Forbidden', ['This membership request was not sent by you']);
+            if (!membership) {
+                throw new CustomError(
+                    404, 
+                    'Not found', 
+                    ['Membership request with this id was not found']
+                );
             }
 
-            // Send membership request to the adm room of membership.groupId
-            const roomName = `${membership.groupId}_adm_room`
+            // Validate that socket.user.userId is one of these:
+            // User that wants to join group
+            // Owner of the group
+            // Admin of the group
 
-            io.to(roomName).emit('membership request', membership)
+            const userThatWantsToJoinId = membership.userId
+            const validMemberships = await MembershipService.listOwnerAndAdminsOfGroup(membership.groupId)
+            const validIds = validMemberships.map((membership) => Number(membership.userId))
+
+            if (
+                Number(socket.user.userId) !== (userThatWantsToJoinId) &&
+                !validIds.includes(Number(socket.user.userId))
+            ) {
+                throw new CustomError(
+                    403, 
+                    'Forbidden', 
+                    ['You are not a part of this membership']
+                );
+            }
+
+            // Find out who is going to receive this (user or adm group)
+
+            if (!membership.accepted) {
+                // This means membership is being sent by USER to the ADM_ROOM
+                const roomName = `${membership.groupId}_adm_room`
+                return io.to(roomName).emit('membership', membership)
+
+            } else {
+                // This means membership is being sent by ADM_ROOM to USER
+                const receivingUser = await UserModel.read({by: 'id', data: membership.userId})
+                const socketId = receivingUser.socketId
+                return socket.to(socketId).emit('membership', membership)
+            }
 
         } catch (error) {
             if (error.type === 'model') {
@@ -244,7 +280,7 @@ class SocketService {
 
     }
 
-    static async acceptMembershipRequest(socket, membershipId, io) {
+    /* static async acceptMembershipRequest(socket, membershipId, io) {
 
         try {
 
@@ -284,8 +320,8 @@ class SocketService {
                 throw new CustomError(500, 'Server error', ['Try again later'])
             }
             throw error; // Passing errors to controller
-        }
-    }
+        } */
+    
 }
 
 module.exports = SocketService

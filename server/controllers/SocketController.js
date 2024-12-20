@@ -4,6 +4,7 @@ const SocketService = require('../services/SocketService')
 // Controller
 class SocketController {
 
+    // Online status
     static notifyFriendsOnline = async(socket, io) => {
         
         console.log(`notifying friends of ${socket.user.userId} that he is online`)
@@ -39,8 +40,8 @@ class SocketController {
 
     }
 
-    // Friendship
-    static sendPrivateMessage = async(socket, {messageId}) => {
+    // Private message
+    static privateMessage = async(socket, {messageId}) => {
         try {
             await SocketService.sendPrivateMessage(socket, messageId)
             return;
@@ -51,9 +52,10 @@ class SocketController {
 
     }
 
-    static sendFriendRequest = async(socket, {friendshipId}) => {
+    // Friendship
+    static handleFriendship = async(socket, {friendshipId}) => {
         try {
-            await SocketService.sendFriendRequest(socket, friendshipId)
+            await SocketService.friendship(socket, friendshipId)
             return;
         } catch (error) {
             // Add error logger here
@@ -62,16 +64,6 @@ class SocketController {
 
     }
 
-    static acceptFriendRequest = async(socket, {friendshipId}) => {
-        try {
-            await SocketService.acceptFriendRequest(socket, friendshipId)
-            return;
-        } catch (error) {
-            // Add error logger here
-            return socket.emit('error', error)
-        } 
-
-    }
 
     // Groups
     static enterAdmRoom = async(socket, {groupId}) => {
@@ -97,9 +89,9 @@ class SocketController {
     }
 
     // Membership
-    static sendMembershipRequest = async(socket, io, {membershipId}) => {
+    static handleMembership = async(socket, io, {membershipId}) => {
         try {
-            await SocketService.sendMembershipRequest(socket, membershipId, io)
+            await SocketService.membership(socket, membershipId, io)
             return;
         } catch (error) {
             // Add error logger here
@@ -108,16 +100,6 @@ class SocketController {
 
     }
 
-    static acceptMembershipRequest = async(socket, io, {membershipId}) => {
-        try {
-            await SocketService.acceptMembershipRequest(socket, membershipId, io)
-            return;
-        } catch (error) {
-            // Add error logger here
-            return socket.emit('error', error)
-        } 
-
-    }
 }
 
 module.exports = SocketController

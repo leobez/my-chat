@@ -36,6 +36,26 @@ const validateRole = async(userId, groupId) => {
 // Service
 class MembershipService {
 
+    // List admins and owners of a group
+    // Used in Socketservice
+    static async listOwnerAndAdminsOfGroup(groupId) {
+        try {
+
+            const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
+            const validMemberships = memberships.filter((membership) => membership.role==='owner'||membership.role==='admin')
+
+            return validMemberships
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+
+            throw error; // Passing errors to controller
+        }
+    }
+
     static async listAllMemberships() {
         try {
 

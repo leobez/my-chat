@@ -161,6 +161,7 @@ class GroupService {
             throw error; // Passing errors to controller
         }
     }
-}
+
+}  
 
 module.exports = GroupService

@@ -230,6 +230,7 @@ db.serialize(() => {
         user1@email.com   123     
         user2@email.com   123
         user3@email.com   123
+        user4@email.com   123
     */
     db.run(`
         
@@ -267,6 +268,19 @@ db.serialize(() => {
             console.log('Error while inserting test data: ', err.message)
         } else {
             console.log('Test data added to database: user3@email.com, user3, 123')
+        }
+    }),
+
+    db.run(`
+        
+        INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+
+    `, ['user4@email.com', 'user4', hash], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added to database: user4@email.com, user4, 123')
         }
     }),
 

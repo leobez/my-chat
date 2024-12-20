@@ -156,8 +156,8 @@ class MembershipService {
                 }
             }
 
-            // Validate that group hasnt reached maximum capacity yet (max: 100) // STILL HAS TO TEST THIS
-            const maximumGroupLength = 3
+            // Validate that group hasnt reached maximum capacity yet (max: 100)
+            const maximumGroupLength = 5
             const groupMemberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
             const acceptedGroupMemberships = groupMemberships.filter((membership) => membership.accepted)   
 

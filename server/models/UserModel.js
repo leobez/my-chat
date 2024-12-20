@@ -69,7 +69,6 @@ class  UserModel {
 
     }
 
-    // BEING USED IN: WSMAPMIDDLEWARE, SOCKERSERVICE, USERSERVICE
     static update({fieldsToBeUpdated=[], newData=[], whereUserId}) {
 
         if (!fieldsToBeUpdated.length) return;

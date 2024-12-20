@@ -37,6 +37,11 @@ class MembershipModel {
             nData = [data]
         }
 
+        if (by === 'userId and groupId') {
+            query = 'SELECT * FROM Membership WHERE userId = ? AND groupId = ?'
+            nData = [data[0], data[1]]
+        }
+
         if (by === 'membershipId') {
             query = 'SELECT * FROM Membership WHERE membershipId = ?'
             nData = [data]

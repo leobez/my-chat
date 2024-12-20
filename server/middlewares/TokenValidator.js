@@ -22,7 +22,7 @@ const tokenValidator = async (req, res, next) => {
             })
         }
 
-        if (
+/*         if (
             userFromDb.userId !== userDecoded.userId ||
             userFromDb.email !== userDecoded.email ||
             userFromDb.username !== userDecoded.username ||
@@ -32,7 +32,7 @@ const tokenValidator = async (req, res, next) => {
                 message: 'Unauthorized',
                 details: ['User decoded from JWT is not the same as the on in the database']
             })
-        }
+        } */
         
         req.user = userDecoded
         next()

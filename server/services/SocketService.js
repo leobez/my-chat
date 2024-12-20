@@ -1,6 +1,7 @@
 const FriendshipModel = require("../models/FriendshipModel");
 const MessageModel = require("../models/MessageModel");
 const UserModel = require("../models/UserModel");
+const MembershipModel = require("../models/MembershipModel");
 
 const CustomError = require("../utils/CustomError");
 
@@ -58,6 +59,7 @@ class SocketService {
         }
     }
 
+    // Friendship
     static async sendPrivateMessage(socket, messageId) {
 
         try {
@@ -146,6 +148,135 @@ class SocketService {
             if (!receivingUser.socketId) throw new CustomError(404, 'Not found', ['User thats receiving the request isnt logged at this moment']);
 
             return socket.to(receivingUser.socketId).emit('accept friend request', friendship)
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+            throw error; // Passing errors to controller
+        }
+    }
+
+    // Group
+    static async enterAdmRoom(socket, groupId) {
+
+        try {
+
+            // Validate that socket.user.userId is a owner or admin of groupId
+            const membership = await MembershipModel.read({
+                by: 'userId and groupId', 
+                data: [socket.user.userId, groupId]
+            })
+
+            if (!membership) throw new CustomError(403, 'Forbidden', ['You are not a member of this group'])
+            
+            if (membership.role !== 'owner' && membership.role !== 'admin') {
+                throw new CustomError(403, 'Forbidden', ['You are not an owner or admin of this group'])
+            }
+
+            // If is valid
+            socket.join(`${groupId}_adm_room`)
+            return true
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+            throw error; // Passing errors to controller
+        }
+
+    }
+
+    static async enterUserRoom(socket, groupId) {
+
+        try {
+
+            // Validate that socket.user.userId is a owner or admin of groupId
+            const membership = await MembershipModel.read({
+                by: 'userId and groupId', 
+                data: [socket.user.userId, groupId]
+            })
+
+            if (!membership) throw new CustomError(403, 'Forbidden', ['You are not a member of this group'])
+
+            // If is valid
+            socket.join(`${groupId}_user_room`)
+            return true
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+            throw error; // Passing errors to controller
+        }
+
+    }
+
+    // Membership
+    static async sendMembershipRequest(socket, membershipId, io) {
+
+        try {
+
+            // Validate that membershipId exists
+            const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
+            if (!membership) throw new CustomError(404, 'Not found', ['Membership request with this id was not found']);
+
+            // Validate that this was sent by user thats in this membership request (userId)
+            if (Number(membership.userId) !== socket.user.userId) {
+                throw new CustomError(403, 'Forbidden', ['This membership request was not sent by you']);
+            }
+
+            // Send membership request to the adm room of membership.groupId
+            const roomName = `${membership.groupId}_adm_room`
+
+            io.to(roomName).emit('membership request', membership)
+
+        } catch (error) {
+            if (error.type === 'model') {
+                // Add error logger here
+                throw new CustomError(500, 'Server error', ['Try again later'])
+            }
+            throw error; // Passing errors to controller
+        }
+
+    }
+
+    static async acceptMembershipRequest(socket, membershipId, io) {
+
+        try {
+
+            // Validate that membershipId exists
+            const membership = await MembershipModel.read({by: 'membershipId', data: membershipId})
+            if (!membership) throw new CustomError(404, 'Not found', ['Membership request with this id was not found']);
+
+            // Validate that user thats accepting this has the privilege to do so
+            const userThatsAccepting = socket.user.userId
+
+            // Has to be an owner or admin of membership.groupId
+            const userThatsAcceptingMembership = await MembershipModel.read({
+                by: 'userId and groupId', 
+                data: [userThatsAccepting, membership.groupId]
+            })
+
+            if (!userThatsAcceptingMembership) {
+                throw new CustomError(403, 'Forbidden', ['You are not a member of this group'])
+            }
+            
+            if (userThatsAcceptingMembership.role !== 'owner' && userThatsAcceptingMembership.role !== 'admin') {
+                throw new CustomError(403, 'Forbidden', ['You are not an owner or admin of this group'])
+            }
+
+            // Find socketId of user that sent request to be a part of group
+            const userThatSentRequest = await UserModel.read({by: 'id', data: membership.userId})
+
+            if (!userThatSentRequest) {
+                throw new CustomError(404, 'Not found', ['User that sent this request does not exist anymore'])
+            }
+
+            return socket.to(userThatSentRequest.socketId).emit('accepted membership request', membership)
 
         } catch (error) {
             if (error.type === 'model') {

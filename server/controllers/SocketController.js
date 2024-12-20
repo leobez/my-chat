@@ -39,6 +39,7 @@ class SocketController {
 
     }
 
+    // Friendship
     static sendPrivateMessage = async(socket, {messageId}) => {
         try {
             await SocketService.sendPrivateMessage(socket, messageId)
@@ -72,6 +73,51 @@ class SocketController {
 
     }
 
+    // Groups
+    static enterAdmRoom = async(socket, {groupId}) => {
+        try {
+            await SocketService.enterAdmRoom(socket, groupId)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        } 
+
+    }
+
+    static enterUserRoom = async(socket, {groupId}) => {
+        try {
+            await SocketService.enterUserRoom(socket, groupId)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        } 
+
+    }
+
+    // Membership
+    static sendMembershipRequest = async(socket, io, {membershipId}) => {
+        try {
+            await SocketService.sendMembershipRequest(socket, membershipId, io)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        } 
+
+    }
+
+    static acceptMembershipRequest = async(socket, io, {membershipId}) => {
+        try {
+            await SocketService.acceptMembershipRequest(socket, membershipId, io)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        } 
+
+    }
 }
 
 module.exports = SocketController

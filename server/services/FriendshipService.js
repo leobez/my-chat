@@ -1,6 +1,5 @@
 // Models
 const FriendshipModel = require('../models/FriendshipModel')
-const MessageModel = require('../models/MessageModel')
 const UserModel = require('../models/UserModel')
 
 const CustomError = require('../utils/CustomError')

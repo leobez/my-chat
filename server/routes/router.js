@@ -6,6 +6,7 @@ router.use('/api/message', require('./messageRouter'))
 router.use('/api/friendship', require('./friendshipRouter'))
 router.use('/api/group', require('./groupRouter'))
 router.use('/api/membership', require('./membershipRouter'))
+router.use('/api/groupMessage', require('./groupMessageRouter'))
 
 // TEST ROUTE
 router.get('/', (req, res) => {

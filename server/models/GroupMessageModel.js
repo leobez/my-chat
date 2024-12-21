@@ -32,6 +32,11 @@ class  GroupMessageModel {
             nData = [data]
         }
 
+        if (by === 'id') {
+            query = 'SELECT * FROM GroupMessages WHERE groupMessageId = ?'
+            nData = [data]
+        }
+
         if (!query) return;
 
         // Get multiple lines

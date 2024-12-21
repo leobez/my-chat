@@ -85,6 +85,11 @@ const handleWsRoutes = (io) => {
             SocketController.privateMessage(socket, messageId)
         })
 
+        // GroupMessage events
+        socket.on('group message', (groupMessageId) => {
+            SocketController.groupMessage(socket, io, groupMessageId)
+        })
+
         // Friendship event
         socket.on('friendship', (friendshipId) => {
             return SocketController.handleFriendship(socket, friendshipId)

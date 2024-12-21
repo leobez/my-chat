@@ -52,6 +52,17 @@ class SocketController {
 
     }
 
+    // Group message
+    static groupMessage = async(socket, io, {groupMessageId}) => {
+        try {
+            await SocketService.sendGroupMessage(socket, groupMessageId, io)
+            return;
+        } catch (error) {
+            // Add error logger here
+            return socket.emit('error', error)
+        } 
+    }
+
     // Friendship
     static handleFriendship = async(socket, {friendshipId}) => {
         try {

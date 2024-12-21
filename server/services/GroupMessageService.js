@@ -2,8 +2,6 @@
 const GroupMessageModel = require('../models/GroupMessageModel')
 const GroupModel = require('../models/GroupModel')
 const MembershipModel = require('../models/MembershipModel')
-const MessageModel = require('../models/MessageModel')
-const UserModel = require('../models/UserModel')
 
 const CustomError = require('../utils/CustomError')
 
@@ -49,7 +47,7 @@ class GroupMessageService {
             // Validate that user can see this history
             const membership = await MembershipModel.read({by: 'userId and groupId', data: [data.userId, data.groupId]})
             if (!membership) throw new CustomError(403, 'Forbidden', ['You are not a member of this group'])
-                
+
              // Validate that user is accepted in this group
             if (!membership.accepted) throw new CustomError(403, 'Forbidden', ['You are not accepted in this group'])
 

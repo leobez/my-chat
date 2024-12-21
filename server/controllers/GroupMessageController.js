@@ -1,7 +1,6 @@
 // Service
 const GroupMessageService = require('../services/GroupMessageService')
 
-
 // Controller
 class GroupMessageController {
 

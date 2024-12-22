@@ -9,8 +9,25 @@ const CustomError = require("../utils/CustomError");
 
 // Services
 const FriendshipService = require("./FriendshipService");
-const MembershipService = require("./MembershipService");
 const GroupModel = require("../models/GroupModel");
+
+
+// List admins and owners of a group
+// Used in Socketservice
+const listOwnerAndAdminsOfGroup = async(groupId) => {
+    try {
+        const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
+        const validMemberships = memberships.filter((membership) => membership.role==='owner'||membership.role==='admin')
+        return validMemberships
+    } catch (error) {
+        if (error.type === 'model') {
+            // Add error logger here
+            throw new CustomError(500, 'Server error', ['Try again later'])
+        }
+
+        throw error; // Passing errors to controller
+    }
+}
 
 class SocketService {
 
@@ -282,9 +299,8 @@ class SocketService {
             // User that wants to join group
             // Owner of the group
             // Admin of the group
-
             const userThatWantsToJoinId = membership.userId
-            const validMemberships = await MembershipService.listOwnerAndAdminsOfGroup(membership.groupId)
+            const validMemberships = await listOwnerAndAdminsOfGroup(membership.groupId)
             const validIds = validMemberships.map((membership) => Number(membership.userId))
 
 
@@ -314,6 +330,7 @@ class SocketService {
             }
 
         } catch (error) {
+            console.log('error: ', error)
             if (error.type === 'model') {
                 // Add error logger here
                 throw new CustomError(500, 'Server error', ['Try again later'])

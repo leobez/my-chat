@@ -40,26 +40,6 @@ const validateRole = async(userId, groupId) => {
 // Service
 class MembershipService {
 
-    // List admins and owners of a group
-    // Used in Socketservice
-    static async listOwnerAndAdminsOfGroup(groupId) {
-        try {
-
-            const memberships = await MembershipModel.read({by: 'groupId', all: true, data: groupId})
-            const validMemberships = memberships.filter((membership) => membership.role==='owner'||membership.role==='admin')
-
-            return validMemberships
-
-        } catch (error) {
-            if (error.type === 'model') {
-                // Add error logger here
-                throw new CustomError(500, 'Server error', ['Try again later'])
-            }
-
-            throw error; // Passing errors to controller
-        }
-    }
-
     static async listAllMemberships() {
         try {
 
@@ -422,7 +402,22 @@ class MembershipService {
                 data: newRole, 
                 membershipId: membershipId
             })
-            
+
+            // Also remove user from ws adm room in case he is there
+            if (newRole === 'user') {
+                // 1. Get user socketId
+                const user = await UserModel.read({by: 'id', data: membership.userId})
+                const socketId = user.socketId
+
+                // 2. Get user socket and io instance
+                const io = getIO()
+                const roomName = `${membership.groupId}_adm_room`
+                const targetSocket = io.sockets.sockets.get(socketId)
+
+                // 3. Leave room
+                if (targetSocket) targetSocket.leave(roomName)
+            }
+
             return updatedMembership
 
         } catch (error) {

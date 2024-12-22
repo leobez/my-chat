@@ -121,7 +121,6 @@ class SocketService {
             // Emit message to room
             io.to(roomName).emit('group message', groupMessage)
 
-
         } catch (error) {
             if (error.type === 'model') {
                 // Add error logger here

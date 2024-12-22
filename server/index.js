@@ -45,18 +45,10 @@ app.use(apiRouter)
 
 // WEBSOCKET
 const http = require('node:http')
-const socketIO = require('socket.io')
-
 const httpServer = http.createServer(app) // implement HTTP server to support websockets
-const io = new socketIO.Server(httpServer, {
-    connectionStateRecovery: {
-        maxDisconnectionDuration: 2*60*1000
-    }
-})
 
-const {handleWsMiddlewares, handleWsRoutes} = require('./utils/handleWs')
-handleWsMiddlewares(io)
-handleWsRoutes(io)
+const { initSocket } = require('./socketHandler')
+initSocket(httpServer)
 
 httpServer.listen(PORT, () => {
     console.log(`SERVER ON ${PORT}`)

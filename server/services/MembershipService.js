@@ -2,8 +2,12 @@
 const MembershipModel = require('../models/MembershipModel')
 const GroupModel = require('../models/GroupModel')
 
+// io
+const {getIO} = require('../socketHandler')
+
 // Custom error
 const CustomError = require('../utils/CustomError')
+const UserModel = require('../models/UserModel')
 
 // Validate group existence
 const validateGroup = async(groupId) => {
@@ -348,6 +352,19 @@ class MembershipService {
 
             // Delete from database (current only solution)
             await MembershipModel.delete(membershipId)
+
+            // Also remove user from ws chat room in case he is there
+            // 1. Get user socketId
+            const user = await UserModel.read({by: 'id', data: membership.userId})
+            const socketId = user.socketId
+
+            // 2. Get user socket and io instance
+            const io = getIO()
+            const roomName = `${membership.groupId}_user_room`
+            const targetSocket = io.sockets.sockets.get(socketId)
+
+            // 3. Leave room
+            if (targetSocket) targetSocket.leave(roomName)
 
             return revokedMembership
     

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useGetAllUsers } from '../hooks/useGetAllUsers'
+import { useGetAllUsers } from '../hooks/userHooks/useGetAllUsers'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 

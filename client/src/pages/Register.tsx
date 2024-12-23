@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import FeedbackMessage from '../components/FeedbackMessage'
-import { useRegister } from '../hooks/useRegister'
+import { useRegister } from '../hooks/userHooks/useRegister'
 
 const Register = () => {
 

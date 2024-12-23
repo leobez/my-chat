@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/Logout';
 import Chat from './pages/Chat';
-import { useGetMe } from './hooks/useGetMe';
+import { useGetMe } from './hooks/userHooks/useGetMe';
 import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
 

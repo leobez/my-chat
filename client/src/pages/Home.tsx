@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom";
-import { useGetAllUsers } from "../hooks/useGetAllUsers";
+import { useGetAllUsers } from "../hooks/userHooks/useGetAllUsers";
 import SocketContext, { SocketContextType } from "../context/SocketContext";
 
 

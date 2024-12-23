@@ -1,20 +1,22 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { loginReducer } from "../slices/authSlice"
+import { loginReducer } from "../../slices/authSlice"
 
 const API_URL = "http://localhost:3000/api/user"
 
-export const useLogin = () => {
+export const useRegister = () => {
 
     const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
-    const login = async(email:string, password:string) => {
+    const register = async(email:string, username:string, password:string) => {
+        
+        setServerSideFeedback([])
 
         try {
 
-            const url = `${API_URL}/login`
+            const url = `${API_URL}/register`
 
             setLoading(true)
 
@@ -25,9 +27,10 @@ export const useLogin = () => {
                 },
                 body: JSON.stringify({
                     email: email,
+                    username:username,
                     password: password
                 }),
-                credentials: 'include' // VERY IMPORTANT -> ALLOWS TO SEND/SAVE COOKIES (SESSION TOKEN IS STORED THERE)
+                credentials: 'include'
             })
 
             const data = await response.json()
@@ -43,9 +46,9 @@ export const useLogin = () => {
                 }
                 return;
             }
-            
-            // User sent valid info to backend. Log him in on frontend.
-            if (data.message === 'User logged') {
+
+            // User was succesfully created on backend. Login him automatically.
+            if (data.message === 'User created') {
                 dispatch(loginReducer(
                     {
                         userId: data.data.id,
@@ -54,20 +57,19 @@ export const useLogin = () => {
                     }
                 ))
                 return;
-                
             } else {
                 // If code got here, something is wrong with server
                 throw new Error(`Missing code`)
             }
 
         } catch (error:any) {
-            console.log(error)
+            console.log('Error: ', error)
             setLoading(false)
         }
     }
 
     return {
-        login,
+        register,
         serverSideFeedback,
         loading
     }

@@ -1,9 +1,9 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
-import { useGetById } from '../hooks/useGetById';
-import { useSendMessage } from '../hooks/useSendMessage';
-import { useGetHistory } from '../hooks/useGetHistory';
+import { useGetById } from '../hooks/userHooks/useGetUserById';
+import { useSendMessage } from '../hooks/messageHooks/useSendMessage';
+import { useGetHistory } from '../hooks/messageHooks/useGetHistory';
 import SocketContext, { SocketContextType } from '../context/SocketContext';
 
 

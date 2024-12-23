@@ -10,29 +10,26 @@ import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/auth/Logout';
 import Chat from './pages/Chat';
-import { useGetMe } from './hooks/userHooks/useGetMe';
+import { useGetMe } from './hooks/userHooks/auth/useGetMe';
 import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
 
 
 function App() {
 
-    const [loadingTestLogin, setLoadingTestLogin] = useState(true)
-
-    const {me} = useGetMe()
+    const {me, loading} = useGetMe()
 
     // Verify user auth status (auto login user)
     useEffect(() => {
       const testAuthAsync = async() => {
         await me()
-        setLoadingTestLogin(false)
       }
       testAuthAsync()
     }, [])
 
     const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
 
-    if (loadingTestLogin) {
+    if (loading) {
       return;
     }
 

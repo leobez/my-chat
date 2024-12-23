@@ -3,6 +3,8 @@ import { useSelector } from "react-redux"
 import { Link } from "react-router-dom";
 import { useGetAllUsers } from "../hooks/userHooks/useGetAllUsers";
 import SocketContext, { SocketContextType } from "../context/SocketContext";
+import Chat from "../components/Home/Chat";
+import Selection from "../components/Home/Selection";
 
 
 const Home = () => {
@@ -22,7 +24,7 @@ const Home = () => {
       getAllUsers()
 
       // Initiate connection via websocket
-      connect(userId)
+      /* connect(userId) */
 
     }, [isLogged, userId])
 
@@ -31,19 +33,8 @@ const Home = () => {
       <div className="flex flex-col justify-center">
 
         <div className="flex gap-2">
-
-          {/* FRIENDSLIST */}
-          <div className="border-2 border-black p-2 min-h-96 w-2/6">
-            <p>FRIENDLIST</p>
-            <p>REQUEST SENT</p>
-            <p>REQUEST RECEIVED</p>
-          </div>
-
-          {/* CHAT COMPONENT */}
-          <div className="border-2 border-black p-2 min-h-96 w-4/6">
-            CHAT
-          </div>
-
+          <Selection/>
+          <Chat/>          
         </div>
         
       </div>

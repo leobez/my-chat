@@ -1,20 +1,24 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { loginReducer } from "../../slices/authSlice"
+import { loginReducer } from "../../../slices/authSlice"
 
 const API_URL = "http://localhost:3000/api/user"
 
 export const useGetMe = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
     const me = async() => {
 
+        setServerSideFeedback([])
+
         try {
 
             const url = `${API_URL}/me`
+
+            setLoading(true)
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -25,26 +29,24 @@ export const useGetMe = () => {
             })
 
             const data = await response.json()
+            console.log(data)
+            setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                if (data.message === 'Bad request') {
+                if (data.details) {
                     setServerSideFeedback(data.details)
                 }
                 return;
             }
             
-            if (data.loggedIn) {
-                dispatch(loginReducer(
-                    {
-                        userId: data.data.id,
-                        email: data.data.email,
-                        username: data.data.username
-                    }
-                ))
-            } 
+            dispatch(loginReducer(
+                {
+                    userId: data.data.userId,
+                    email: data.data.email,
+                    username: data.data.username
+                }
+            ))  
 
         } catch (error:any) {
             console.log(error)
@@ -54,6 +56,7 @@ export const useGetMe = () => {
 
     return {
         me,
+        loading,
         serverSideFeedback,
     }
 }

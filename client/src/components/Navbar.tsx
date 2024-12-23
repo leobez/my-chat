@@ -18,7 +18,7 @@ const Navbar = ({isLogged}: Props) => {
                     className={({ isActive, isPending }) =>
                         isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
                     }>
-                    To Login
+                    Login
                     </NavLink>
                 </li> }
 
@@ -26,7 +26,7 @@ const Navbar = ({isLogged}: Props) => {
                     className={({ isActive, isPending }) =>
                         isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
                     }>
-                    To Register
+                    Register
                     </NavLink>
                 </li> }
 
@@ -34,7 +34,7 @@ const Navbar = ({isLogged}: Props) => {
                     className={({ isActive, isPending }) =>
                         isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
                     }>
-                    To Home
+                    Home
                     </NavLink>
                 </li> }
 

@@ -13,7 +13,8 @@ class UserController {
 
             const userInfo = {
                 userId: user.userId,
-                username: user.username
+                email: user.email,
+                username: user.username  
             }
 
             return res.cookie('jwt', token, {
@@ -46,7 +47,8 @@ class UserController {
 
             const userInfo = {
                 userId: user.userId,
-                email: user.email
+                email: user.email,
+                username: user.username
             }
 
             return res.cookie('jwt', token, {

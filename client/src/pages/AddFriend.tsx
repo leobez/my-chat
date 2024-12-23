@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import FeedbackMessage from '../components/FeedbackMessage'
+import FeedbackMessage from '../components/Form/FormFeedback'
 
 type Props = {}
 

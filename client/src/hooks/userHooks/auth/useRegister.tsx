@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { loginReducer } from "../../slices/authSlice"
+import { loginReducer } from "../../../slices/authSlice"
 
 const API_URL = "http://localhost:3000/api/user"
 
@@ -34,33 +34,24 @@ export const useRegister = () => {
             })
 
             const data = await response.json()
-
+            console.log(data)
             setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                if (data.message === 'Bad request') {
+                if (data.details) {
                     setServerSideFeedback(data.details)
                 }
                 return;
             }
 
-            // User was succesfully created on backend. Login him automatically.
-            if (data.message === 'User created') {
-                dispatch(loginReducer(
-                    {
-                        userId: data.data.id,
-                        email: data.data.email,
-                        username: data.data.username
-                    }
-                ))
-                return;
-            } else {
-                // If code got here, something is wrong with server
-                throw new Error(`Missing code`)
-            }
+            dispatch(loginReducer(
+                {
+                    userId: data.data.id,
+                    email: data.data.email,
+                    username: data.data.username
+                }
+            ))
 
         } catch (error:any) {
             console.log('Error: ', error)

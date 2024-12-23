@@ -2,13 +2,13 @@ import './App.css'
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
-import Logout from './pages/Logout';
+import Logout from './pages/auth/Logout';
 import Chat from './pages/Chat';
 import { useGetMe } from './hooks/userHooks/useGetMe';
 import Navbar from './components/Navbar';

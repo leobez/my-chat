@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { loginReducer } from "../../slices/authSlice"
+import { loginReducer } from "../../../slices/authSlice"
 
 const API_URL = "http://localhost:3000/api/user"
 
@@ -11,6 +11,8 @@ export const useLogin = () => {
     const dispatch = useDispatch()
 
     const login = async(email:string, password:string) => {
+        
+        setServerSideFeedback([])
 
         try {
 
@@ -31,34 +33,25 @@ export const useLogin = () => {
             })
 
             const data = await response.json()
-
+            console.log(data)
             setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                if (data.message === 'Bad request') {
+                if (data.details) {
                     setServerSideFeedback(data.details)
                 }
                 return;
             }
             
             // User sent valid info to backend. Log him in on frontend.
-            if (data.message === 'User logged') {
-                dispatch(loginReducer(
-                    {
-                        userId: data.data.id,
-                        email: data.data.email,
-                        username: data.data.username
-                    }
-                ))
-                return;
-                
-            } else {
-                // If code got here, something is wrong with server
-                throw new Error(`Missing code`)
-            }
+            dispatch(loginReducer(
+                {
+                    userId: data.data.userId,
+                    email: data.data.email,
+                    username: data.data.username
+                }
+            ))                
 
         } catch (error:any) {
             console.log(error)

@@ -1,16 +1,18 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { logoutReducer } from "../../slices/authSlice"
+import { logoutReducer } from "../../../slices/authSlice"
 
 const API_URL = "http://localhost:3000/api/user"
 
 export const useLogout = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
     const logout = async() => {
+
+        setServerSideFeedback([])
 
         try {
 
@@ -27,24 +29,19 @@ export const useLogout = () => {
             })
 
             const data = await response.json()
-
-            setLoading(true)
+            console.log(data)
+            setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                throw new Error(`${data.details[0]}`)
+                if (data.details) {
+                    setServerSideFeedback(data.details)
+                }
+                return;
             }
 
             // User sent valid info to backend. Log him out on frontend.
-            if (data.message === 'User logged out') {
-                dispatch(logoutReducer())
-                return;
-            }
-            
-            // If code got here, something is wrong with server
-            throw new Error(`Missing code`)
+            dispatch(logoutReducer())
 
         } catch (error:any) {
             console.log(error)

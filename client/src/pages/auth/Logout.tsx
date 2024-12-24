@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
-import { useLogout } from "../../hooks/userHooks/auth/useLogout"
+import { useLogout } from "../../hooks/authHooks/useLogout"
 
 const Logout = () => {
 

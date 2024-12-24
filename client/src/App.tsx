@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/auth/Logout';
-import { useGetMe } from './hooks/userHooks/auth/useGetMe';
+import { useGetMe } from './hooks/authHooks/useGetMe';
 import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
 

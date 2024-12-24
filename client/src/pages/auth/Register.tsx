@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useRegister } from '../../hooks/userHooks/auth/useRegister'
+import { useRegister } from '../../hooks/authHooks/useRegister'
 import Form from '../../components/Form/Form'
 
 const Register = () => {

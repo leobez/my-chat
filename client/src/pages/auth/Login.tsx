@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useLogin } from '../../hooks/userHooks/auth/useLogin'
+import { useLogin } from '../../hooks/authHooks/useLogin'
 import Form from '../../components/Form/Form'
 
 const Login = () => {

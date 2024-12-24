@@ -80,7 +80,7 @@ class UserController {
             maxAge: 0,
         }).status(200).json({
             message: 'User logged out', 
-            details: ['Session token got removed from cookies']
+            data: ['Session token got removed from cookies']
         })
 
     }

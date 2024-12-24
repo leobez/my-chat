@@ -2,12 +2,15 @@ import { useState } from "react"
 
 const API_URL = "http://localhost:3000/api/user"
 
-export const useGetById = () => {
+export const useGetUserById = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
     const [userData, setUserData] = useState<any>()
 
-    const getUserById = async(id:string) => {
+    const getUserById = async(id:string|number) => {
+
+        setServerSideFeedback([])
 
         try {
 
@@ -22,27 +25,29 @@ export const useGetById = () => {
             })
 
             const data = await response.json()
+            console.log(data)
+            setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                throw new Error(`${data.details[0]}`)
+                if (data.details) {
+                    setServerSideFeedback(data.details)
+                }
+                return;
             }
 
             setUserData(data.data)
 
         } catch (error:any) {
             console.log(error)
-            if (error.message) {
-                setServerSideFeedback(error.message)
-            }
+            setLoading(false)
         }
     }
 
     return {
         getUserById,
         userData,
+        loading,
         serverSideFeedback,
     }
 }

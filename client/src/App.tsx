@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/auth/Logout';
-import Chat from './pages/Chat';
 import { useGetMe } from './hooks/userHooks/auth/useGetMe';
 import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
@@ -49,7 +48,6 @@ function App() {
 
             {/* MUST BE LOGGED TO ACCESS */}
             <Route path="/logout" element={isLogged ? <Logout/> : <Navigate to="/login"/>}/>
-            <Route path="/chat/:id" element={isLogged ? <Chat/> : <Navigate to="/login"/>}/>
             <Route path="/" element={isLogged ? <Home/> : <Navigate to="/login"/>}/>
             <Route path="/add" element={isLogged ? <AddFriend/> : <Navigate to="/login"/>}/>
 

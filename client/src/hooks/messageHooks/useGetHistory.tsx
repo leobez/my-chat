@@ -4,18 +4,21 @@ const API_URL = "http://localhost:3000/api/message"
 
 export const useGetHistory = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
     const [history, setHistory] = useState<any[]>([])
 
     useEffect(() => {
         console.log('history: ', history)
     }, [history])
 
-    const getHistoryWithThisUser = async(id:string) => {
+    const getHistoryWithThisUser = async(id:string|number) => {
+
+        setServerSideFeedback([])
 
         try {
 
-            const url = `${API_URL}/with?user=${id}`
+            const url = `${API_URL}/history/${id}`
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -26,22 +29,22 @@ export const useGetHistory = () => {
             })
 
             const data = await response.json()
+            console.log(data)
+            setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                throw new Error(`${data.details[0]}`)
+                if (data.details) {
+                    setServerSideFeedback(data.details)
+                }
+                return;
             }
 
-            console.log('history: ', data.data)
             setHistory(data.data)
 
         } catch (error:any) {
             console.log(error)
-            if (error.message) {
-                setServerSideFeedback(error.message)
-            }
+            setLoading(false)
         }
     }
 
@@ -54,6 +57,7 @@ export const useGetHistory = () => {
         getHistoryWithThisUser,
         addToHistory,
         history,
+        loading,
         serverSideFeedback,
     }
 }

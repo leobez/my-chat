@@ -1,6 +1,5 @@
 import { useContext, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Link } from "react-router-dom";
 import { useGetAllUsers } from "../hooks/userHooks/useGetAllUsers";
 import SocketContext, { SocketContextType } from "../context/SocketContext";
 import Chat from "../components/Home/Chat";
@@ -12,8 +11,7 @@ const Home = () => {
     const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
     const userId = useSelector((state:any) => state.auth.userId)
 
-    const {usersList, getAllUsers} = useGetAllUsers()
-    const {connect} = useContext(SocketContext) as SocketContextType
+    /* const {connect} = useContext(SocketContext) as SocketContextType */
 
     useEffect(() => {
 
@@ -21,7 +19,7 @@ const Home = () => {
       if (!isLogged) return;
 
       // Get all users from DB
-      getAllUsers()
+      /* getAllUsers() */
 
       // Initiate connection via websocket
       /* connect(userId) */

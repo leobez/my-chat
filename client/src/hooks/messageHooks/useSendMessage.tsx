@@ -4,13 +4,16 @@ const API_URL = "http://localhost:3000/api/message"
 
 export const useSendMessage = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<string|null>("")
+    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
 
-    const sendMessage = async(message:string, from:string, to:string) => {
+    const sendMessage = async(message:string, to:string|number) => {
+
+        setServerSideFeedback([])
 
         try {
 
-            const url = `${API_URL}`
+            const url = `${API_URL}/${to}`
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -19,33 +22,33 @@ export const useSendMessage = () => {
                 },
                 body: JSON.stringify({
                     content: message,
-                    from: from,
-                    to: to
                 }),
                 credentials: 'include'
             })
 
             const data = await response.json()
+            console.log(data)
+            setLoading(false)
 
             // Resonse code not between 200 - 299
             if (!response.ok) {
-                console.log('All details: ', data.details)
-                console.log('Error Message: ', data.message)
-                throw new Error(`${data.details[0]}`)
+                if (data.details) {
+                    setServerSideFeedback(data.details)
+                }
+                return;
             }
 
             return data.data
 
         } catch (error:any) {
             console.log(error)
-            if (error.message) {
-                setServerSideFeedback(error.message)
-            }
+            setLoading(false)
         }
     }
 
     return {
         serverSideFeedback,
+        loading,
         sendMessage
     }
 }

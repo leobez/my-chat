@@ -1,5 +1,5 @@
 import { FaUser } from "react-icons/fa";
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useGetFriends } from "../../hooks/friendshipHooks/useGetFriends"
 import { useGetReceivedFriendsRequests } from "../../hooks/friendshipHooks/useGetReceivedFriendRequests";
 import { useGetSentFriendsRequests } from "../../hooks/friendshipHooks/useGetSentFriendRequests";
@@ -7,14 +7,21 @@ import { MdExpandMore } from "react-icons/md";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
+import { setChat } from "../../slices/chatSlice";
+import { useDispatch } from "react-redux";
 
-type Props = {}
 
-const SelectionFriends = (props: Props) => {
+const SelectionFriends = () => {
 
     const {getFriends, friendsList} = useGetFriends()
     const {getReceivedFriendsRequests, requests:receivedRequests} = useGetReceivedFriendsRequests()
     const {getSentFriendsRequests, requests:sentRequests} = useGetSentFriendsRequests()
+    const [chattingWith, setChattingWith] = useState('')
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(setChat({type: 'friend', id: chattingWith}))    
+    }, [chattingWith])
 
     useEffect(() => {
         getFriends()
@@ -39,7 +46,7 @@ const SelectionFriends = (props: Props) => {
 
                     {friendsList.map((friend) => (
                         <li key={friend.userId} className="w-full">
-                            <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg">
+                            <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg" onClick={() => setChattingWith(friend.userId)}>
                                 <FaUser size={20}/>
                                 {friend.username}
                             </button>

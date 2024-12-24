@@ -74,8 +74,24 @@ class FriendshipService {
 
         try {
 
+            // Get all sent requests
             const sentRequests = await FriendshipModel.read({by: 'sent', all:true, data: userId})
-            return sentRequests
+            let onlyNotAcceptedOnes = sentRequests.filter((request) => !request.accepted)
+
+            // Get the user that we are sending the request to (so it can be returned to user)
+            let arrAppended = []
+            for (let a=0; a<onlyNotAcceptedOnes.length; a++) {
+                let user = await UserModel.read({by: 'id', data: onlyNotAcceptedOnes[a].to_user})
+                arrAppended.push({
+                    ...onlyNotAcceptedOnes[a],
+                    user: {
+                        userId: user.userId,
+                        username: user.username
+                    }
+                })
+            }
+
+            return arrAppended
 
         } catch (error) {
 
@@ -94,7 +110,22 @@ class FriendshipService {
         try {
 
             const receivedRequests = await FriendshipModel.read({by: 'received', all:true, data: userId})
-            return receivedRequests
+            let onlyNotAcceptedOnes = receivedRequests.filter((request) => !request.accepted)
+
+            // Get the user that we are sending the request to (so it can be returned to user)
+            let arrAppended = []
+            for (let a=0; a<onlyNotAcceptedOnes.length; a++) {
+                let user = await UserModel.read({by: 'id', data: onlyNotAcceptedOnes[a].from_user})
+                arrAppended.push({
+                    ...onlyNotAcceptedOnes[a],
+                    user: {
+                        userId: user.userId,
+                        username: user.username
+                    }
+                })
+            }
+
+            return arrAppended
 
         } catch (error) {
 

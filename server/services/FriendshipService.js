@@ -84,7 +84,7 @@ class FriendshipService {
                 let user = await UserModel.read({by: 'id', data: onlyNotAcceptedOnes[a].to_user})
                 arrAppended.push({
                     ...onlyNotAcceptedOnes[a],
-                    user: {
+                    user_that_receive: {
                         userId: user.userId,
                         username: user.username
                     }
@@ -118,7 +118,7 @@ class FriendshipService {
                 let user = await UserModel.read({by: 'id', data: onlyNotAcceptedOnes[a].from_user})
                 arrAppended.push({
                     ...onlyNotAcceptedOnes[a],
-                    user: {
+                    user_that_sent: {
                         userId: user.userId,
                         username: user.username
                     }

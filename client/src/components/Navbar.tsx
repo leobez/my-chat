@@ -16,7 +16,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { !isLogged && <li><NavLink to="/login" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white p-2 rounded-lg" : "p-2 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
                     }>
                     Login
                     </NavLink>
@@ -24,7 +24,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { !isLogged && <li><NavLink to="/register" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white p-2 rounded-lg" : "p-2 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
                     }>
                     Register
                     </NavLink>
@@ -32,7 +32,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { isLogged && <li><NavLink to="/" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white p-2 rounded-lg" : "p-2 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
                     }>
                     Home
                     </NavLink>
@@ -40,7 +40,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { isLogged && <li><NavLink to="/add" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-gray-300 cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white p-2 rounded-lg" : "p-2 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
                     }>
                     Add a friend
                     </NavLink>
@@ -48,7 +48,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { isLogged && <li><NavLink to="/logout" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-gray-300 p-2 rounded-lg" : "p-2 rounded-lg hover:bg-red-700 hover:text-white cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white p-2 rounded-lg" : "p-2 rounded-lg hover:bg-red-700 hover:text-white cursor-pointer duration-200"
                     }>
                     Logout
                     </NavLink>

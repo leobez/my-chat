@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useDispatch } from "react-redux"
 
 const API_URL = "http://localhost:3000/api/friendship"
 

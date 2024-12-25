@@ -164,10 +164,11 @@ class FriendshipController {
                 friendshipId: friendshipId
             }
 
-            await FriendshipService.denyFriendRequest(friendshipData)
+            const deniedFriendship = await FriendshipService.denyFriendRequest(friendshipData)
 
             return res.status(201).json({
                 message: 'Friendship denied',
+                data: deniedFriendship
             })
 
         } catch (error) {

@@ -16,7 +16,7 @@ export const useLogout = () => {
         const result = await AuthService.logout()
         setLoading(false)
 
-        if (!result.success && result.details) setFeedback(result.details)
+        if (!result.success && result.details) return setFeedback(result.details)
 
         dispatch(logoutUser())    
     }

@@ -16,7 +16,7 @@ export const useLogin = () => {
         const result = await AuthService.login(data)
         setLoading(false)
 
-        if (!result.success && result.details) setFeedback(result.details)
+        if (!result.success && result.details) return setFeedback(result.details)
 
         dispatch(loginUser(
             {

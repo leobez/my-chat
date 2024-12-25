@@ -1,35 +1,28 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { loginUser } from "../../slices/authSlice"
-import AuthService from "../../services/AuthService"
+import FriendshipService from "../../services/FriendshipService"
+import { setFriend } from "../../slices/friendshipSlice"
 
-export const useGetMe = () => {
+export const useListFriends = () => {
 
     const [feedback, setFeedback] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
 
-    const me = async() => {
-
+    const listFriends = async() => {
+        
         setFeedback([])
         setLoading(true)
-        const result = await AuthService.profile()
+        const result = await FriendshipService.listFriends()
         setLoading(false)
 
         if (!result.success && result.details) return setFeedback(result.details)
-        
-        dispatch(loginUser(
-            {
-                userId: result.data.userId,
-                email: result.data.email,
-                username: result.data.username
-            }
-        ))     
 
+        dispatch(setFriend(result.data))
     }
 
     return {
-        me,
+        listFriends,
         feedback,
         loading,
     }

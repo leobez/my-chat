@@ -15,7 +15,7 @@ export const useRegister = () => {
         setLoading(true)
         const result = await AuthService.register(data)
         setLoading(false)
-        if (!result.success && result.details) setFeedback(result.details)
+        if (!result.success && result.details) return setFeedback(result.details)
 
         dispatch(loginUser(
             {

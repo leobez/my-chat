@@ -1,6 +1,6 @@
 import { FaUser } from "react-icons/fa";
 import { useEffect, useState } from "react"
-import { useGetFriends } from "../../hooks/friendshipHooks/useGetFriends"
+import { useGetFriends } from "../../hooks/friendshipHooks/useListFriends"
 import { useGetReceivedFriendsRequests } from "../../hooks/friendshipHooks/useGetReceivedFriendRequests";
 import { useGetSentFriendsRequests } from "../../hooks/friendshipHooks/useGetSentFriendRequests";
 import { MdExpandMore } from "react-icons/md";

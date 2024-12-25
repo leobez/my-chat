@@ -11,7 +11,7 @@ class  FriendshipModel {
                 }
                 const lastId = this.lastID
 
-                db.get('SELECT * FROM Friendship WHERE friendshipId = ?', lastId, function(err, row) {
+                db.get('SELECT friendshipId, from_user, to_user, accepted, wait, created_at FROM Friendship WHERE friendshipId = ?', lastId, function(err, row) {
                     if (err) {
                         return reject({type: 'model', error: err.message})
                     }
@@ -90,7 +90,7 @@ class  FriendshipModel {
 
                 const lastId = this.lastID
     
-                db.get('SELECT * FROM Friendship WHERE friendshipId = ?', [lastId], function (err, row) {
+                db.get('SELECT friendshipId, from_user, to_user, accepted, wait, created_at FROM Friendship WHERE friendshipId = ?', [lastId], function (err, row) {
     
                     if (err) {
                         return reject({type: 'model', error: err.message})

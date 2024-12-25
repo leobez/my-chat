@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Friend {
     userId: number
+    socketId: string
     username: string
 }
 
@@ -41,32 +42,53 @@ export const friendshipSlice = createSlice({
     name: 'friendship',
     initialState,
     reducers: {
-        addFriend: (state, action:PayloadAction<Friend>) => {
 
+        // Friends[]
+        setFriend: (state, action:PayloadAction<Friend[]>) => {
+            state.friends = action.payload    
         },
-        removeFriend: (state, action:PayloadAction<Friend>) => {
+        addFriend: (state, action:PayloadAction<Friend>) => {
+            state.friends.push(action.payload)
+        },
+        removeFriend: (state, action:PayloadAction<Number>) => {
+            const newArray = state.friends.filter((friend) => friend.userId !== action.payload)
+            state.friends = newArray
+        },
 
+        // receivedRequests[]
+        setReceivedRequest: (state, action:PayloadAction<ReceivedRequest[]>) => {
+            state.receivedRequests = action.payload    
         },
         addReceivedRequest: (state, action:PayloadAction<ReceivedRequest>) => {
 
         },
         removeReceivedRequest: (state, action:PayloadAction<ReceivedRequest>) => {
+            const newArray = state.receivedRequests.filter((requests) => requests.friendshipId !== action.payload.friendshipId)
+            state.receivedRequests = newArray
+        },
 
+        // sentRequests[]
+        setSentRequest: (state, action:PayloadAction<SentRequest[]>) => {
+            state.sentRequests = action.payload    
         },
         addSentRequest: (state, action:PayloadAction<SentRequest>) => {
-
+            state.sentRequests.push(action.payload)
         },
         removeSentRequest: (state, action:PayloadAction<SentRequest>) => {
-
+            const newArray = state.sentRequests.filter((requests) => requests.friendshipId !== action.payload.friendshipId)
+            state.sentRequests = newArray
         },
     } 
 })
 
 export const {
+    setFriend,
     addFriend, 
     removeFriend,
+    setReceivedRequest,
     addReceivedRequest,
     removeReceivedRequest,
+    setSentRequest,
     addSentRequest,
     removeSentRequest} = friendshipSlice.actions
 

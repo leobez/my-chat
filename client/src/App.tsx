@@ -12,11 +12,12 @@ import Logout from './pages/auth/Logout';
 import { useGetMe } from './hooks/authHooks/useGetMe';
 import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
+import TestFriendship from './pages/Test/TestFriendship';
 
 
 function App() {
 
-    const {me, loading} = useGetMe()
+/*     const {me, loading} = useGetMe()
 
     // Verify user auth status (auto login user)
     useEffect(() => {
@@ -30,7 +31,7 @@ function App() {
 
     if (loading) {
       return;
-    }
+    } */
 
     return (
       <>
@@ -38,21 +39,22 @@ function App() {
 
         <BrowserRouter>
 
-          <Navbar isLogged={isLogged}/>
+          {/* <Navbar isLogged={isLogged}/> */}
 
           <Routes>
 
-            {/* MUST NOT BE LOGGED TO ACCESS */}
+            {/* ROUTE TO TEST SHIT */}
+            <Route path="/" element={<TestFriendship/>}/>
+
+            {/* 
             <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>
             <Route path="/register" element={isLogged ? <Navigate to="/"/> : <Register/>}/>
 
-            {/* MUST BE LOGGED TO ACCESS */}
             <Route path="/logout" element={isLogged ? <Logout/> : <Navigate to="/login"/>}/>
             <Route path="/" element={isLogged ? <Home/> : <Navigate to="/login"/>}/>
             <Route path="/add" element={isLogged ? <AddFriend/> : <Navigate to="/login"/>}/>
-
-            {/* WHATEVER */}
-            <Route path='*' element={<NotFound />} />
+            <Route path='*' element={<NotFound />} /> 
+            */}
 
           </Routes>
 

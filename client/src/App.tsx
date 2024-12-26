@@ -18,19 +18,6 @@ import SocketContext, { SocketContextType } from './context/SocketContext';
 
 function App() {
 
-    const userId = useSelector((state:any) => state.auth.userId)
-    const {connect} = useContext(SocketContext) as SocketContextType
-
-    useEffect(() => {
-
-      // User somehow got here wihout being logged
-      if (!userId) return;
-
-      // Initiate connection via websocket
-      connect()
-
-    }, [userId])
-
     return (
       <>
         <Header/>

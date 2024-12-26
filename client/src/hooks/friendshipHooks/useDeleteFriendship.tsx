@@ -28,7 +28,7 @@ export const useDeleteFriendship = () => {
         const userIdToRemove:number = result.data.from_user === userId ? result.data.to_user : result.data.from_user
 
         dispatch(removeFriend(userIdToRemove))
-        dispatch(removeSentRequest(result.data))
+        dispatch(removeSentRequest(result.data.friendshipId)) 
     }
 
     return {

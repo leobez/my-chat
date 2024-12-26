@@ -1,35 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { OnlineStatus } from "../context/SocketContext";
 
-interface Friend {
+export interface Friend {
     userId: number
     username: string
     online?: boolean
 }
 
-interface ReceivedRequest {
+export interface Request {
     friendshipId: number,
     from_user: number,
     to_user: number,
     accepted: number,
     wait: number,
     created_at: string
-    user_that_sent: Friend
 }
 
-interface SentRequest {
-    friendshipId: number,
-    from_user: number,
-    to_user: number,
-    accepted: number,
-    wait: number,
-    created_at: string
-    user_that_receive: Friend
-}
-
-interface Friendships {
+export interface Friendships {
     friends:Friend[]
-    receivedRequests:ReceivedRequest[]
-    sentRequests:SentRequest[]
+    receivedRequests:Request[]
+    sentRequests:Request[]
 }
 
 const initialState: Friendships = {
@@ -50,32 +40,42 @@ export const friendshipSlice = createSlice({
         addFriend: (state, action:PayloadAction<Friend>) => {
             state.friends.push(action.payload)
         },
+        updateOnlineStatus: (state, action:PayloadAction<OnlineStatus>) => {
+            //console.log('updating friend status: ', action.payload)
+            for (let friend of state.friends) {
+                if (Number(friend.userId) === Number(action.payload.friendId)) {
+                    friend.online = action.payload.online
+                }
+            }
+        },
         removeFriend: (state, action:PayloadAction<Number>) => {
             const newArray = state.friends.filter((friend) => friend.userId !== action.payload)
             state.friends = newArray
         },
 
+
         // receivedRequests[]
-        setReceivedRequest: (state, action:PayloadAction<ReceivedRequest[]>) => {
+        setReceivedRequest: (state, action:PayloadAction<Request[]>) => {
             state.receivedRequests = action.payload    
         },
-        addReceivedRequest: (state, action:PayloadAction<ReceivedRequest>) => {
-
+        addReceivedRequest: (state, action:PayloadAction<Request>) => {
+            state.receivedRequests.push(action.payload)
         },
-        removeReceivedRequest: (state, action:PayloadAction<ReceivedRequest>) => {
-            const newArray = state.receivedRequests.filter((requests) => requests.friendshipId !== action.payload.friendshipId)
+        removeReceivedRequest: (state, action:PayloadAction<Number>) => {
+            const newArray = state.receivedRequests.filter((requests) => requests.friendshipId !== action.payload)
             state.receivedRequests = newArray
         },
 
+
         // sentRequests[]
-        setSentRequest: (state, action:PayloadAction<SentRequest[]>) => {
+        setSentRequest: (state, action:PayloadAction<Request[]>) => {
             state.sentRequests = action.payload    
         },
-        addSentRequest: (state, action:PayloadAction<SentRequest>) => {
+        addSentRequest: (state, action:PayloadAction<Request>) => {
             state.sentRequests.push(action.payload)
         },
-        removeSentRequest: (state, action:PayloadAction<SentRequest>) => {
-            const newArray = state.sentRequests.filter((requests) => requests.friendshipId !== action.payload.friendshipId)
+        removeSentRequest: (state, action:PayloadAction<Number>) => {
+            const newArray = state.sentRequests.filter((requests) => requests.friendshipId !== action.payload)
             state.sentRequests = newArray
         },
     } 
@@ -84,6 +84,7 @@ export const friendshipSlice = createSlice({
 export const {
     setFriend,
     addFriend, 
+    updateOnlineStatus,
     removeFriend,
     setReceivedRequest,
     addReceivedRequest,

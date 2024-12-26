@@ -20,7 +20,7 @@ export const useDenyFriendRequest = () => {
 
         if (!result.success && result.details) return setFeedback(result.details)
 
-        dispatch(removeReceivedRequest(result.data))
+        dispatch(removeReceivedRequest(result.data.friendshipId))
     }
 
     return {

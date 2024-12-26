@@ -1,53 +1,26 @@
 import { useState } from "react"
-
-const API_URL = "http://localhost:3000/api/user"
+import UserService from "../../services/UserService"
 
 export const useGetUserById = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [feedback, setFeedback] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
-    const [userData, setUserData] = useState<any>()
 
-    const getUserById = async(id:string|number) => {
+    const getUserById = async(userId:number) => {
+        
+        setFeedback([])
+        setLoading(true)
+        const result = await UserService.getUserById(userId)
+        setLoading(false)
 
-        setServerSideFeedback([])
+        if (!result.success && result.details) return setFeedback(result.details)
 
-        try {
-
-            const url = `${API_URL}/byid/${id}`
-
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            })
-
-            const data = await response.json()
-            console.log(data)
-            setLoading(false)
-
-            // Resonse code not between 200 - 299
-            if (!response.ok) {
-                if (data.details) {
-                    setServerSideFeedback(data.details)
-                }
-                return;
-            }
-
-            setUserData(data.data)
-
-        } catch (error:any) {
-            console.log(error)
-            setLoading(false)
-        }
+        return result.data
     }
 
     return {
         getUserById,
-        userData,
+        feedback,
         loading,
-        serverSideFeedback,
     }
 }

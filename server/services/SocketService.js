@@ -179,26 +179,58 @@ class SocketService {
                 );
             }
 
-            // Find socketId of user thats receiving the request
-            let receivingUser
+            /*  
+            
+                There are two ways this event can flow
+                
+                1) from_user   ------->    to_user
+                2) to_user     ------->    from_user
+                
+                if friendship has properties (accepted===0, wait===1)
+                that means this event is being triggered to transmit a friend request,
+                so its going to flow like example 1.
 
-            if (!friendship.accepted) {
-                receivingUser = await UserModel.read({by: 'id', data: friendship.to_user})
-            } else {
-                receivingUser = await UserModel.read({by: 'id', data: friendship.from_user})
+                if friendship has properties (accepted===1, wait===0)
+                that means this event is being triggered to transmit an accepted friend request,
+                so its going to flow like example 2.
+
+                if friendship has properties (accepted===0, wait===0)
+                that means this event is being triggered to transmit a denied friend request,
+                so its going to flow like example 2.
+
+            */
+
+            // Find socketId of users
+            let USERID_THATS_RECEIVING
+            let USERID_THATS_TRANSMITTING
+
+            if (!friendship.accepted && friendship.wait) {
+                USERID_THATS_RECEIVING = friendship.to_user
+                USERID_THATS_TRANSMITTING = friendship.from_user
+            }
+            if (friendship.accepted && !friendship.wait) {
+                USERID_THATS_RECEIVING = friendship.from_user
+                USERID_THATS_TRANSMITTING = friendship.to_user
+            }
+            if (!friendship.accepted && !friendship.wait) {
+                USERID_THATS_RECEIVING = friendship.from_user
+                USERID_THATS_TRANSMITTING = friendship.to_user
             }
 
+            let RECEIVING_USER = await UserModel.read({by: 'id', data: USERID_THATS_RECEIVING})
+            let TRANSMITTING_USER = await UserModel.read({by: 'id', data: USERID_THATS_TRANSMITTING})
+
             // User doesnt exist
-            if (!receivingUser) {
+            if (!RECEIVING_USER || !TRANSMITTING_USER) {
                 throw new CustomError(
                     404, 
                     'Not found', 
-                    ['User thats receiving this request doesnt exist']
+                    ['User thats receiving or transmitting this request doesnt exist']
                 )
             }
 
-            // User doesnt have a socket, which means he inst online at the moment
-            if (!receivingUser.socketId) {
+            // User thats receiving doesnt have a socket, which means he inst online at the moment
+            if (!RECEIVING_USER.socketId) {
                 throw new CustomError(
                     404, 
                     'Not found', 
@@ -206,7 +238,16 @@ class SocketService {
                 )
             }
 
-            return socket.to(receivingUser.socketId).emit('friendship', friendship)
+            const formattedFriendship = {
+                friendshipId: friendship.friendshipId,
+                from_user: friendship.from_user,
+                to_user: friendship.to_user,
+                accepted: friendship.accepted,
+                wait: friendship.wait,
+                created_at: friendship.created_at,
+            }
+
+            return socket.to(RECEIVING_USER.socketId).emit('friendship', formattedFriendship)
 
         } catch (error) {
             if (error.type === 'model') {
@@ -219,6 +260,11 @@ class SocketService {
 
     }
 
+
+
+
+
+    
     // Group
     static async enterAdmRoom(socket, groupId) {
 

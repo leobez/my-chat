@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { useListFriends } from '../../hooks/friendshipHooks/useListFriends'
 import { useSelector } from 'react-redux'
 import { useListReceivedRequests } from '../../hooks/friendshipHooks/useListReceivedRequests'
@@ -8,11 +8,11 @@ import { useAcceptFriendRequest } from '../../hooks/friendshipHooks/useAcceptFri
 import { useDenyFriendRequest } from '../../hooks/friendshipHooks/useDenyFriendRequest'
 import { useDeleteFriendship } from '../../hooks/friendshipHooks/useDeleteFriendship'
 import { useLogin } from '../../hooks/authHooks/useLogin'
+import SocketContext, { SocketContextType } from '../../context/SocketContext'
 
 const TestFriendship = () => {
 
     const {login} = useLogin()
-
     const {listFriends} = useListFriends()
     const {listReceivedRequests} = useListReceivedRequests()
     const {listSentRequests} = useListSentRequests()
@@ -25,6 +25,7 @@ const TestFriendship = () => {
     const sentRequest = useSelector((state:any) => state.friendship.sentRequests)
     const receivedRequest = useSelector((state:any) => state.friendship.receivedRequests)
     const profile = useSelector((state:any) => state.auth)
+    const {connect} = useContext(SocketContext) as SocketContextType
 
     useEffect(() => {listFriends()}, [])
     useEffect(() => {listReceivedRequests()}, [])
@@ -36,12 +37,43 @@ const TestFriendship = () => {
     useEffect(() => {if (receivedRequest) console.log('receivedRequest: ', receivedRequest)}, [receivedRequest])
 
     return (
-        <div>
-            <button onClick={() => login({email: 'user1@email.com', password: '123'})} className='h-12 w-24 bg-slate-700'></button>
-            <button onClick={() => sendFriendRequest(4)} className='h-12 w-24 bg-black'></button>
-            <button onClick={() => acceptFriendRequest(3)} className='h-12 w-24 bg-red-400'></button>
-            <button onClick={() => denyFriendRequest(3)} className='h-12 w-24 bg-green-400'></button>
-            <button onClick={() => deleteFriendship(3)} className='h-12 w-24 bg-purple-400'></button>
+        <div className='p-3 flex gap-2 items-center justify-center'>
+            <button 
+                onClick={() => login({email: 'user1@email.com', password: '123'})}
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    LOGIN
+            </button>
+
+            <button 
+                onClick={() => connect()} 
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    WS
+            </button>
+
+            <button 
+                onClick={() => sendFriendRequest(4)} 
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    SEND FR.REQ.
+            </button>
+
+            <button 
+                onClick={() => acceptFriendRequest(3)} 
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                ACCEPT FR.REQ.
+            </button>
+
+            <button 
+                onClick={() => denyFriendRequest(3)} 
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                DENY FR.REQ.
+            </button>
+
+            <button 
+                onClick={() => deleteFriendship(3)} 
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                DELETE FR.
+            </button>
+
         </div>
     )
 }

@@ -77,22 +77,7 @@ class FriendshipService {
             // Get all sent requests
             const sentRequests = await FriendshipModel.read({by: 'sent', all:true, data: userId})
             let onlyNotAcceptedOnes = sentRequests.filter((request) => !request.accepted)
-
-            // Get the user that we are sending the request to (so it can be returned to user)
-            let arrAppended = []
-            for (let a=0; a<onlyNotAcceptedOnes.length; a++) {
-                let user = await UserModel.read({by: 'id', data: onlyNotAcceptedOnes[a].to_user})
-                arrAppended.push({
-                    ...onlyNotAcceptedOnes[a],
-                    user_that_receive: {
-                        userId: user.userId,
-                        socketId: user.socketId,
-                        username: user.username
-                    }
-                })
-            }
-
-            return arrAppended
+            return onlyNotAcceptedOnes
 
         } catch (error) {
 
@@ -112,22 +97,7 @@ class FriendshipService {
 
             const receivedRequests = await FriendshipModel.read({by: 'received', all:true, data: userId})
             let onlyNotAcceptedOnes = receivedRequests.filter((request) => !request.accepted)
-
-            // Get the user that we are sending the request to (so it can be returned to user)
-            let arrAppended = []
-            for (let a=0; a<onlyNotAcceptedOnes.length; a++) {
-                let user = await UserModel.read({by: 'id', data: onlyNotAcceptedOnes[a].from_user})
-                arrAppended.push({
-                    ...onlyNotAcceptedOnes[a],
-                    user_that_sent: {
-                        userId: user.userId,
-                        socketId: user.socketId,
-                        username: user.username
-                    }
-                })
-            }
-
-            return arrAppended
+            return onlyNotAcceptedOnes
 
         } catch (error) {
 
@@ -155,13 +125,6 @@ class FriendshipService {
             // Create request
             let createdRequest = await FriendshipModel.create(friendshipData)
 
-            // Append data about user thats receiving the request (so it can be used by client)
-            createdRequest['user_that_receive'] = {
-                userId: doesUserExist.userId,
-                socketId: doesUserExist.socketId,
-                username: doesUserExist.username
-            }
-
             return createdRequest
 
         } catch (error) {
@@ -187,22 +150,13 @@ class FriendshipService {
         try {
 
             // Validate that the user thats accepting this request was actually meant to do so
-            const friendship = await FriendshipModel.read({by: 'id', data: friendshipData.friendshipId})
+            let friendship = await FriendshipModel.read({by: 'id', data: friendshipData.friendshipId})
 
             if (!friendship) throw new CustomError(400, 'Bad request', ['Friendship request with this id does not exist'])
 
             if (Number(friendshipData.userThatsAccepting.userId) !== Number(friendship.to_user)) throw new CustomError(403, 'Forbidden', ['This friend request was not sent to you'])
 
             let acceptedRequest = await FriendshipModel.update({accepted: true, friendshipId: friendshipData.friendshipId})
-            
-            // Append data about user that sent the request (so it can be used by client)
-            const user = await UserModel.read({by: 'id', data: friendship.from_user})
-
-            acceptedRequest['user'] = {
-                userId: user.userId,
-                socketId: user.socketId,
-                username: user.username
-            }
 
             return acceptedRequest
 
@@ -224,7 +178,7 @@ class FriendshipService {
 
             // Validate that friendship with friendshipId === friendshipData.friendshipId has to_user === friendshipData.user.userId
             // Validate that the user thats denying this request was actually meant to do so
-            const friendship = await FriendshipModel.read({by: 'id', data: friendshipData.friendshipId})
+            let friendship = await FriendshipModel.read({by: 'id', data: friendshipData.friendshipId})
 
             if (!friendship) throw new CustomError(400, 'Bad request', ['Friendship request with this id does not exist'])
             
@@ -238,6 +192,12 @@ class FriendshipService {
             // for user to send request to this person again due to UNIQUE constrainsts on database.
             // AKA: I fucked up while creating the database. it is what it is
             await FriendshipModel.delete(friendshipData.friendshipId)
+
+            // In this case, friendship isnt updated on database, as it is deleted, so 'accepted' and 'wait' properties have to be
+            // changed here 
+
+            friendship.accepted = 0
+            friendship.wait = 0
 
             return friendship
 
@@ -253,6 +213,7 @@ class FriendshipService {
 
     }
 
+    // TODO
     static async deleteFriendRequest(userId, friendshipId) {
 
         try {
@@ -269,6 +230,7 @@ class FriendshipService {
             
             await FriendshipModel.delete(friendshipId)
 
+            // Maybe gonna have to remove this or change the way its sent back to client
             return friendship
 
         } catch (error) {

@@ -113,7 +113,8 @@ class UserController {
 
             const userInfo = {
                 userId: user.userId,
-                username: user.username
+                username: user.username,
+                online: user.socketId ? true : false
             }
 
             return res.status(200).json({

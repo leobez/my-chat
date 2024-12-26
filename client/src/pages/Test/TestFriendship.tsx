@@ -84,7 +84,7 @@ const TestFriendship = () => {
                 </button>
 
                 <button 
-                    onClick={() => deleteFriendship(3)} 
+                    onClick={() => deleteFriendship(2)} 
                     className='h-16 p-2 w-24 bg-white border-2 border-black'>
                     DELETE FR.
                 </button>

@@ -9,6 +9,7 @@ import { useDenyFriendRequest } from '../../hooks/friendshipHooks/useDenyFriendR
 import { useDeleteFriendship } from '../../hooks/friendshipHooks/useDeleteFriendship'
 import { useLogin } from '../../hooks/authHooks/useLogin'
 import SocketContext, { SocketContextType } from '../../context/SocketContext'
+import { Friend } from '../../slices/friendshipSlice'
 
 const TestFriendship = () => {
 
@@ -32,48 +33,63 @@ const TestFriendship = () => {
     useEffect(() => {listSentRequests()}, [])
 
     useEffect(() => {if (profile) console.log('profile: ', profile)}, [profile])
-    useEffect(() => {if (friends) console.log('Friends: ', friends)}, [friends])
+    useEffect(() => {if (friends) console.log('Friends: ', friends)}, [JSON.stringify(friends)])
     useEffect(() => {if (sentRequest) console.log('sentRequest: ', sentRequest)}, [sentRequest])
     useEffect(() => {if (receivedRequest) console.log('receivedRequest: ', receivedRequest)}, [receivedRequest])
 
     return (
-        <div className='p-3 flex gap-2 items-center justify-center'>
-            <button 
-                onClick={() => login({email: 'user1@email.com', password: '123'})}
-                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+        <div>  
+            <div>
+                <p>Friends</p>
+                <div className='flex gap-2'>
+                    {friends && friends.map((friend:Friend) => (
+                        <div key={friend.userId} className='border-2 border-black w-fit h-16 p-2 flex gap-2 items-center justify-center'>
+                            <p>{friend.username}</p>
+                            <p>{friend.online ? 'online' : 'offline'}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className='p-3 flex gap-2 items-center justify-center'>
+
+                <button 
+                    onClick={() => login({email: 'user1@email.com', password: '123'})}
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
                     LOGIN
-            </button>
+                </button>
 
-            <button 
-                onClick={() => connect()} 
-                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                <button 
+                    onClick={() => connect()} 
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
                     WS
-            </button>
+                </button>
 
-            <button 
-                onClick={() => sendFriendRequest(4)} 
-                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                <button 
+                    onClick={() => sendFriendRequest(4)} 
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
                     SEND FR.REQ.
-            </button>
+                </button>
 
-            <button 
-                onClick={() => acceptFriendRequest(3)} 
-                className='h-16 p-2 w-24 bg-white border-2 border-black'>
-                ACCEPT FR.REQ.
-            </button>
+                <button 
+                    onClick={() => acceptFriendRequest(3)} 
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    ACCEPT FR.REQ.
+                </button>
 
-            <button 
-                onClick={() => denyFriendRequest(3)} 
-                className='h-16 p-2 w-24 bg-white border-2 border-black'>
-                DENY FR.REQ.
-            </button>
+                <button 
+                    onClick={() => denyFriendRequest(3)} 
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    DENY FR.REQ.
+                </button>
 
-            <button 
-                onClick={() => deleteFriendship(3)} 
-                className='h-16 p-2 w-24 bg-white border-2 border-black'>
-                DELETE FR.
-            </button>
+                <button 
+                    onClick={() => deleteFriendship(3)} 
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    DELETE FR.
+                </button>
 
+            </div>
         </div>
     )
 }

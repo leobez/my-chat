@@ -8,24 +8,6 @@ import Selection from "../components/Home/Selection";
 
 const Home = () => {
 
-    const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
-    const userId = useSelector((state:any) => state.auth.userId)
-
-    /* const {connect} = useContext(SocketContext) as SocketContextType */
-
-    useEffect(() => {
-
-      // User somehow got here wihout being logged
-      if (!isLogged) return;
-
-      // Get all users from DB
-      /* getAllUsers() */
-
-      // Initiate connection via websocket
-      /* connect(userId) */
-
-    }, [isLogged, userId])
-
     return (
       
       <div className="flex flex-col justify-center">

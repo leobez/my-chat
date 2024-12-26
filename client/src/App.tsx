@@ -6,32 +6,30 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/auth/Logout';
 import { useGetMe } from './hooks/authHooks/useGetMe';
 import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
 import TestFriendship from './pages/Test/TestFriendship';
+import SocketContext, { SocketContextType } from './context/SocketContext';
 
 
 function App() {
 
-/*     const {me, loading} = useGetMe()
+    const userId = useSelector((state:any) => state.auth.userId)
+    const {connect} = useContext(SocketContext) as SocketContextType
 
-    // Verify user auth status (auto login user)
     useEffect(() => {
-      const testAuthAsync = async() => {
-        await me()
-      }
-      testAuthAsync()
-    }, [])
 
-    const isLogged = useSelector((state:any) => state.auth.isLoggedIn)
+      // User somehow got here wihout being logged
+      if (!userId) return;
 
-    if (loading) {
-      return;
-    } */
+      // Initiate connection via websocket
+      connect()
+
+    }, [userId])
 
     return (
       <>

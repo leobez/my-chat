@@ -31,7 +31,7 @@ class FriendshipService {
                 const friend = await UserModel.read({by: 'id', data: friendsId[a]})
                 friendsfinal.push({
                     userId: friend.userId,
-                    socketId: friend.socketId,
+                    online: friend.socketId ? true : false,
                     username: friend.username,
                 })
             }

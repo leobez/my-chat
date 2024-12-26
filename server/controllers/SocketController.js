@@ -4,11 +4,9 @@ const SocketService = require('../services/SocketService')
 // Controller
 class SocketController {
 
-    // Online status
+    // Friends online status
     static notifyFriendsOnline = async(socket, io) => {
         
-        console.log(`notifying friends of ${socket.user.userId} that he is online`)
-
         try {
             await SocketService.notifyFriendsDisponibility(socket.user.userId, io, true)
             return;
@@ -74,7 +72,6 @@ class SocketController {
         } 
 
     }
-
 
     // Groups
     static enterAdmRoom = async(socket, {groupId}) => {

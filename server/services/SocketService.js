@@ -41,18 +41,23 @@ class SocketService {
             if (!friendsList) return;
 
             // Get every socketId of userId friends
-            const socketIdList = friendsList.map((friend) => friend.socketId)
+            let socketIdList = []
+
+            for (let friend of friendsList) {
+                const friendData = await UserModel.read({by: 'id', data: friend.userId})
+                socketIdList.push(friendData.socketId)
+            }
+
             console.log('notifying friends: ', socketIdList)
 
             socketIdList.forEach(socketId => {
+                //console.log('notifying: ', socketId)
                 io.to(socketId).emit('friends online status', {
                     user: userId,
                     online: status
                 })
             });
             
-            return true
-
         } catch (error) {
             if (error.type === 'model') {
                 // Add error logger here

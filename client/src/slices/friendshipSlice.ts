@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Friend {
     userId: number
-    socketId: string
     username: string
+    online?: boolean
 }
 
 interface ReceivedRequest {

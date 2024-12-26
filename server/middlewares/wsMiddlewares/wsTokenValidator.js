@@ -10,17 +10,41 @@ const SECRET = process.env.SECRET_KEY
 
 const wsTokenValidator = async(socket, next) => {
 
-    // Verify if token exists on connection headers
-    const token = socket.handshake.headers.auth_jwt
+    // Verify for postman testing
+    let token_postman = socket.handshake.headers.auth_jwt
 
-    if (!token) {
+    // Verify for client application
+    let cookie = socket.handshake.headers.cookie
+
+    // Get jwt out of cookie
+    let cookieArray = []
+    if (cookie) cookieArray = cookie.split(' ')
+    let token_client = ''
+
+    cookieArray.forEach(cookie => {
+        if (cookie.includes('jwt=')) {
+            token_client = cookie.split('jwt=')[1]
+        }
+    });
+
+    if (!token_postman && !token_client.length) {
         const err = new CustomError(400, 'Bad request', ['No JWT token detected'])
         return next(err)
     }
 
+    let definitiveToken = ''
+
+    if (token_postman) {
+        definitiveToken = token_postman
+    }
+
+    if (token_client) {
+        definitiveToken = token_client
+    }
+
     try {
 
-        const userData = jwt.verify(token, SECRET)
+        const userData = jwt.verify(definitiveToken, SECRET)
 
         // Validate that user exists on DB
         const userFromDb = await UserModel.read({by: 'id', data: userData.userId})

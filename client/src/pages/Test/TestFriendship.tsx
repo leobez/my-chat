@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react'
 import { useListFriends } from '../../hooks/friendshipHooks/useListFriends'
-import { useSelector } from 'react-redux'
+import { connect } from 'react-redux'
 import { useListReceivedRequests } from '../../hooks/friendshipHooks/useListReceivedRequests'
 import { useListSentRequests } from '../../hooks/friendshipHooks/useListSentRequests'
 import { useSendFriendRequest } from '../../hooks/friendshipHooks/useSendFriendRequest'
@@ -10,8 +10,9 @@ import { useDeleteFriendship } from '../../hooks/friendshipHooks/useDeleteFriend
 import { useLogin } from '../../hooks/authHooks/useLogin'
 import SocketContext, { SocketContextType } from '../../context/SocketContext'
 import { Friend } from '../../slices/friendshipSlice'
+import { useSocket } from '../../hooks/useSocket'
 
-const TestFriendship = () => {
+const TestFriendship = ({ friends, sentRequest, receivedRequest, profile }:any) => {
 
     const {login} = useLogin()
     const {listFriends} = useListFriends()
@@ -21,12 +22,8 @@ const TestFriendship = () => {
     const {acceptFriendRequest} = useAcceptFriendRequest()
     const {denyFriendRequest} = useDenyFriendRequest()
     const {deleteFriendship} = useDeleteFriendship()
-
-    const friends = useSelector((state:any) => state.friendship.friends)
-    const sentRequest = useSelector((state:any) => state.friendship.sentRequests)
-    const receivedRequest = useSelector((state:any) => state.friendship.receivedRequests)
-    const profile = useSelector((state:any) => state.auth)
     const {connect} = useContext(SocketContext) as SocketContextType
+    useSocket()
 
     useEffect(() => {listFriends()}, [])
     useEffect(() => {listReceivedRequests()}, [])
@@ -94,4 +91,13 @@ const TestFriendship = () => {
     )
 }
 
-export default TestFriendship
+const mapStateToProps = (state:any) => {
+    return {
+        friends: state.friendship.friends,
+        sentRequest: state.friendship.sentRequests,
+        receivedRequest: state.friendship.receivedRequests,
+        profile: state.auth
+    }
+}
+
+export default connect(mapStateToProps, {})(TestFriendship);

@@ -26,9 +26,7 @@ export function SocketContextProvider({children}:SocketContextProps) {
 
     const [socket] = useState<Socket>(() => io(SOCKET_URL, {autoConnect: false, transports: ['websocket']}))
     const [initConn, setInitConn] = useState<boolean>(false)
-
     const userId = useSelector((state:any) => state.auth.userId)
-    const dispatch = useDispatch()
 
     // Listen to ws events
     useEffect(() => {
@@ -38,7 +36,7 @@ export function SocketContextProvider({children}:SocketContextProps) {
         console.log('connected ws: ', socket)
 
         // Listen ws events
-        socket.on('friends online status', (onlineStatus:OnlineStatus) => dispatch(updateOnlineStatus(onlineStatus)))
+        /* socket.on('friends online status', (onlineStatus:OnlineStatus) => dispatch(updateOnlineStatus(onlineStatus)))
         
         socket.on('friendship', (friendship:any) => {
 
@@ -65,7 +63,7 @@ export function SocketContextProvider({children}:SocketContextProps) {
         return () => {
             socket.off('friends online status')
             socket.off('friendship')
-        }
+        } */
 
     }, [initConn, userId])
 

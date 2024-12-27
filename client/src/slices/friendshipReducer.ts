@@ -42,13 +42,7 @@ export const friendshipSlice = createSlice({
         },
         updateOnlineStatus: (state, action:PayloadAction<OnlineStatus>) => {
             console.log('updating friend status: ', action.payload)
-
-            state.friends.forEach((friend) => {
-                if (Number(friend.userId) === Number(action.payload.friendId)) {
-                    friend.online = action.payload.online
-                }
-            })
-
+            
             /* return {
                 ...state,
                 friends: state.friends.map((friend:Friend) => {
@@ -64,8 +58,13 @@ export const friendshipSlice = createSlice({
                 })
             }  */
 
-
+            state.friends.forEach((friend) => {
+                if (Number(friend.userId) === Number(action.payload.friendId)) {
+                    friend.online = action.payload.online
+                }
+            })
         },
+        
         removeFriend: (state, action:PayloadAction<Number>) => {
             const newArray = state.friends.filter((friend) => friend.userId !== action.payload)
             state.friends = newArray

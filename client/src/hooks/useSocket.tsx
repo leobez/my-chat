@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import SocketContext, { OnlineStatus, SocketContextType } from "../context/SocketContext"
 import { updateOnlineStatus } from "../slices/friendshipSlice"
@@ -14,15 +14,11 @@ export const useSocket = () => {
 
         console.log('socket hook')
 
-        const handleOnlineStatus = (onlineStatus:OnlineStatus) => {
-            dispatch(updateOnlineStatus(onlineStatus))
-        }
-
-        socket.on('friends online status', handleOnlineStatus)
+        socket.on('friends online status', (onlineStatus:OnlineStatus) => dispatch(updateOnlineStatus(onlineStatus)))
 
         return  () => {
             socket.off('friends online status')
         }
 
-    }, [dispatch, socket])
+    }, [socket])
 }

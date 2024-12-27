@@ -53,7 +53,7 @@ class SocketService {
             socketIdList.forEach(socketId => {
                 //console.log('notifying: ', socketId)
                 io.to(socketId).emit('friends online status', {
-                    user: userId,
+                    userId: userId,
                     online: status
                 })
             });

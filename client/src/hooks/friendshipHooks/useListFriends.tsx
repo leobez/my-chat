@@ -17,7 +17,7 @@ export const useListFriends = () => {
         setLoading(false)
 
         if (!result.success && result.details) return setFeedback(result.details)
-
+        
         dispatch(setFriend(result.data))
     }
 

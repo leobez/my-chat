@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react'
 import { useListFriends } from '../../hooks/friendshipHooks/useListFriends'
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useListReceivedRequests } from '../../hooks/friendshipHooks/useListReceivedRequests'
 import { useListSentRequests } from '../../hooks/friendshipHooks/useListSentRequests'
 import { useSendFriendRequest } from '../../hooks/friendshipHooks/useSendFriendRequest'
@@ -12,7 +12,7 @@ import SocketContext, { SocketContextType } from '../../context/SocketContext'
 import { Friend } from '../../slices/friendshipSlice'
 import { useSocket } from '../../hooks/useSocket'
 
-const TestFriendship = ({ friends, sentRequest, receivedRequest, profile }:any) => {
+const TestFriendship = () => {
 
     const {login} = useLogin()
     const {listFriends} = useListFriends()
@@ -25,12 +25,17 @@ const TestFriendship = ({ friends, sentRequest, receivedRequest, profile }:any) 
     const {connect} = useContext(SocketContext) as SocketContextType
     useSocket()
 
+    const friends = useSelector((state:any) => state.friendship.friends)
+    const receivedRequest = useSelector((state:any) => state.friendship.receivedRequests)
+    const sentRequest = useSelector((state:any) => state.friendship.sentRequests)
+    const profile = useSelector((state:any) => state.auth)
+
     useEffect(() => {listFriends()}, [])
     useEffect(() => {listReceivedRequests()}, [])
     useEffect(() => {listSentRequests()}, [])
 
     useEffect(() => {if (profile) console.log('profile: ', profile)}, [profile])
-    useEffect(() => {if (friends) console.log('Friends: ', friends)}, [JSON.stringify(friends)])
+    useEffect(() => {if (friends) console.log('Friends: ', friends)}, [friends])
     useEffect(() => {if (sentRequest) console.log('sentRequest: ', sentRequest)}, [sentRequest])
     useEffect(() => {if (receivedRequest) console.log('receivedRequest: ', receivedRequest)}, [receivedRequest])
 
@@ -91,13 +96,6 @@ const TestFriendship = ({ friends, sentRequest, receivedRequest, profile }:any) 
     )
 }
 
-const mapStateToProps = (state:any) => {
-    return {
-        friends: state.friendship.friends,
-        sentRequest: state.friendship.sentRequests,
-        receivedRequest: state.friendship.receivedRequests,
-        profile: state.auth
-    }
-}
 
-export default connect(mapStateToProps, {})(TestFriendship);
+
+export default TestFriendship;

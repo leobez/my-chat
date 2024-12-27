@@ -1,4 +1,4 @@
-import { createReducer, createSlice, PayloadAction, current } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { OnlineStatus } from "../context/SocketContext";
 
 export interface Friend {
@@ -41,30 +41,12 @@ export const friendshipSlice = createSlice({
             state.friends.push(action.payload)
         },
         updateOnlineStatus: (state, action:PayloadAction<OnlineStatus>) => {
-            console.log('updating friend status: ', action.payload)
-
+            /* console.log('updating friend status: ', action.payload) */
             state.friends.forEach((friend) => {
-                if (Number(friend.userId) === Number(action.payload.friendId)) {
+                if (Number(friend.userId) === Number(action.payload.userId)) {
                     friend.online = action.payload.online
                 }
             })
-
-            /* return {
-                ...state,
-                friends: state.friends.map((friend:Friend) => {
-                    if (Number(friend.userId) === Number(action.payload.friendId)) {
-                        console.log('found: ', friend.userId, action.payload.friendId)
-                        return {
-                            ...friend,
-                            online: action.payload.online
-                        }
-                    } else {
-                        return friend
-                    }
-                })
-            }  */
-
-
         },
         removeFriend: (state, action:PayloadAction<Number>) => {
             const newArray = state.friends.filter((friend) => friend.userId !== action.payload)

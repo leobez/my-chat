@@ -6,7 +6,7 @@ import { updateOnlineStatus, addReceivedRequest, removeReceivedRequest, addFrien
 const SOCKET_URL = "http://localhost:3000"
 
 export interface OnlineStatus {
-    friendId: number,
+    userId: number,
     online: boolean
 }
 

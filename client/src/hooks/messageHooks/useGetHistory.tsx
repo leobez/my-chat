@@ -1,63 +1,30 @@
-import { useEffect, useState } from "react"
-
-const API_URL = "http://localhost:3000/api/message"
+import { useState } from "react"
+import { useDispatch } from "react-redux"
+import MessageService from "../../services/MessageService"
+import { createHistory } from "../../slices/messageSlice"
 
 export const useGetHistory = () => {
 
-    const [serverSideFeedback, setServerSideFeedback] = useState<any[]>([])
+    const [feedback, setFeedback] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
-    const [history, setHistory] = useState<any[]>([])
+    const dispatch = useDispatch()
 
-    useEffect(() => {
-        console.log('history: ', history)
-    }, [history])
+    const getHistoryWithUser = async(userId:number) => {
 
-    const getHistoryWithThisUser = async(id:string|number) => {
+        setFeedback([])
+        setLoading(true)
+        const result = await MessageService.getHistoryWithUser(userId)
+        setLoading(false)
 
-        setServerSideFeedback([])
+        if (!result.success && result.details) return setFeedback(result.details)
+        
+        dispatch(createHistory({userId: userId, history: result.data}))
 
-        try {
-
-            const url = `${API_URL}/history/${id}`
-
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            })
-
-            const data = await response.json()
-            console.log(data)
-            setLoading(false)
-
-            // Resonse code not between 200 - 299
-            if (!response.ok) {
-                if (data.details) {
-                    setServerSideFeedback(data.details)
-                }
-                return;
-            }
-
-            setHistory(data.data)
-
-        } catch (error:any) {
-            console.log(error)
-            setLoading(false)
-        }
-    }
-
-    const addToHistory = (message:any) => {
-        console.log('adding to history: ', message)
-        setHistory((prev:any) => [...prev, message])
     }
 
     return {
-        getHistoryWithThisUser,
-        addToHistory,
-        history,
+        getHistoryWithUser,
+        feedback,
         loading,
-        serverSideFeedback,
     }
 }

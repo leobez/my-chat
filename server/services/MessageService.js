@@ -2,6 +2,9 @@
 const MessageModel = require('../models/MessageModel')
 const UserModel = require('../models/UserModel')
 
+// Socket.io
+const {getIO} = require('../socketHandler')
+
 const CustomError = require('../utils/CustomError')
 
 // Service
@@ -19,6 +22,15 @@ class MessageService {
             if (!doesUserExist) throw new CustomError(400, 'Bad request', ['user thats receiving the message does not exist'])
 
             const message = await MessageModel.create(messageData)
+            
+            // Send via ws 
+            // In this case, the one who receives the message is the one on to_user field
+            const receiverSocketId = doesUserExist.socketId
+
+            if  (receiverSocketId) {
+                const io = getIO()
+                io.to(receiverSocketId).emit('private message', message)
+            }
 
             return message;
 

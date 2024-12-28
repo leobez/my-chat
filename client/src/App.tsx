@@ -14,6 +14,7 @@ import Navbar from './components/Navbar';
 import AddFriend from './pages/AddFriend';
 import TestFriendship from './pages/Test/TestFriendship';
 import SocketContext, { SocketContextType } from './context/SocketContext';
+import TestMessage from './pages/Test/TestMessage';
 
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
           <Routes>
 
             {/* ROUTE TO TEST SHIT */}
-            <Route path="/" element={<TestFriendship/>}/>
+            <Route path="/" element={<TestFriendship/>}/> 
 
             {/* 
             <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>

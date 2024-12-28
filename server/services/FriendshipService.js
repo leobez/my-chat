@@ -256,7 +256,6 @@ class FriendshipService {
 
         try {
 
-
             // Validate that friendship exists
             const friendship = await FriendshipModel.read({by: 'id', data: friendshipId})
             if (!friendship) throw new CustomError(400, 'Bad request', ['Friendship  with this id does not exist'])
@@ -268,7 +267,29 @@ class FriendshipService {
             
             await FriendshipModel.delete(friendshipId)
 
-            // Maybe gonna have to remove this or change the way its sent back to client
+            // Send via ws 
+            // In this case, the one who receives the deleted request is the one who didnt do it
+            // Gonna send it to both just in case anyways
+            const userToReceive1 = await UserModel.read({by: 'id', data: friendship.to_user})
+            const userToReceive2 = await UserModel.read({by: 'id', data: friendship.from_user})
+            let io = getIO()
+
+            if  (userToReceive1.socketId) {
+                let socketIdToReceive = userToReceive1.socketId
+                io.to(socketIdToReceive).emit('friendship', {
+                    type: 'deleted',
+                    data: friendship
+                })
+            }
+
+            if  (userToReceive2.socketId) {
+                let socketIdToReceive = userToReceive2.socketId
+                io.to(socketIdToReceive).emit('friendship', {
+                    type: 'deleted',
+                    data: friendship
+                })
+            }
+
             return friendship
 
         } catch (error) {

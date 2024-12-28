@@ -6,11 +6,10 @@
 --/--
 
 TODO: 
-    -> FINISH FRONTEND LOGIC: 
-
-    -> DELETE REQUEST (FRONT AND SERVER -> useSocket.tsx e FriendshipService.deleteFriendRequest -> send to user just like other functions)
+    -> FRONTEND
 
     SERVER:
+    -> CAN ONLY SEND MESSAGE TO FRIENDS
     -> ERROR LOGGER
     -> UNIT TESTS (JEST?)
     -> RATE LIMITER

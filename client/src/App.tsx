@@ -15,6 +15,7 @@ import AddFriend from './pages/AddFriend';
 import TestFriendship from './pages/Test/TestFriendship';
 import SocketContext, { SocketContextType } from './context/SocketContext';
 import TestMessage from './pages/Test/TestMessage';
+import Chat from './pages/Test/Chat';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
 
             {/* ROUTE TO TEST SHIT */}
             <Route path="/" element={<TestFriendship/>}/> 
+            <Route path="/chat/:id" element={<Chat/>}/> 
 
             {/* 
             <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>

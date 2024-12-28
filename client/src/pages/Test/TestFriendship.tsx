@@ -11,6 +11,7 @@ import { useLogin } from '../../hooks/authHooks/useLogin'
 import SocketContext, { SocketContextType } from '../../context/SocketContext'
 import { Friend, Request } from '../../slices/friendshipSlice'
 import { useSocket } from '../../hooks/useSocket'
+import { Link } from 'react-router-dom'
 
 const TestFriendship = () => {
 
@@ -49,6 +50,7 @@ const TestFriendship = () => {
                         <div key={friend.userId} className='border-2 border-black w-fit h-16 p-2 flex gap-2 items-center justify-center'>
                             <p>{friend.username}</p>
                             <p>{friend.online ? 'online' : 'offline'}</p>
+                            <Link to={`chat/${friend.userId}`}>Talk to</Link>
                         </div>
                     ))}
                 </div>

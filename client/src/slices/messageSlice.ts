@@ -8,7 +8,7 @@ export interface Message {
     created_at:string
 }
 
-interface History {
+export interface History {
     userId:number,
     history:Message[]
 }
@@ -37,7 +37,7 @@ export const messageSlice = createSlice({
                     history.history.push(action.payload)
                 }
             })
-        }
+        },
 
     } 
 })

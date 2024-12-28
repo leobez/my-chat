@@ -11,6 +11,8 @@ export interface Request {
     friendshipId: number,
     from_user: number,
     to_user: number,
+    from_username: string,
+    to_username: string,
     accepted: number,
     wait: number,
     created_at: string

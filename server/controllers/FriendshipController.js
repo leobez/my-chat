@@ -90,6 +90,7 @@ class FriendshipController {
 
     }
 
+    // Integrated with ws
     static sendFriendRequest = async(req, res) => {
 
         try {
@@ -103,8 +104,6 @@ class FriendshipController {
             }
 
             const sentFriendRequest = await FriendshipService.sendFriendRequest(friendshipData)
-
-            //console.log(sentFriendRequest)
 
             return res.status(201).json({
                 message: 'Friendship request sent',
@@ -122,6 +121,7 @@ class FriendshipController {
 
     }
 
+    // Integrated with ws
     static acceptFriendRequest = async(req, res) => {
 
         try {
@@ -152,6 +152,7 @@ class FriendshipController {
 
     }
 
+    // Integrated with ws
     static denyFriendRequest = async(req, res) => {
 
         try {

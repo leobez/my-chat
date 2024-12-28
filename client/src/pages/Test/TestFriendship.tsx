@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useListFriends } from '../../hooks/friendshipHooks/useListFriends'
 import { useSelector } from 'react-redux'
 import { useListReceivedRequests } from '../../hooks/friendshipHooks/useListReceivedRequests'
@@ -9,7 +9,7 @@ import { useDenyFriendRequest } from '../../hooks/friendshipHooks/useDenyFriendR
 import { useDeleteFriendship } from '../../hooks/friendshipHooks/useDeleteFriendship'
 import { useLogin } from '../../hooks/authHooks/useLogin'
 import SocketContext, { SocketContextType } from '../../context/SocketContext'
-import { Friend } from '../../slices/friendshipSlice'
+import { Friend, Request } from '../../slices/friendshipSlice'
 import { useSocket } from '../../hooks/useSocket'
 
 const TestFriendship = () => {
@@ -26,8 +26,8 @@ const TestFriendship = () => {
     useSocket()
 
     const friends = useSelector((state:any) => state.friendship.friends)
-    const receivedRequest = useSelector((state:any) => state.friendship.receivedRequests)
-    const sentRequest = useSelector((state:any) => state.friendship.sentRequests)
+    const receivedRequests = useSelector((state:any) => state.friendship.receivedRequests)
+    const sentRequests = useSelector((state:any) => state.friendship.sentRequests)
     const profile = useSelector((state:any) => state.auth)
 
     useEffect(() => {listFriends()}, [])
@@ -36,11 +36,12 @@ const TestFriendship = () => {
 
     useEffect(() => {if (profile) console.log('profile: ', profile)}, [profile])
     useEffect(() => {if (friends) console.log('Friends: ', friends)}, [friends])
-    useEffect(() => {if (sentRequest) console.log('sentRequest: ', sentRequest)}, [sentRequest])
-    useEffect(() => {if (receivedRequest) console.log('receivedRequest: ', receivedRequest)}, [receivedRequest])
+    useEffect(() => {if (sentRequests) console.log('sentRequests: ', sentRequests)}, [sentRequests])
+    useEffect(() => {if (receivedRequests) console.log('receivedRequests: ', receivedRequests)}, [receivedRequests])
 
     return (
         <div>  
+
             <div>
                 <p>Friends</p>
                 <div className='flex gap-2'>
@@ -48,6 +49,28 @@ const TestFriendship = () => {
                         <div key={friend.userId} className='border-2 border-black w-fit h-16 p-2 flex gap-2 items-center justify-center'>
                             <p>{friend.username}</p>
                             <p>{friend.online ? 'online' : 'offline'}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div>
+                <p>Received requests</p>
+                <div className='flex gap-2'>
+                    {receivedRequests && receivedRequests.map((receivedRequest:Request) => (
+                        <div key={receivedRequest.friendshipId} className='border-2 border-black w-fit h-16 p-2 flex gap-2 items-center justify-center'>
+                            <p>{receivedRequest.from_username}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div>
+                <p>Sent requests</p>
+                <div className='flex gap-2'>
+                    {sentRequests && sentRequests.map((sentRequest:Request) => (
+                        <div key={sentRequest.friendshipId} className='border-2 border-black w-fit h-16 p-2 flex gap-2 items-center justify-center'>
+                            <p>{sentRequest.to_username}</p>
                         </div>
                     ))}
                 </div>

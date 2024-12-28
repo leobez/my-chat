@@ -35,20 +35,42 @@ class SocketService {
     static async notifyFriendsDisponibility(userId, io, status) {
 
         try {
-
             // Get every friend of userId
-            const friendsList = await FriendshipService.getFriends(userId)
-            if (!friendsList) return;
+            const friendsList = await FriendshipModel.read({by: 'userId', all: true, data: userId})
+            if (!friendsList) return []
+
+            // Get the id of each friend
+            let friendsId = []
+            friendsList.forEach(friend => {
+                if (friend.from_user === userId) {
+                    friendsId.push(friend.to_user)
+                } else {
+                    friendsId.push(friend.from_user)
+                }
+            });
+
+            // Get the user object of each friend
+            let friendsFinal = []
+            for (let a=0; a<friendsId.length; a++) {
+                const friend = await UserModel.read({by: 'id', data: friendsId[a]})
+                friendsFinal.push({
+                    userId: friend.userId,
+                    online: friend.socketId ? true : false,
+                    username: friend.username,
+                })
+            }
+
+            if (!friendsFinal) return;
 
             // Get every socketId of userId friends
             let socketIdList = []
 
-            for (let friend of friendsList) {
+            for (let friend of friendsFinal) {
                 const friendData = await UserModel.read({by: 'id', data: friend.userId})
                 socketIdList.push(friendData.socketId)
             }
 
-            console.log('notifying friends: ', socketIdList)
+            //console.log('notifying friends: ', socketIdList)
 
             socketIdList.forEach(socketId => {
                 //console.log('notifying: ', socketId)
@@ -160,6 +182,7 @@ class SocketService {
 
             // Validate that friendshipId exists
             const friendship = await FriendshipModel.read({by: 'id', data: friendshipId})
+            console.log('friendship: ', friendship)
 
             if (!friendship) throw new CustomError(
                 404, 
@@ -242,6 +265,8 @@ class SocketService {
                 friendshipId: friendship.friendshipId,
                 from_user: friendship.from_user,
                 to_user: friendship.to_user,
+                from_username: friendship.from_username,
+                to_username: friendship.to_username,
                 accepted: friendship.accepted,
                 wait: friendship.wait,
                 created_at: friendship.created_at,
@@ -260,11 +285,6 @@ class SocketService {
 
     }
 
-
-
-
-
-    
     // Group
     static async enterAdmRoom(socket, groupId) {
 

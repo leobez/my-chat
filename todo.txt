@@ -6,7 +6,9 @@
 --/--
 
 TODO: 
-    -> FINISH IMPLEMENTING AUTH+FRIENDSHIP LOGIC + WS
+    -> FINISH FRONTEND LOGIC: 
+
+    -> DELETE REQUEST (FRONT AND SERVER -> useSocket.tsx e FriendshipService.deleteFriendRequest -> send to user just like other functions)
 
     SERVER:
     -> ERROR LOGGER

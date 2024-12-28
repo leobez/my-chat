@@ -74,6 +74,8 @@ db.serialize(() => {
             friendshipId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             from_user INTEGER NOT NULL,
             to_user INTEGER NOT NULL,
+            from_username VARCHAR(255),
+            to_username VARCHAR(255),
             accepted BOOLEAN,
             wait BOOLEAN,
             lesser_id INTEGER NOT NULL GENERATED AlWAYS AS (CASE WHEN from_user < to_user THEN from_user ELSE to_user END),
@@ -91,6 +93,7 @@ db.serialize(() => {
             console.log('Table Friendship created')
         }
     }),
+
     db.run(`
         CREATE TRIGGER IF NOT EXISTS update_friendship_updated_at
         AFTER UPDATE ON Friendship
@@ -100,7 +103,48 @@ db.serialize(() => {
             SET updated_at = CURRENT_TIMESTAMP
             WHERE friendshipId = OLD.friendshipId;
         END;
-        )
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Friendship" update trigger', err.message)
+        } else {
+            console.log('Trigger for Friendship created')
+        }
+    }),
+    
+    // Trigger to insert usernames of users of a friendship
+    db.run(`
+        CREATE TRIGGER update_friendship_usernames_on_insert
+        AFTER INSERT ON Friendship
+        FOR EACH ROW
+        BEGIN
+            UPDATE Friendship
+        SET 
+            from_username = (SELECT username FROM Users WHERE userId = NEW.from_user),
+            to_username = (SELECT username FROM Users WHERE userId = NEW.to_user)
+            WHERE friendshipId = NEW.friendshipId;
+        END;
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Friendship" update trigger', err.message)
+        } else {
+            console.log('Trigger for Friendship created')
+        }
+    }),
+
+    // Trigger to update usernames when they are updated on Users table
+    db.run(`
+        CREATE TRIGGER update_friendship_usernames_on_user_update
+        AFTER UPDATE OF username ON Users
+        FOR EACH ROW
+        BEGIN
+            UPDATE Friendship
+            SET from_username = NEW.username
+            WHERE from_user = OLD.userId;
+
+            UPDATE Friendship
+            SET to_username = NEW.username
+            WHERE to_user = OLD.userId;
+        END;
     `, (err) => {
         if (err) {
             console.log('Error while creating "Friendship" update trigger', err.message)
@@ -146,6 +190,7 @@ db.serialize(() => {
             console.log('Table Groups created')
         }
     }),
+
     db.run(`
         CREATE TRIGGER IF NOT EXISTS update_groups_updated_at
         AFTER UPDATE ON Groups
@@ -188,6 +233,7 @@ db.serialize(() => {
             console.log('Table Membership created')
         }
     }),
+
     db.run(`
         CREATE TRIGGER IF NOT EXISTS update_membership_updated_at
         AFTER UPDATE ON Membership
@@ -309,7 +355,7 @@ db.serialize(() => {
         } else {
             console.log('Test data added')
         }
-    })
+    }),
 
     // Insert some data for testing (Friendship) (TO REMOVE)
     db.run(`
@@ -336,7 +382,7 @@ db.serialize(() => {
         } else {
             console.log('Test data added')
         }
-    })
+    }),
 
     // Insert some data for testing (Groups and Membership) (TO REMOVE)
     db.run(`
@@ -363,7 +409,7 @@ db.serialize(() => {
         } else {
             console.log('Test data added')
         }
-    })
+    }),
 
     db.run(`
         
@@ -376,7 +422,7 @@ db.serialize(() => {
         } else {
             console.log('Test data added')
         }
-    })
+    }),
 
     db.run(`
         

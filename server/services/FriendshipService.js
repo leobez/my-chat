@@ -2,6 +2,9 @@
 const FriendshipModel = require('../models/FriendshipModel')
 const UserModel = require('../models/UserModel')
 
+// Socket.io
+const {getIO} = require('../socketHandler')
+
 const CustomError = require('../utils/CustomError')
 
 // Service
@@ -111,6 +114,7 @@ class FriendshipService {
 
     }
 
+    /* ALL OF THESE ARE INTEGRATED WITH WS */
     static async sendFriendRequest(friendshipData) {
 
         try {
@@ -124,6 +128,16 @@ class FriendshipService {
             
             // Create request
             let createdRequest = await FriendshipModel.create(friendshipData)
+
+            // Send via ws
+            if  (doesUserExist.socketId) {
+                let socketIdToReceive = doesUserExist.socketId
+                const io = getIO()
+                io.to(socketIdToReceive).emit('friendship', {
+                    type: 'sent',
+                    data: createdRequest
+                })
+            }
 
             return createdRequest
 
@@ -157,6 +171,19 @@ class FriendshipService {
             if (Number(friendshipData.userThatsAccepting.userId) !== Number(friendship.to_user)) throw new CustomError(403, 'Forbidden', ['This friend request was not sent to you'])
 
             let acceptedRequest = await FriendshipModel.update({accepted: true, friendshipId: friendshipData.friendshipId})
+
+            // Send via ws 
+            // In this case, the one who sent the request (from) is going to receive a real time feedback that his request was accepted
+            const userToReceive = await UserModel.read({by: 'id', data: friendship.from_user})
+
+            if  (userToReceive.socketId) {
+                let socketIdToReceive = userToReceive.socketId
+                const io = getIO()
+                io.to(socketIdToReceive).emit('friendship', {
+                    type: 'accepted',
+                    data: acceptedRequest
+                })
+            }
 
             return acceptedRequest
 
@@ -195,9 +222,20 @@ class FriendshipService {
 
             // In this case, friendship isnt updated on database, as it is deleted, so 'accepted' and 'wait' properties have to be
             // changed here 
-
             friendship.accepted = 0
             friendship.wait = 0
+
+            // Send via ws 
+            // In this case, the one who sent the request (from) is going to receive a real time feedback that his request was denied
+            const userToReceive = await UserModel.read({by: 'id', data: friendship.from_user})
+            if  (userToReceive.socketId) {
+                let socketIdToReceive = userToReceive.socketId
+                const io = getIO()
+                io.to(socketIdToReceive).emit('friendship', {
+                    type: 'denied',
+                    data: friendship
+                })
+            }
 
             return friendship
 

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { useGetUserById } from "../../hooks/userHooks/useGetUserById"
 import { useGetHistory } from "../../hooks/messageHooks/useGetHistory"
 import { useSendMessage } from "../../hooks/messageHooks/useSendMessage"
 import { useSelector } from "react-redux"
 import { History, Message } from "../../slices/messageSlice"
-import { Friend } from "../../slices/friendshipSlice"
+import ChatContext, { ChatContextType } from "../../context/ChatContext"
 
 type Props = {
     userId: number
@@ -15,15 +15,25 @@ const FriendChat = (props: Props) => {
     // ids of friends and mine
     const me_id = useSelector((state:any) => state.auth.userId)
     const friend_id = props.userId
+
+    // Friend data
     const [friend, setFriend] = useState<any>(null)
 
     // Hooks
     const {getUserById} = useGetUserById()
     const {getHistoryWithUser} = useGetHistory()
 
+    // Chatting context
+    const {chatting} = useContext(ChatContext) as ChatContextType
+
     useEffect(() => {
-        const friend = getUserById(friend_id)
-        setFriend(friend)
+
+        const getFriendAsync = async() => {
+            const friend = await getUserById(friend_id)
+            setFriend(friend)
+        }
+        getFriendAsync()
+
         getHistoryWithUser(friend_id);
     }, [friend_id])
 
@@ -31,11 +41,14 @@ const FriendChat = (props: Props) => {
     const [messages, setMessages] = useState<Message[]>([])
 
     useEffect(() => {
+
         const filteredHistory = allHistories.filter((history:History) => history.userId === friend_id);
         if (!filteredHistory.length) return;
+
         const relevantHistory = filteredHistory[0].history
         setMessages(relevantHistory)
-    }, [allHistories, messages])
+
+    }, [allHistories, chatting])
 
     // Auto scroll to bottom of chat box when history updates
     const endOfChatBoxRef = useRef<any>(null)
@@ -48,7 +61,6 @@ const FriendChat = (props: Props) => {
 
     // Send message function and state
     const {sendMessageTo} = useSendMessage()
-
     const [message, setMessage] = useState<string>('')
 
     const handleSubmit = async(e:any) => {
@@ -69,7 +81,7 @@ const FriendChat = (props: Props) => {
                 <div className="flex flex-col h-full">
 
                     <div className="h-16 bg-black text-white font-bold flex items-center justify-start px-3">
-                        <p>{friend.username}</p>
+                        <p className="text-white">{friend.username}</p>
                     </div>
                     
                     {/* CHAT BOX */}
@@ -81,8 +93,8 @@ const FriendChat = (props: Props) => {
 
                                 {/* MY MESSAGE */}
                                 {Number(message.from_user) === Number(me_id) && 
-                                    <div className='rounded-xl border-2 border-black text-black w-1/2 self-start'>
-                                        <p className='p-4 w-full h-full text-left'>
+                                    <div className='rounded-xl border-2 border-black text-black w-1/2 self-start h-fit break-words'>
+                                        <p className='p-3 w-full h-full text-left'>
                                             {message.content}
                                         </p>
                                     </div>
@@ -91,7 +103,7 @@ const FriendChat = (props: Props) => {
                                 {/* OTHER PERSON MESSAGE */}
                                 {Number(message.from_user) === Number(friend_id) && 
                                     <div className='rounded-xl border-2 border-black text-white bg-black w-1/2 self-end'>
-                                    <p className='p-4 w-full h-full text-left'>
+                                    <p className='p-3 w-full h-full text-left'>
                                         {message.content}
                                     </p>
                                 </div>

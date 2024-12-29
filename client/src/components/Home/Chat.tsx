@@ -1,28 +1,26 @@
+import { useContext } from 'react';
 import FriendChat from './FriendChat'
-import { ChattingWith } from '../../pages/Home'
+import ChatContext, { ChatContextType } from '../../context/ChatContext';
 
-type Props = {
-    chattingWith: ChattingWith | null
-}
-
-const Chat = ({chattingWith}:Props) => {
+const Chat = () => {
 
     // Get what we are chatting (could be friend or user)
+    const {chatting} = useContext(ChatContext) as ChatContextType
 
-    if (!chattingWith) return;
+    if (!chatting) return;
     
-    if (chattingWith.type === 'friend') {
+    if (chatting.type === 'friend') {
         return (
             <div className="border-2 border-black h-[450px] w-9/12">
-                <FriendChat userId={chattingWith.id}/>
+                <FriendChat userId={chatting.id}/>
             </div>
         )
     }
 
-    if (chattingWith.type === 'group') {
+    if (chatting.type === 'group') {
         return (
             <div className="border-2 border-black h-[450px] w-9/12">
-                GROUP CHAT WITH: {chattingWith.id}
+                GROUP CHAT WITH: {chatting.id}
             </div>
         )  
     }

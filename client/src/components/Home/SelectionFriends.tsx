@@ -5,17 +5,17 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import { useSelector } from "react-redux";
 import { Friend, Request } from "../../slices/friendshipSlice";
-import { ChattingWith } from "../../pages/Home";
+import { useContext } from "react";
+import ChatContext, { ChatContextType } from "../../context/ChatContext";
 
-type Props = {
-    updateChattingWith:(chat:ChattingWith)=>void
-}
 
-const SelectionFriends = ({updateChattingWith}:Props) => {
+const SelectionFriends = () => {
 
     const friends = useSelector((state:any) => state.friendship.friends)
     const receivedRequests = useSelector((state:any) => state.friendship.receivedRequests)
     const sentRequests = useSelector((state:any) => state.friendship.sentRequests)
+
+    const {chatting, updateChatting} = useContext(ChatContext) as ChatContextType
 
     return (
         <div className='h-full overflow-y-auto scrollbar-thin'>
@@ -34,10 +34,23 @@ const SelectionFriends = ({updateChattingWith}:Props) => {
 
                     {friends.map((friend:Friend) => (
                         <li key={friend.userId} className="w-full">
-                            <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg" onClick={() => updateChattingWith({type: 'friend', id: friend.userId})}>
-                                <FaUser size={20}/>
-                                {friend.username}
-                            </button>
+
+                            {friend.userId === chatting?.id ? (
+                                <button 
+                                    className="p-3 w-full border text-left bg-black text-white duration-200 flex gap-2 items-center rounded-lg" 
+                                    onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
+                                    <FaUser size={20}/>
+                                    {friend.username}
+                                </button>
+                            ) : (
+                                <button 
+                                className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg" 
+                                onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
+                                    <FaUser size={20}/>
+                                    {friend.username}
+                                </button>
+                            )}
+
                         </li>
                     ))}
                 </ul>

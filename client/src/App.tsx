@@ -6,18 +6,12 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import { useSelector } from 'react-redux';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import NotFound from './pages/NotFound';
 import Logout from './pages/auth/Logout';
 import { useGetMe } from './hooks/authHooks/useGetMe';
 import Navbar from './components/Navbar';
-import AddFriend from './pages/AddFriend';
-import TestFriendship from './pages/Test/TestFriendship';
-import SocketContext, { SocketContextType } from './context/SocketContext';
-import TestMessage from './pages/Test/TestMessage';
-import Chat from './pages/Test/Chat';
 import Loading from './components/Loading';
-
 
 function App() {
 
@@ -56,7 +50,7 @@ function App() {
             <Route path="/logout" element={userId ? <Logout/> : <Navigate to="/login"/>}/>
             <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
             <Route path='*' element={<NotFound />} /> 
-            
+
           </Routes>
 
         </BrowserRouter>

@@ -8,7 +8,6 @@ const MembershipModel = require("../models/MembershipModel");
 const CustomError = require("../utils/CustomError");
 
 // Services
-const FriendshipService = require("./FriendshipService");
 const GroupModel = require("../models/GroupModel");
 
 

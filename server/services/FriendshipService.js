@@ -130,10 +130,9 @@ class FriendshipService {
             let createdRequest = await FriendshipModel.create(friendshipData)
 
             // Send via ws
-            const io = getIO()
-
             if  (doesUserExist.socketId) {
                 let socketIdToReceive = doesUserExist.socketId
+                const io = getIO()
                 io.to(socketIdToReceive).emit('friendship', {
                     type: 'sent',
                     data: createdRequest

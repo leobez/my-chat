@@ -5,6 +5,8 @@ let io;
 
 const initSocket = (server) => {
 
+    console.log('initiating socket server')
+
     io = socketIO(server, {
         connectionStateRecovery: {
             maxDisconnectionDuration: 2*60*1000

@@ -130,9 +130,10 @@ class FriendshipService {
             let createdRequest = await FriendshipModel.create(friendshipData)
 
             // Send via ws
+            const io = getIO()
+
             if  (doesUserExist.socketId) {
                 let socketIdToReceive = doesUserExist.socketId
-                const io = getIO()
                 io.to(socketIdToReceive).emit('friendship', {
                     type: 'sent',
                     data: createdRequest
@@ -142,7 +143,7 @@ class FriendshipService {
             return createdRequest
 
         } catch (error) {
-
+            console.log(error)
             if (error.type === 'model') {
                 // Add error logger here
                 if (error.error.includes("SQLITE_CONSTRAINT: UNIQUE constraint failed: Friendship.lesser_id, Friendship.bigger_id")) {

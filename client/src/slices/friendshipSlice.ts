@@ -80,6 +80,14 @@ export const friendshipSlice = createSlice({
             const newArray = state.sentRequests.filter((requests) => requests.friendshipId !== action.payload)
             state.sentRequests = newArray
         },
+
+        // Full reset of state (used after logou)
+        resetFriendshipState: (state) => {
+            state.friends = []
+            state.receivedRequests = []
+            state.sentRequests = []
+        },
+        
     } 
 })
 
@@ -93,7 +101,8 @@ export const {
     removeReceivedRequest,
     setSentRequest,
     addSentRequest,
-    removeSentRequest} = friendshipSlice.actions
+    removeSentRequest,
+    resetFriendshipState} = friendshipSlice.actions
 
 export const selectFriendshipState = (state:Friendships) => state
 

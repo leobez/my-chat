@@ -16,9 +16,27 @@ import TestFriendship from './pages/Test/TestFriendship';
 import SocketContext, { SocketContextType } from './context/SocketContext';
 import TestMessage from './pages/Test/TestMessage';
 import Chat from './pages/Test/Chat';
+import Loading from './components/Loading';
 
 
 function App() {
+
+    const {me, loading} = useGetMe()
+
+    const userId = useSelector((state:any) => state.auth.userId)
+
+    // Verify if user is logged in
+    useEffect(() => {
+      me()
+    }, [])
+
+    if (loading) {
+      return (
+        <>
+          <Loading/>
+        </>
+      )
+    }
 
     return (
       <>
@@ -26,24 +44,19 @@ function App() {
 
         <BrowserRouter>
 
-          {/* <Navbar isLogged={isLogged}/> */}
+          <Navbar isLogged={userId ? true : false}/>
 
           <Routes>
 
-            {/* ROUTE TO TEST SHIT */}
-            <Route path="/" element={<TestFriendship/>}/> 
-            <Route path="/chat/:id" element={<Chat/>}/> 
+            {/* UNPROTECTED ROUTES */}
+            <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
+            <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
 
-            {/* 
-            <Route path="/login" element={isLogged ? <Navigate to="/"/> : <Login/>}/>
-            <Route path="/register" element={isLogged ? <Navigate to="/"/> : <Register/>}/>
-
-            <Route path="/logout" element={isLogged ? <Logout/> : <Navigate to="/login"/>}/>
-            <Route path="/" element={isLogged ? <Home/> : <Navigate to="/login"/>}/>
-            <Route path="/add" element={isLogged ? <AddFriend/> : <Navigate to="/login"/>}/>
+            {/* PROTECTED ROUTES */}
+            <Route path="/logout" element={userId ? <Logout/> : <Navigate to="/login"/>}/>
+            <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
             <Route path='*' element={<NotFound />} /> 
-            */}
-
+            
           </Routes>
 
         </BrowserRouter>

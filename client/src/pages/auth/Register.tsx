@@ -12,7 +12,7 @@ const Register = () => {
     const [feedback, setFeedback] = useState<string[]>([])
 
     // HOOKS
-    const {register, serverSideFeedback, loading:c_loading} = useRegister()
+    const {register, feedback:serverSideFeedback, loading:c_loading} = useRegister()
 
     // FUNCTONS
     const handleSubmit = async(e:any) => {
@@ -43,7 +43,11 @@ const Register = () => {
 
         if (feedbackCount > 0) return;
 
-        register(email, username, password)
+        register({
+            email: email,
+            password: password,
+            username: username
+        })
     }
 
     useEffect(() => {

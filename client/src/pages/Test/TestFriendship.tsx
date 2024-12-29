@@ -12,10 +12,12 @@ import SocketContext, { SocketContextType } from '../../context/SocketContext'
 import { Friend, Request } from '../../slices/friendshipSlice'
 import { useSocket } from '../../hooks/useSocket'
 import { Link } from 'react-router-dom'
+import { useLogout } from '../../hooks/authHooks/useLogout'
 
 const TestFriendship = () => {
 
     const {login} = useLogin()
+    const {logout} = useLogout()
     const {listFriends} = useListFriends()
     const {listReceivedRequests} = useListReceivedRequests()
     const {listSentRequests} = useListSentRequests()
@@ -30,10 +32,11 @@ const TestFriendship = () => {
     const receivedRequests = useSelector((state:any) => state.friendship.receivedRequests)
     const sentRequests = useSelector((state:any) => state.friendship.sentRequests)
     const profile = useSelector((state:any) => state.auth)
+    const userId = useSelector((state:any) => state.auth.userId)
 
-    useEffect(() => {listFriends()}, [])
-    useEffect(() => {listReceivedRequests()}, [])
-    useEffect(() => {listSentRequests()}, [])
+    useEffect(() => {if (userId) listFriends()}, [userId])
+    useEffect(() => {if (userId) listReceivedRequests()}, [userId])
+    useEffect(() => {if (userId) listSentRequests()}, [userId])
 
     useEffect(() => {if (profile) console.log('profile: ', profile)}, [profile])
     useEffect(() => {if (friends) console.log('Friends: ', friends)}, [friends])
@@ -84,6 +87,12 @@ const TestFriendship = () => {
                     onClick={() => login({email: 'user1@email.com', password: '123'})}
                     className='h-16 p-2 w-24 bg-white border-2 border-black'>
                     LOGIN
+                </button>
+
+                <button 
+                    onClick={() => logout()}
+                    className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                    LOGOUT
                 </button>
 
                 <button 

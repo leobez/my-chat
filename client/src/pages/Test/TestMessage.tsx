@@ -1,10 +1,12 @@
 import { useContext } from "react"
 import { useLogin } from "../../hooks/authHooks/useLogin"
 import SocketContext, { SocketContextType } from "../../context/SocketContext"
+import { useLogout } from "../../hooks/authHooks/useLogout"
 
 const TestMessage = () => {
 
     const {login} = useLogin()
+    const {logout} = useLogout()
     const {connect} = useContext(SocketContext) as SocketContextType
 
     return (
@@ -13,6 +15,12 @@ const TestMessage = () => {
                 onClick={() => login({email: 'user1@email.com', password: '123'})}
                 className='h-16 p-2 w-24 bg-white border-2 border-black'>
                 LOGIN
+            </button>
+
+            <button 
+                onClick={() => logout()}
+                className='h-16 p-2 w-24 bg-white border-2 border-black'>
+                LOGOUT
             </button>
 
             <button 

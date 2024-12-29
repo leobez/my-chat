@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { logoutUser } from "../../slices/authSlice"
+import { resetFriendshipState } from "../../slices/friendshipSlice"
+import { resetMessageState } from "../../slices/messageSlice"
 import AuthService from "../../services/AuthService"
 
 export const useLogout = () => {
@@ -17,7 +19,9 @@ export const useLogout = () => {
         setLoading(false)
 
         if (!result.success && result.details) return setFeedback(result.details)
-
+        
+        dispatch(resetFriendshipState())
+        dispatch(resetMessageState())
         dispatch(logoutUser())    
     }
 

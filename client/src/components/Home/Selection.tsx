@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import SelectionFriends from './SelectionFriends'
 import SelectionGroups from './SelectionGroups'
+import { ChattingWith } from '../../pages/Home'
 
-const Selection = () => {
+type Props = {
+    updateChattingWith:(chat:ChattingWith)=>void
+}
+
+const Selection = ({updateChattingWith}:Props) => {
 
     const [selection, setSelection] = useState<'friends'|'groups'>("friends")
 
@@ -49,7 +54,7 @@ const Selection = () => {
 
             </div>
             
-            { selection === 'friends' && <SelectionFriends/>}
+            { selection === 'friends' && <SelectionFriends updateChattingWith={updateChattingWith}/>}
             { selection === 'groups' && <SelectionGroups/>}
 
         </div>

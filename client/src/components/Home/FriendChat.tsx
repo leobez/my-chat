@@ -3,27 +3,39 @@ import { useGetUserById } from "../../hooks/userHooks/useGetUserById"
 import { useGetHistory } from "../../hooks/messageHooks/useGetHistory"
 import { useSendMessage } from "../../hooks/messageHooks/useSendMessage"
 import { useSelector } from "react-redux"
+import { History, Message } from "../../slices/messageSlice"
+import { Friend } from "../../slices/friendshipSlice"
 
 type Props = {
-    userId: string|number
+    userId: number
 }
 
 const FriendChat = (props: Props) => {
 
-    // My and my friend ids
+    // ids of friends and mine
     const me_id = useSelector((state:any) => state.auth.userId)
     const friend_id = props.userId
+    const [friend, setFriend] = useState<any>(null)
 
     // Hooks
-    const {getUserById, userData:friendData} = useGetUserById()
-    const {getHistoryWithThisUser, addToHistory, history} = useGetHistory()
-    const {sendMessage} = useSendMessage()
+    const {getUserById} = useGetUserById()
+    const {getHistoryWithUser} = useGetHistory()
 
-    // Activate hooks
     useEffect(() => {
-        getUserById(friend_id)
-        getHistoryWithThisUser(friend_id);
+        const friend = getUserById(friend_id)
+        setFriend(friend)
+        getHistoryWithUser(friend_id);
     }, [friend_id])
+
+    const allHistories = useSelector((state:any) => state.message.completeHistory)
+    const [messages, setMessages] = useState<Message[]>([])
+
+    useEffect(() => {
+        const filteredHistory = allHistories.filter((history:History) => history.userId === friend_id);
+        if (!filteredHistory.length) return;
+        const relevantHistory = filteredHistory[0].history
+        setMessages(relevantHistory)
+    }, [allHistories, messages])
 
     // Auto scroll to bottom of chat box when history updates
     const endOfChatBoxRef = useRef<any>(null)
@@ -31,43 +43,39 @@ const FriendChat = (props: Props) => {
         if (endOfChatBoxRef.current) {
             endOfChatBoxRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [history])
+    }, [messages])
+
 
     // Send message function and state
+    const {sendMessageTo} = useSendMessage()
+
     const [message, setMessage] = useState<string>('')
 
     const handleSubmit = async(e:any) => {
+
         e.preventDefault()
+
         if (!message.length) return;
-        if (message.length > 150)
-        console.log('sending message')
+        if (message.length > 150) return;
 
-        // Send to API
-        const newMessage = await sendMessage(message, props.userId)
-        console.log('newMessage: ', newMessage)
+        await sendMessageTo(friend_id, message)
 
-        // Send by websocket
-        /* sendMessageWS(newMessage) */
-
-        // Add to local history of messages
-        addToHistory(newMessage)
-        
         setMessage("")
     }
 
     return (
         <div className="w-full h-full">
-           {friendData && 
+           {friend && 
                 <div className="flex flex-col h-full">
 
                     <div className="h-16 bg-black text-white font-bold flex items-center justify-start px-3">
-                        <p>{friendData.username}</p>
+                        <p>{friend.username}</p>
                     </div>
                     
                     {/* CHAT BOX */}
                     <div className='w-full flex-1 flex flex-col gap-4 overflow-y-auto p-2 scrollbar-thin'>
 
-                        {history && history.map((message:any) => (
+                        {messages && messages.map((message:any) => (
 
                             <div key={message.messageId} className='flex flex-col'>
 

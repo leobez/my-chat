@@ -11,7 +11,7 @@ const Login = () => {
     const [feedback, setFeedback] = useState<string[]>([])
 
     // HOOKS
-    const {login, serverSideFeedback, loading:c_loading} = useLogin()
+    const {login, feedback:serverSideFeedback, loading:c_loading} = useLogin()
 
     // FUNCTIONS
     const handleSubmit = async(e:any) => {
@@ -33,7 +33,10 @@ const Login = () => {
 
         if (feedbackCount > 0) return;
 
-        login(email, password)
+        login({
+            email: email,
+            password: password
+        })
     }
 
     useEffect(() => {

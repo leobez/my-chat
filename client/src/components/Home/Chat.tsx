@@ -1,12 +1,14 @@
-import { useSelector } from 'react-redux'
 import FriendChat from './FriendChat'
+import { ChattingWith } from '../../pages/Home'
 
-type Props = {}
+type Props = {
+    chattingWith: ChattingWith | null
+}
 
-const Chat = (props: Props) => {
+const Chat = ({chattingWith}:Props) => {
 
     // Get what we are chatting (could be friend or user)
-    const chattingWith = useSelector((state:any) => state.chat)
+
     if (!chattingWith) return;
     
     if (chattingWith.type === 'friend') {

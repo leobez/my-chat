@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { useLogout } from "../../hooks/authHooks/useLogout"
+import Loading from "../../components/Loading"
 
 const Logout = () => {
 
@@ -12,10 +13,13 @@ const Logout = () => {
         navigate('/login')
     }, [])
 
-    if (loading) return (
-        <>
-        </>
-    );
+    if (loading) {
+        return (
+            <>
+                <Loading/>
+            </>
+        );
+    }
 }
 
 export default Logout

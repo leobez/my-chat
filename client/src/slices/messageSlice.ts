@@ -25,7 +25,16 @@ export const messageSlice = createSlice({
     reducers: {
 
         createHistory: (state, action:PayloadAction<History>) => {
-            state.completeHistory.push(action.payload)
+
+            let found = false
+
+            state.completeHistory.forEach((history) => {
+                if (history.userId === action.payload.userId) {
+                    found = true
+                }
+            })
+
+            if (!found) state.completeHistory.push(action.payload)
         },
         
         addMessage: (state, action:PayloadAction<Message>) => {
@@ -34,14 +43,20 @@ export const messageSlice = createSlice({
                     history.userId === action.payload.from_user ||
                     history.userId === action.payload.to_user
                 ) {
+                    console.log('adding to history: ', history.userId)
                     history.history.push(action.payload)
                 }
             })
         },
 
+        // Full reset of state (used after logout)
+        resetMessageState: (state) => {
+            state.completeHistory = []
+        },
+
     } 
 })
 
-export const {createHistory, addMessage} = messageSlice.actions
+export const {createHistory, addMessage, resetMessageState} = messageSlice.actions
 export const selectMessageState = (state:{completeHistory:History[]}) => state
 export default messageSlice.reducer

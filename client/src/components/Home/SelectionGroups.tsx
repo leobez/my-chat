@@ -1,10 +1,8 @@
-import React from 'react'
-
-type Props = {}
-
-const SelectionGroups = (props: Props) => {
+const SelectionGroups = () => {
     return (
-        <div>SelectionGroups</div>
+        <div>
+            SelectionGroups
+        </div>
     )
 }
 

@@ -1,33 +1,21 @@
 import { FaUser } from "react-icons/fa";
-import { useEffect, useState } from "react"
-import { useGetFriends } from "../../hooks/friendshipHooks/useListFriends"
-import { useGetReceivedFriendsRequests } from "../../hooks/friendshipHooks/useGetReceivedFriendRequests";
-import { useGetSentFriendsRequests } from "../../hooks/friendshipHooks/useGetSentFriendRequests";
 import { MdExpandMore } from "react-icons/md";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import { setChat } from "../../slices/chatSlice";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { Friend, Request } from "../../slices/friendshipSlice";
+import { ChattingWith } from "../../pages/Home";
 
+type Props = {
+    updateChattingWith:(chat:ChattingWith)=>void
+}
 
-const SelectionFriends = () => {
+const SelectionFriends = ({updateChattingWith}:Props) => {
 
-    const {getFriends, friendsList} = useGetFriends()
-    const {getReceivedFriendsRequests, requests:receivedRequests} = useGetReceivedFriendsRequests()
-    const {getSentFriendsRequests, requests:sentRequests} = useGetSentFriendsRequests()
-    const [chattingWith, setChattingWith] = useState('')
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        dispatch(setChat({type: 'friend', id: chattingWith}))    
-    }, [chattingWith])
-
-    useEffect(() => {
-        getFriends()
-        getReceivedFriendsRequests()
-        getSentFriendsRequests()
-    }, [])
+    const friends = useSelector((state:any) => state.friendship.friends)
+    const receivedRequests = useSelector((state:any) => state.friendship.receivedRequests)
+    const sentRequests = useSelector((state:any) => state.friendship.sentRequests)
 
     return (
         <div className='h-full overflow-y-auto scrollbar-thin'>
@@ -42,11 +30,11 @@ const SelectionFriends = () => {
                 </AccordionSummary>
                 <ul className="flex flex-col gap-1 p-2">
 
-                    {friendsList.length === 0 && <p>None</p>}
+                    {friends.length === 0 && <p>None</p>}
 
-                    {friendsList.map((friend) => (
+                    {friends.map((friend:Friend) => (
                         <li key={friend.userId} className="w-full">
-                            <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg" onClick={() => setChattingWith(friend.userId)}>
+                            <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg" onClick={() => updateChattingWith({type: 'friend', id: friend.userId})}>
                                 <FaUser size={20}/>
                                 {friend.username}
                             </button>
@@ -67,11 +55,11 @@ const SelectionFriends = () => {
 
                     {receivedRequests.length === 0 && <p>None</p>}
 
-                    {receivedRequests.map((request) => (
+                    {receivedRequests.map((request:Request) => (
                         <li key={request.friendshipId} className="w-full">
                             <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg">
                                 <FaUser size={20}/>
-                                {request.user.username}
+                                {request.from_username}
                             </button>
                         </li>
                     ))}
@@ -90,11 +78,11 @@ const SelectionFriends = () => {
 
                     {sentRequests.length === 0 && <p>None</p>}
 
-                    {sentRequests.map((request) => (
+                    {sentRequests.map((request:Request) => (
                         <li key={request.friendshipId} className="w-full">
                             <button className="p-3 w-full border text-left hover:bg-black hover:text-white duration-200 flex gap-2 items-center rounded-lg">
                                 <FaUser size={20}/>
-                                {request.user.username}
+                                {request.to_username}
                             </button>
                         </li>
                     ))}

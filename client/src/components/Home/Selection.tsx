@@ -7,7 +7,7 @@ const Selection = () => {
     const [selection, setSelection] = useState<'friends'|'groups'>("friends")
 
     return (
-        <div className="border-2 border-black p-2 h-[450px] w-3/12 gap-2 flex flex-col">
+        <div className="border-2 border-black p-2 h-[450px] w-[320px] gap-2 flex flex-col">
 
             <div className="border-2 border-black flex">
 

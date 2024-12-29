@@ -11,7 +11,7 @@ const Chat = () => {
     
     if (chatting.type === 'friend') {
         return (
-            <div className="border-2 border-black h-[450px] w-9/12">
+            <div className="border-2 border-black h-[450px] w-full">
                 <FriendChat userId={chatting.id}/>
             </div>
         )
@@ -19,7 +19,7 @@ const Chat = () => {
 
     if (chatting.type === 'group') {
         return (
-            <div className="border-2 border-black h-[450px] w-9/12">
+            <div className="border-2 border-black h-[450px] w-full">
                 GROUP CHAT WITH: {chatting.id}
             </div>
         )  

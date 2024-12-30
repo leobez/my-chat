@@ -28,6 +28,7 @@ const initSocket = (server) => {
 
         // Broadcast to socket friends that he is offline
         socket.on('disconnect', () => {
+            console.log('socket disconnecting')
             SocketController.notifyFriendsOffline(socket, io)
             SocketController.disconnect(socket)
         })

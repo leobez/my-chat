@@ -91,7 +91,7 @@ const Login = () => {
 
                 <Link 
                     to="/register" 
-                    className='w-full px-3 py-2 grid place-items-center hover:bg-black border border-black hover:text-white duration-200'>
+                    className='w-full px-3 py-2 grid place-items-center hover:bg-black border-2 border-black hover:text-white duration-200'>
                         No account yet?
                 </Link>
 

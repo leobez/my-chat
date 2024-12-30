@@ -12,6 +12,7 @@ import Logout from './pages/auth/Logout';
 import { useGetMe } from './hooks/authHooks/useGetMe';
 import Navbar from './components/Navbar';
 import Loading from './components/Loading';
+import AddFriend from './pages/AddFriend';
 
 function App() {
 
@@ -48,6 +49,7 @@ function App() {
 
             {/* PROTECTED ROUTES */}
             <Route path="/logout" element={userId ? <Logout/> : <Navigate to="/login"/>}/>
+            <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
             <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
             <Route path='*' element={<NotFound />} /> 
 

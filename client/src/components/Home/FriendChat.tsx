@@ -1,10 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { useGetUserById } from "../../hooks/userHooks/useGetUserById"
 import { useGetHistory } from "../../hooks/messageHooks/useGetHistory"
 import { useSendMessage } from "../../hooks/messageHooks/useSendMessage"
 import { useSelector } from "react-redux"
 import { History, Message } from "../../slices/messageSlice"
 import ChatContext, { ChatContextType } from "../../context/ChatContext"
+import { IoMdSend } from "react-icons/io";
+import { Friend } from "../../slices/friendshipSlice"
 
 type Props = {
     userId: number
@@ -17,10 +18,10 @@ const FriendChat = (props: Props) => {
     const friend_id = props.userId
 
     // Friend data
+    const friends = useSelector((state:any) => state.friendship.friends)
     const [friend, setFriend] = useState<any>(null)
 
     // Hooks
-    const {getUserById} = useGetUserById()
     const {getHistoryWithUser} = useGetHistory()
 
     // Chatting context
@@ -28,14 +29,15 @@ const FriendChat = (props: Props) => {
 
     useEffect(() => {
 
-        const getFriendAsync = async() => {
-            const friend = await getUserById(friend_id)
-            setFriend(friend)
-        }
-        getFriendAsync()
+        friends.forEach((friend:Friend) => {
+            if (friend.userId === friend_id) {
+                setFriend(friend)
+            }
+        })
 
         getHistoryWithUser(friend_id);
-    }, [friend_id])
+
+    }, [friends])
 
     const allHistories = useSelector((state:any) => state.message.completeHistory)
     const [messages, setMessages] = useState<Message[]>([])
@@ -80,8 +82,29 @@ const FriendChat = (props: Props) => {
            {friend && 
                 <div className="flex flex-col h-full">
 
-                    <div className="h-16 bg-black text-white font-bold flex items-center justify-start px-3">
+                    <div className="h-16 bg-black text-white font-bold flex items-center justify-start px-3 gap-2">
                         <p className="text-white">{friend.username}</p>
+                        <p className="text-white text-sm">#{friend.userId}</p>
+                        <div>
+                            {
+                                friend.online ? (
+                                    <div className="flex gap-2 items-center justify-center">
+                                        <div className="h-4 w-4 rounded-full border-2 border-green-600 p-[2px]">
+                                            <div className="h-full w-full rounded-full bg-green-600"/>
+                                        </div>
+                                        <p className="text-xs font-thin text-green-600">Online</p>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-2 items-center justify-center">
+                                        <div className="h-4 w-4 rounded-full border-2 border-red-600 p-[2px]">
+                                            <div className="h-full w-full rounded-full bg-red-600"/>
+                                        </div>
+                                        <p className="text-xs font-thin text-red-600">Offline</p>
+                                    </div>
+                                    
+                                )
+                            }
+                        </div>
                     </div>
                     
                     {/* CHAT BOX */}
@@ -118,21 +141,22 @@ const FriendChat = (props: Props) => {
 
                     {/* MESSAGE AREA */}
                     <form onSubmit={handleSubmit} className='flex w-full h-14'>
-
-                        <textarea 
+                        
+                        <input 
+                            type="text" 
                             name="message" 
                             id="message" 
-                            className='border-t-2 border-black w-5/6 resize-none outline-none px-2' 
+                            className='border-t-2 border-black w-10/12 resize-none outline-none px-2 py-1 rounded-b-lg' 
                             value={message} 
                             onChange={(e) => setMessage(e.target.value)}
-                        ></textarea>
-
-                        <input 
-                            type='submit' 
-                            value='send' 
-                            className='border-t-2 border-l-2 border-black hover:bg-black hover:text-white duration-200 px-2 cursor-pointer w-1/6'
                         />
-                    
+
+                        <button 
+                        onClick={handleSubmit} 
+                        className='border-t-2 border-l-2 border-black hover:bg-black hover:text-white duration-300 px-2 cursor-pointer w-2/12 grid place-items-center'>
+                            <IoMdSend size={25}/>
+                        </button>
+
                     </form>
 
                 </div>

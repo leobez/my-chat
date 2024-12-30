@@ -7,21 +7,21 @@ const Selection = () => {
     const [selection, setSelection] = useState<'friends'|'groups'>("friends")
 
     return (
-        <div className="border-2 border-black p-2 h-[450px] w-[320px] gap-2 flex flex-col">
+        <div className="border-2 border-black p-2 h-[450px] w-[320px] gap-2 flex flex-col rounded-lg relative z-0">
 
-            <div className="border-2 border-black flex">
+            <div className="flex">
 
                 {selection === 'friends' &&
                     <>
                         <button 
-                            className="w-1/2 p-2 bg-black text-white" 
+                            className="w-1/2 p-2 bg-black text-white rounded-l-lg" 
                             onClick={() => setSelection('friends')}
                         >
                             Friends
                         </button>
 
                         <button 
-                            className="w-1/2 p-2 hover:bg-gray-300 duration-200" 
+                            className="w-1/2 p-2 hover:bg-black hover:text-white duration-300 border-b-2 border-black" 
                             onClick={() => setSelection('groups')}
                         >
                             Groups
@@ -32,14 +32,14 @@ const Selection = () => {
                 {selection === 'groups' &&
                     <>
                         <button 
-                            className="w-1/2 p-2 hover:bg-gray-300 duration-200" 
+                            className="w-1/2 p-2 hover:bg-black hover:text-white duration-300 border-b-2 border-black" 
                             onClick={() => setSelection('friends')}
                         >
                             Friends
                         </button>
 
                         <button 
-                            className="w-1/2 p-2 bg-black text-white" 
+                            className="w-1/2 p-2 bg-black text-white rounded-r-lg" 
                             onClick={() => setSelection('groups')}
                         >
                             Groups

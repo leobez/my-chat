@@ -103,8 +103,8 @@ const Register = () => {
 
                 <Link 
                     to="/login" 
-                    className='w-full px-3 py-2 grid place-items-center hover:bg-black border border-black hover:text-white duration-200'>
-                        Already has an account?
+                    className='w-full px-3 py-2 grid place-items-center hover:bg-black border-2 border-black hover:text-white duration-200'>
+                        Already have an account?
                 </Link>
             
             </Form>

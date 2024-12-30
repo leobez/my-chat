@@ -88,14 +88,12 @@ class  FriendshipModel {
                     return reject({type: 'model', error: err.message})
                 }
 
-                const lastId = this.lastID
-    
-                db.get('SELECT friendshipId, from_user, to_user, from_username, to_username, accepted, wait, created_at FROM Friendship WHERE friendshipId = ?', [lastId], function (err, row) {
+                db.get('SELECT friendshipId, from_user, to_user, from_username, to_username, accepted, wait, created_at FROM Friendship WHERE friendshipId = ?', [friendshipId], function (err, row) {
     
                     if (err) {
                         return reject({type: 'model', error: err.message})
                     }
-    
+
                     return resolve(row);
                 });
     

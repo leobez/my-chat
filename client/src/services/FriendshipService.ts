@@ -179,6 +179,8 @@ class FriendshipService {
             const parsedResponse = await response.json()
             validateResponse(response, parsedResponse)
 
+            console.log('parsedResponse: ', parsedResponse)
+
             return {
                 success: true,
                 data: parsedResponse.data

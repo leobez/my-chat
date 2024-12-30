@@ -375,7 +375,7 @@ db.serialize(() => {
         
         INSERT INTO Friendship(from_user, to_user, accepted, wait) VALUES (?, ?, ?, ?)
 
-    `, [1, 3, true, false], (err) => {
+    `, [3, 1, false, true], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)

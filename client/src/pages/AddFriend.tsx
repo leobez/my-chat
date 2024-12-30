@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
-import FeedbackMessage from '../components/Form/FormFeedback'
+import { useState } from 'react'
+import { useSendFriendRequest } from '../hooks/friendshipHooks/useSendFriendRequest'
 
-type Props = {}
+const AddFriend = () => {
 
-const AddFriend = (props: Props) => {
+    const [userIdToAdd, setUserIdToAdd] = useState<number>(0)
 
-    const [usernameToAdd, setUsernameToAdd] = useState<string>('')
+    const {sendFriendRequest} = useSendFriendRequest()
 
     const handleSubmit = (e:any) => {
         e.preventDefault()
+        sendFriendRequest(userIdToAdd)
     }
 
     return (
@@ -19,35 +20,27 @@ const AddFriend = (props: Props) => {
                 <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-80 py-3'>
                 
                 <div className='border-b-2 border-black p-2'>
-                    <p>ADD A FRIEND</p>
+                    <p>Add a friend</p>
                 </div>
 
                 <div className='flex gap-1 flex-col'>
-                    <label htmlFor="email" className='flex justify-start'>Username:</label>
+                    <label htmlFor="email" className='flex justify-start'>Enter user Id:</label>
                     <input 
-                        type="text" 
-                        name="usernameToAdd" 
-                        id="usernameToAdd" 
-                        onChange={(e) => setUsernameToAdd(e.target.value)}
-                        value={usernameToAdd}
-                        className='border-2 border-black w-full p-2'/>                
+                        type="number" 
+                        name="userIdToAdd" 
+                        id="userIdToAdd" 
+                        onChange={(e) => setUserIdToAdd(Number(e.target.value))}
+                        value={userIdToAdd}
+                        className='border-2 border-black w-full p-2'
+                    /> 
                 </div>
 
                 <div className='flex gap-2 justify-center'>
                     <input type="submit" value="Send request" className='border-2 border-black px-3 py-2 w-fit cursor-pointer hover:bg-black hover:text-white duration-200'/>
                 </div>
 
-                {/* <FeedbackMessage clientSideFeedback={clientSideFeedback}/>
-                <FeedbackMessage serverSideFeedback={serverSideFeedback}/> */}
-
                 </form>
             </div>
-
-            {/* SUGGESTIONS */}
-            <div className='p-2'>
-                SUGGESTIONS
-            </div>
-
         </div>
     )
 }

@@ -31,12 +31,12 @@ const Register = () => {
             feedbackCount++
         }
 
-        if (!password || password.length == 3) {
+        if (!password) {
             setFeedback((prev) => [...prev, 'Password empty'])
             feedbackCount++
         }
 
-        if (password.length <= 3) {
+        if (password.length < 3) {
             setFeedback((prev) => [...prev, 'Password minimum length: 3'])
             feedbackCount++
         }

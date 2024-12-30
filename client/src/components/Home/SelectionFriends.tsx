@@ -13,6 +13,42 @@ import { TiDeleteOutline } from "react-icons/ti";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { useAcceptFriendRequest } from "../../hooks/friendshipHooks/useAcceptFriendRequest";
 import { useDenyFriendRequest } from "../../hooks/friendshipHooks/useDenyFriendRequest";
+import { createTheme, Tooltip, ThemeProvider } from "@mui/material";
+
+
+const redTooltipTheme = createTheme({
+    components: {
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: "#dc2626", // Cor de fundo
+            color: "#fff", // Cor do texto
+            fontSize: "12px", // Tamanho da fonte
+          },
+          arrow: {
+            color: "#dc2626", // Cor da seta
+          },
+        },
+      },
+    },
+});
+
+const greenTooltipTheme = createTheme({
+    components: {
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: "#16a34a", // Cor de fundo
+            color: "#fff", // Cor do texto
+            fontSize: "12px", // Tamanho da fonte
+          },
+          arrow: {
+            color: "#16a34a", // Cor da seta
+          },
+        },
+      },
+    },
+});
 
 const SelectionFriends = () => {
 
@@ -43,7 +79,7 @@ const SelectionFriends = () => {
     }
 
     return (
-        <div className='h-full scrollbar-thin relative z-0'>
+        <div className='h-full scrollbar-thin relative z-0 pr-2 overflow-x-hidden overflow-y-scroll'>
 
             <Accordion defaultExpanded disableGutters className="border-2 my-1 border-black shadow-none">
                 <AccordionSummary
@@ -53,6 +89,7 @@ const SelectionFriends = () => {
                 >
                 <Typography component="span">Friends</Typography>
                 </AccordionSummary>
+                
                 <ul className="flex flex-col gap-1 p-2">
 
                     {friends.length === 0 && <p>None</p>}
@@ -66,7 +103,7 @@ const SelectionFriends = () => {
                                     onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
                                     <div className="flex gap-3">
                                         <FaUser size={20}/>
-                                        <p>{friend.username}</p>
+                                        <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{friend.username}</p>
                                         <p className="text-sm grid place-items-center"># {friend.userId}</p>
                                     </div>
                                     <div>
@@ -89,7 +126,7 @@ const SelectionFriends = () => {
                                 onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
                                     <div className="flex gap-3">
                                         <FaUser size={20}/>
-                                        <p>{friend.username}</p>
+                                        <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{friend.username}</p>
                                         <p className="text-sm grid place-items-center"># {friend.userId}</p>
                                     </div>
                                     <div>
@@ -114,6 +151,7 @@ const SelectionFriends = () => {
             </Accordion>
 
             <Accordion disableGutters className="border-2 my-1 border-black shadow-none">
+
                 <AccordionSummary
                 expandIcon={<MdExpandMore size={20}/>}
                 aria-controls="received-requests-content"
@@ -121,38 +159,58 @@ const SelectionFriends = () => {
                 >
                 <Typography component="span">Received requests</Typography>
                 </AccordionSummary>
-                <ul className="flex flex-col gap-1 p-2">
+
+                <ul className="flex flex-col gap-1 p-2 z-10">
 
                     {receivedRequests.length === 0 && <p>None</p>}
 
                     {receivedRequests.map((request:Request) => (
-                        <li key={request.friendshipId} className="w-full">
-                            <div className="p-3 w-full border text-left flex gap-2 items-center rounded-lg justify-between">
+
+                        <li key={request.friendshipId} className="w-full overflow-visible">
+
+                            <div className="p-3 w-full border text-left flex gap-2 items-center rounded-lg justify-between z-10 overflow-visible">
 
                                 <div className=" flex gap-2">
                                     <FaUser size={20}/>
-                                    <p>{request.from_username}</p>
+                                    <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{request.from_username}</p>
                                     <p className="text-sm grid place-items-center"># {request.from_user}</p>
                                 </div>
 
-                                <div className="flex gap-2">
-                                    <button 
-                                    className="grid place-items-center px-3 py-1 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip z-10" 
-                                    onClick={() => handleAccept(request.friendshipId)}>
-                                        <IoPersonAddOutline size={25}/>
-                                        <div className="tooltip-text bg-green-600 text-white z-50">
-                                            <p>Accept request</p>
-                                        </div>
-                                    </button>
+                                <div className="flex gap-2 relative overflow-visible">
+                                    <ThemeProvider theme={greenTooltipTheme}>
+                                        <Tooltip 
+                                            title="Accept request" 
+                                            placement="top" 
+                                            arrow 
+                                            slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
+                                            >
 
-                                    <button 
-                                    className="grid place-items-center px-3 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg tooltip z-10" 
-                                    onClick={() => handleDenial(request.friendshipId)}>
-                                        <TiDeleteOutline size={25}/>
-                                        <div className="tooltip-text bg-red-600 text-white z-50">
-                                            <p>Deny request</p>
-                                        </div>
-                                    </button>
+                                            <button 
+                                            className="grid place-items-center px-3 py-1 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip z-50 border-2" 
+                                            onClick={() => handleAccept(request.friendshipId)}>
+                                                <IoPersonAddOutline size={25}/>
+                                            </button>
+
+                                        </Tooltip>
+                                    </ThemeProvider>
+
+                                    <ThemeProvider theme={redTooltipTheme}>
+                                        <Tooltip 
+                                            title="Deny request" 
+                                            placement="top" 
+                                            arrow 
+                                            slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
+                                            >
+
+                                            <button 
+                                            className="grid place-items-center px-3 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
+                                            onClick={() => handleDenial(request.friendshipId)}>
+                                                <TiDeleteOutline size={25}/>
+                                            </button>
+
+                                        </Tooltip>
+                                    </ThemeProvider>
+
                                 </div>
                                 
 
@@ -183,18 +241,24 @@ const SelectionFriends = () => {
 
                                 <div className=" flex gap-2">
                                     <FaUser size={20}/>
-                                    <p>{request.to_username}</p>
+                                    <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{request.to_username}</p>
                                     <p className="text-sm grid place-items-center"># {request.to_user}</p>
                                 </div>
 
-                                <button 
-                                    className="grid place-items-center px-3 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg tooltip z-0" 
-                                    onClick={() => handleRemoval(request.friendshipId)}>
-                                    <RiChatDeleteFill size={25}/>
-                                    <div className="tooltip-text bg-red-600 text-white z-50">
-                                        <p>Delete request</p>
-                                    </div>
-                                </button>
+                                <ThemeProvider theme={redTooltipTheme}>
+                                    <Tooltip 
+                                        title="Delete request" 
+                                        placement="top" 
+                                        arrow 
+                                        slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
+                                        >
+                                        <button 
+                                            className="grid place-items-center px-3 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
+                                            onClick={() => handleRemoval(request.friendshipId)}>
+                                            <RiChatDeleteFill size={25}/>
+                                        </button>
+                                    </Tooltip>
+                                </ThemeProvider>
 
                             </div>
                         </li>

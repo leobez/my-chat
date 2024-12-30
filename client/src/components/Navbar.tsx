@@ -22,7 +22,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { !isLogged && <li><NavLink to="/login" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg" : "py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center" : "py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200 w-fit flex gap-2 items-center justify-center"
                     }>
                     Login
                     </NavLink>
@@ -30,7 +30,7 @@ const Navbar = ({isLogged}: Props) => {
 
                 { !isLogged && <li><NavLink to="/register" 
                     className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg " : "py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
+                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center" : "py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200 w-fit flex gap-2 items-center justify-center"
                     }>
                     Register
                     </NavLink>

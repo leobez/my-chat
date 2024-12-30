@@ -11,6 +11,7 @@ import { useDeleteFriendship } from "../../hooks/friendshipHooks/useDeleteFriend
 import { FaUser } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { removeHasNewMessagesWs } from "../../slices/friendshipSlice" 
+import Loading from "../Loading"
 
 type Props = {
     userId: number
@@ -99,6 +100,18 @@ const FriendChat = (props: Props) => {
     // Close chat
     const handleClose = () => {
         updateChatting(null)
+    }
+
+    // Mount
+    const [isMounted, setIsMounted] = useState<boolean>(false)
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    if (!isMounted) {
+        return (
+            <Loading/>
+        )
     }
 
     return (

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLogin } from '../../hooks/authHooks/useLogin'
 import Form from '../../components/Form/Form'
+import Loading from '../../components/Loading'
 
 const Login = () => {
 
@@ -49,9 +50,19 @@ const Login = () => {
         setPassword('123')
     }, [])
 
-    return (
+    const [isMounted, setIsMounted] = useState<boolean>(false)
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
-        <div className='p-4 border-2 border-black grid place-items-center'>
+    if (!isMounted) {
+        return (
+            <Loading/>
+        )
+    }
+
+    return (
+        <div className='p-4 border-2 border-black grid place-items-center rounded-lg'>
 
             <Form
 

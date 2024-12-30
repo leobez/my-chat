@@ -28,7 +28,7 @@ type Props = {
 const Form = (props: Props) => {
 
     return (
-        <div className='p-4 border-2 border-black grid place-items-center'>
+        <div className='p-4 border-2 border-black grid place-items-center rounded-lg'>
 
             <form onSubmit={props.onSubmitFunction} className='flex flex-col gap-4 w-80 py-3'>
 

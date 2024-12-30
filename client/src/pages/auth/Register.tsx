@@ -56,7 +56,7 @@ const Register = () => {
 
     return (
 
-        <div className='p-4 border-2 border-black grid place-items-center'>
+        <div className='p-4 border-2 border-black grid place-items-center rounded-lg'>
 
             <Form
 

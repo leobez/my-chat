@@ -34,6 +34,7 @@ class FriendshipService {
                 const friend = await UserModel.read({by: 'id', data: friendsId[a]})
                 friendsfinal.push({
                     userId: friend.userId,
+                    friendshipId: friendsList[a].friendshipId,
                     online: friend.socketId ? true : false,
                     username: friend.username,
                 })
@@ -251,7 +252,6 @@ class FriendshipService {
 
     }
 
-    // TODO
     static async deleteFriendRequest(userId, friendshipId) {
 
         try {

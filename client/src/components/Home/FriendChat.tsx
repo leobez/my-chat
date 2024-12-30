@@ -6,6 +6,8 @@ import { History, Message } from "../../slices/messageSlice"
 import ChatContext, { ChatContextType } from "../../context/ChatContext"
 import { IoMdSend } from "react-icons/io";
 import { Friend } from "../../slices/friendshipSlice"
+import { AiOutlineUserDelete } from "react-icons/ai";
+import { useDeleteFriendship } from "../../hooks/friendshipHooks/useDeleteFriendship"
 
 type Props = {
     userId: number
@@ -19,7 +21,7 @@ const FriendChat = (props: Props) => {
 
     // Friend data
     const friends = useSelector((state:any) => state.friendship.friends)
-    const [friend, setFriend] = useState<any>(null)
+    const [friend, setFriend] = useState<Friend|null>(null)
 
     // Hooks
     const {getHistoryWithUser} = useGetHistory()
@@ -28,6 +30,8 @@ const FriendChat = (props: Props) => {
     const {chatting} = useContext(ChatContext) as ChatContextType
 
     useEffect(() => {
+
+        console.log('friends: ', friend)
 
         friends.forEach((friend:Friend) => {
             if (friend.userId === friend_id) {
@@ -77,34 +81,54 @@ const FriendChat = (props: Props) => {
         setMessage("")
     }
 
+    // Delete friend
+    const {deleteFriendship} = useDeleteFriendship()
+    const handleDelete = (friendshipId:number) => {
+        deleteFriendship(friendshipId)
+    }
+
     return (
         <div className="w-full h-full">
            {friend && 
                 <div className="flex flex-col h-full">
 
-                    <div className="h-16 bg-black text-white font-bold flex items-center justify-start px-3 gap-2">
-                        <p className="text-white">{friend.username}</p>
-                        <p className="text-white text-sm">#{friend.userId}</p>
-                        <div>
-                            {
-                                friend.online ? (
-                                    <div className="flex gap-2 items-center justify-center">
-                                        <div className="h-4 w-4 rounded-full border-2 border-green-600 p-[2px]">
-                                            <div className="h-full w-full rounded-full bg-green-600"/>
+                    <div className="h-16 bg-black text-white font-bold flex justify-between items-center px-3">
+
+                        <div className="flex items-center justify-start gap-2">
+                            <p className="text-white">{friend.username}</p>
+                            <p className="text-white text-sm">#{friend.userId}</p>
+                            <div>
+                                {
+                                    friend.online ? (
+                                        <div className="flex gap-2 items-center justify-center">
+                                            <div className="h-4 w-4 rounded-full border-2 border-green-600 p-[2px]">
+                                                <div className="h-full w-full rounded-full bg-green-600"/>
+                                            </div>
+                                            <p className="text-xs font-thin text-green-600">Online</p>
                                         </div>
-                                        <p className="text-xs font-thin text-green-600">Online</p>
-                                    </div>
-                                ) : (
-                                    <div className="flex gap-2 items-center justify-center">
-                                        <div className="h-4 w-4 rounded-full border-2 border-red-600 p-[2px]">
-                                            <div className="h-full w-full rounded-full bg-red-600"/>
+                                    ) : (
+                                        <div className="flex gap-2 items-center justify-center">
+                                            <div className="h-4 w-4 rounded-full border-2 border-red-600 p-[2px]">
+                                                <div className="h-full w-full rounded-full bg-red-600"/>
+                                            </div>
+                                            <p className="text-xs font-thin text-red-600">Offline</p>
                                         </div>
-                                        <p className="text-xs font-thin text-red-600">Offline</p>
-                                    </div>
-                                    
-                                )
-                            }
+                                        
+                                    )
+                                }
+                            </div>
+                        </div> 
+                        <div className="flex gap-2 items-center">
+                            <button 
+                                className="border-2 border-red-600 p-2 rounded-lg text-red-600 font-bold hover:bg-red-600 hover:text-white duration-300 flex gap-2"
+                                onClick={() => handleDelete(friend.friendshipId)}
+                                >
+                                <p className="font-thin">Delete friend</p>
+                                <AiOutlineUserDelete size={25}/>
+                            </button>
                         </div>
+                        
+
                     </div>
                     
                     {/* CHAT BOX */}

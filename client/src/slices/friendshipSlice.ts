@@ -3,6 +3,7 @@ import { OnlineStatus } from "../context/SocketContext";
 
 export interface Friend {
     userId: number
+    friendshipId: number
     username: string
     online?: boolean
 }

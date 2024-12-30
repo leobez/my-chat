@@ -89,7 +89,7 @@ const SelectionFriends = () => {
                 >
                 <Typography component="span">Friends</Typography>
                 </AccordionSummary>
-                
+
                 <ul className="flex flex-col gap-1 p-2">
 
                     {friends.length === 0 && <p>None</p>}
@@ -99,12 +99,16 @@ const SelectionFriends = () => {
 
                             {friend.userId === chatting?.id ? (
                                 <button 
-                                    className="p-3 w-full border text-left bg-black text-white duration-300 flex gap-2 items-center rounded-lg justify-between" 
+                                    className="p-3 w-full border-2 text-left bg-black text-white duration-300 flex gap-2 items-center rounded-lg justify-between" 
                                     onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
-                                    <div className="flex gap-3">
-                                        <FaUser size={20}/>
-                                        <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{friend.username}</p>
-                                        <p className="text-sm grid place-items-center"># {friend.userId}</p>
+                                    <div className="flex gap-3 items-center">
+                                        <div className="h-full grid place-items-center">
+                                            <FaUser size={25}/>
+                                        </div>
+                                        <div>
+                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px] text-sm">{friend.username}</p>
+                                            <p className="text-xs"># {friend.userId}</p>
+                                        </div>
                                     </div>
                                     <div>
                                         {
@@ -124,11 +128,21 @@ const SelectionFriends = () => {
                                 <button 
                                 className="p-3 w-full border text-left hover:bg-black hover:text-white duration-300 flex gap-2 items-center rounded-lg justify-between" 
                                 onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
-                                    <div className="flex gap-3">
-                                        <FaUser size={20}/>
-                                        <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{friend.username}</p>
-                                        <p className="text-sm grid place-items-center"># {friend.userId}</p>
+
+                                    <div className="flex gap-3 items-center">
+                                        <div className="h-full grid place-items-center">
+                                            <FaUser size={25}/>
+                                        </div>
+                                        <div>
+                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px] text-sm">{friend.username}</p>
+                                            <p className="text-xs"># {friend.userId}</p>
+                                        </div>
                                     </div>
+
+                                    <div>
+                                        {friend.has_new_messages_ws && <p className="text-xs text-green-600 text-center">New message!</p>}
+                                    </div>
+
                                     <div>
                                         {
                                             friend.online ? (
@@ -157,25 +171,33 @@ const SelectionFriends = () => {
                 aria-controls="received-requests-content"
                 id="received-requests-header"
                 >
-                <Typography component="span">Received requests</Typography>
+                <Typography component="span">Received friend requests</Typography>
                 </AccordionSummary>
 
-                <ul className="flex flex-col gap-1 p-2 z-10">
+                <ul className="flex flex-col gap-1 p-2">
 
                     {receivedRequests.length === 0 && <p>None</p>}
 
                     {receivedRequests.map((request:Request) => (
 
-                        <li key={request.friendshipId} className="w-full overflow-visible">
+                        <li key={request.friendshipId} className="w-full">
 
-                            <div className="p-3 w-full border text-left flex gap-2 items-center rounded-lg justify-between z-10 overflow-visible">
+                            <div className="p-3 w-full border-2 text-left flex gap-2 items-center rounded-lg justify-between">
 
-                                <div className=" flex gap-2">
-                                    <FaUser size={20}/>
-                                    <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{request.from_username}</p>
-                                    <p className="text-sm grid place-items-center"># {request.from_user}</p>
+                                {/* FRIEND INFO */}
+                                <div className="flex gap-2">
+                                    <div className="flex gap-3 items-center">
+                                        <div className="h-full grid place-items-center">
+                                            <FaUser size={25}/>
+                                        </div>
+                                        <div>
+                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[100px] text-sm">{request.from_username}</p>
+                                            <p className="text-xs"># {request.from_user}</p>
+                                        </div>
+                                    </div>
                                 </div>
 
+                                {/* BUTTONS */}
                                 <div className="flex gap-2 relative overflow-visible">
                                     <ThemeProvider theme={greenTooltipTheme}>
                                         <Tooltip 
@@ -186,9 +208,9 @@ const SelectionFriends = () => {
                                             >
 
                                             <button 
-                                            className="grid place-items-center px-3 py-1 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip z-50 border-2" 
+                                            className="grid place-items-center px-2 py-1 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip border-2" 
                                             onClick={() => handleAccept(request.friendshipId)}>
-                                                <IoPersonAddOutline size={25}/>
+                                                <IoPersonAddOutline size={20}/>
                                             </button>
 
                                         </Tooltip>
@@ -203,9 +225,9 @@ const SelectionFriends = () => {
                                             >
 
                                             <button 
-                                            className="grid place-items-center px-3 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
+                                            className="grid place-items-center px-2 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
                                             onClick={() => handleDenial(request.friendshipId)}>
-                                                <TiDeleteOutline size={25}/>
+                                                <TiDeleteOutline size={20}/>
                                             </button>
 
                                         </Tooltip>
@@ -213,8 +235,8 @@ const SelectionFriends = () => {
 
                                 </div>
                                 
-
                             </div>
+
                         </li>
                     ))}
                 </ul>
@@ -227,7 +249,7 @@ const SelectionFriends = () => {
                     aria-controls="sent-requests-content"
                     id="sent-requests-header"
                 >
-                <Typography component="span">Sent requests</Typography>
+                <Typography component="span">Sent friend requests</Typography>
 
                 </AccordionSummary>
 
@@ -237,12 +259,18 @@ const SelectionFriends = () => {
 
                     {sentRequests.map((request:Request) => (
                         <li key={request.friendshipId} className="w-full">
-                            <div className="p-3 w-full border text-left flex gap-2 items-center rounded-lg justify-between">
+                            <div className="p-3 w-full border-2 text-left flex gap-2 items-center rounded-lg justify-between">
 
                                 <div className=" flex gap-2">
-                                    <FaUser size={20}/>
-                                    <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px]">{request.to_username}</p>
-                                    <p className="text-sm grid place-items-center"># {request.to_user}</p>
+                                    <div className="flex gap-3 items-center">
+                                        <div className="h-full grid place-items-center">
+                                            <FaUser size={25}/>
+                                        </div>
+                                        <div>
+                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[100px] text-sm">{request.to_username}</p>
+                                            <p className="text-xs"># {request.to_user}</p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <ThemeProvider theme={redTooltipTheme}>
@@ -253,9 +281,9 @@ const SelectionFriends = () => {
                                         slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
                                         >
                                         <button 
-                                            className="grid place-items-center px-3 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
+                                            className="grid place-items-center px-2 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
                                             onClick={() => handleRemoval(request.friendshipId)}>
-                                            <RiChatDeleteFill size={25}/>
+                                            <RiChatDeleteFill size={20}/>
                                         </button>
                                     </Tooltip>
                                 </ThemeProvider>

@@ -1,9 +1,10 @@
 import { useContext, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import SocketContext, { OnlineStatus, SocketContextType } from "../context/SocketContext"
-import { addFriend, addReceivedRequest, removeSentRequest, Request, updateOnlineStatus, removeReceivedRequest, removeFriend } from "../slices/friendshipSlice"
+import { addFriend, addReceivedRequest, removeSentRequest, Request, updateOnlineStatus, removeReceivedRequest, removeFriend, updateHasNewMessagesWs } from "../slices/friendshipSlice"
 import { useGetUserById } from "./userHooks/useGetUserById"
 import { addMessage, Message } from "../slices/messageSlice"
+import ChatContext, { ChatContextType } from "../context/ChatContext"
 
 
 export interface FriendshipData {
@@ -15,6 +16,8 @@ export const useSocket = () => {
 
     const dispatch = useDispatch()
     const {socket} = useContext(SocketContext) as SocketContextType
+
+    const {chatting, updateChatting} = useContext(ChatContext) as ChatContextType
 
     const {getUserById} = useGetUserById()
 
@@ -43,6 +46,8 @@ export const useSocket = () => {
             } 
 
             if (data.type === 'deleted') {
+                console.log('deleted', chatting?.id, data.data.from_user)
+                if (chatting?.id === data.data.from_user || chatting?.id === data.data.to_user) updateChatting(null)
                 dispatch(removeFriend(data.data.from_user))
                 dispatch(removeFriend(data.data.to_user))
                 dispatch(removeSentRequest(data.data.friendshipId))   
@@ -51,7 +56,10 @@ export const useSocket = () => {
 
         })
 
-        socket.on('private message', (message:Message) => dispatch(addMessage(message)))
+        socket.on('private message', (message:Message) => {
+            dispatch(addMessage(message))
+            dispatch(updateHasNewMessagesWs(message.from_user))
+        })
 
         return  () => {
             socket.off('friends online status')

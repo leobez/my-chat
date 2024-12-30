@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import FriendshipService from "../../services/FriendshipService"
 import { removeFriend, removeSentRequest } from "../../slices/friendshipSlice"

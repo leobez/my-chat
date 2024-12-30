@@ -6,6 +6,7 @@ export interface Friend {
     friendshipId: number
     username: string
     online?: boolean
+    has_new_messages_ws?:boolean
 }
 
 export interface Request {
@@ -55,8 +56,20 @@ export const friendshipSlice = createSlice({
             const newArray = state.friends.filter((friend) => friend.userId !== action.payload)
             state.friends = newArray
         },
-
-
+        updateHasNewMessagesWs: (state, action:PayloadAction<Number>) => {
+            state.friends.map((friend:Friend) => {
+                if (friend.userId === action.payload) {
+                    friend.has_new_messages_ws = true
+                }
+            })
+        },
+        removeHasNewMessagesWs: (state, action:PayloadAction<Number>) => {
+            state.friends.map((friend:Friend) => {
+                if (friend.userId === action.payload) {
+                    friend.has_new_messages_ws = false
+                }
+            })
+        },
         // receivedRequests[]
         setReceivedRequest: (state, action:PayloadAction<Request[]>) => {
             state.receivedRequests = action.payload    
@@ -97,6 +110,8 @@ export const {
     addFriend, 
     updateOnlineStatus,
     removeFriend,
+    updateHasNewMessagesWs,
+    removeHasNewMessagesWs,
     setReceivedRequest,
     addReceivedRequest,
     removeReceivedRequest,

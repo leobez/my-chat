@@ -7,7 +7,7 @@ export interface Chatting {
 
 export interface ChatContextType {
     chatting: Chatting|null
-    updateChatting:(newChatting:Chatting)=>void
+    updateChatting:(newChatting:Chatting|null)=>void
 }
 
 const ChatContext = createContext<ChatContextType|undefined>(undefined)
@@ -20,9 +20,7 @@ export function ChatContextProvider({children}:ChatContextProps) {
 
     const [chatting, setChatting] = useState<Chatting|null>(null)
 
-    const updateChatting = (newChatting:Chatting) => {
-        //console.log('newChatting: ',newChatting)
-        if (!newChatting) return;
+    const updateChatting = (newChatting:Chatting|null) => {
         setChatting(newChatting)
     }
 

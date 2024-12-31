@@ -64,22 +64,22 @@ const Register = () => {
 
                 fields={[
                     {
-                        name: 'email',
+                        name: 'Email',
                         type: 'text',
                         id: 'email',
                         onChangeFunction: (e) => setEmail(e.target.value),
                         value: email
                     },
                     {
-                        name: 'username',
+                        name: 'Username',
                         type: 'text',
                         id: 'username',
                         onChangeFunction: (e) => setUsername(e.target.value),
                         value: username
                     },
                     {
-                        name: 'password',
-                        type: 'text',
+                        name: 'Password',
+                        type: 'password',
                         id: 'password',
                         onChangeFunction: (e) => setPassword(e.target.value),
                         value: password

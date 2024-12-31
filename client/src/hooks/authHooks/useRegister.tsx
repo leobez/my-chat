@@ -1,13 +1,16 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useDispatch } from "react-redux"
 import { loginUser } from "../../slices/authSlice"
 import AuthService, { RegisterData } from "../../services/AuthService"
+import SnackbarContext, { SnackbarContextType } from "../../context/SnackbarContext"
 
 export const useRegister = () => {
 
     const [feedback, setFeedback] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useDispatch()
+
+    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
 
     const register = async(data:RegisterData) => {
         
@@ -24,6 +27,9 @@ export const useRegister = () => {
                 username: result.data.username
             }
         ))     
+    
+        handleSnackbar({open: true, message: 'User logged in', severity: 'success'})
+
     }
 
     return {

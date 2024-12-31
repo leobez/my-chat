@@ -5,13 +5,17 @@ import { useLogout } from "../../hooks/authHooks/useLogout"
 const Logout = () => {
 
     const navigate = useNavigate()
-    const {logout, } = useLogout()
+    const {logout} = useLogout()
 
     useEffect(() => {
         logout()
         navigate('/login')
     }, [])
 
+    return (
+        <>
+        </>
+    )
 }
 
 export default Logout

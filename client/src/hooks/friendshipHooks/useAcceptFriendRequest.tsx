@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useDispatch } from "react-redux"
 import FriendshipService from "../../services/FriendshipService"
 import { addFriend, removeReceivedRequest } from "../../slices/friendshipSlice"
 import { useGetUserById } from "../userHooks/useGetUserById"
+import SnackbarContext, { SnackbarContextType } from "../../context/SnackbarContext"
 
 export const useAcceptFriendRequest = () => {
 
@@ -14,6 +15,8 @@ export const useAcceptFriendRequest = () => {
 
     const {getUserById} = useGetUserById()
 
+    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
+
     const acceptFriendRequest = async(friendshipId:number) => {
         
         setFeedback([])
@@ -21,7 +24,9 @@ export const useAcceptFriendRequest = () => {
         const result = await FriendshipService.acceptRequest(friendshipId)
         setLoading(false)
 
-        if (!result.success && result.details) return setFeedback(result.details)
+        if (!result.success && result.details) {
+            return handleSnackbar({open: true, message: result.details[0], severity: 'error'})
+        }
         
         // Get user of person we just accepted the request
         const user = await getUserById(result.data.from_user)
@@ -29,6 +34,9 @@ export const useAcceptFriendRequest = () => {
         // Add that person to redux and remove the request
         dispatch(addFriend(user))
         dispatch(removeReceivedRequest(result.data.friendshipId))
+
+        handleSnackbar({open: true, message: 'Added new friend', severity: 'success'})
+
     }
 
     return {

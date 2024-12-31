@@ -1,18 +1,24 @@
 import './App.css'
+
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useGetMe } from './hooks/authHooks/useGetMe';
+
+// COMPONENTS
+import Navbar from './components/Navbar';
+import Loading from './components/Loading';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
+// PAGES
+import AddFriend from './pages/AddFriend';
+import NotFound from './pages/NotFound';
+import Logout from './pages/auth/Logout';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Home from './pages/Home';
-import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import NotFound from './pages/NotFound';
-import Logout from './pages/auth/Logout';
-import { useGetMe } from './hooks/authHooks/useGetMe';
-import Navbar from './components/Navbar';
-import Loading from './components/Loading';
-import AddFriend from './pages/AddFriend';
+import SnackBar from './components/Snackbar';
 
 function App() {
 
@@ -40,6 +46,7 @@ function App() {
         <BrowserRouter>
 
           <Navbar isLogged={userId ? true : false}/>
+          <SnackBar/>
 
           <Routes>
 

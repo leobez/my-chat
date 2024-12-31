@@ -5,6 +5,7 @@ import { resetFriendshipState } from "../../slices/friendshipSlice"
 import { resetMessageState } from "../../slices/messageSlice"
 import AuthService from "../../services/AuthService"
 import SocketContext, { SocketContextType } from "../../context/SocketContext"
+import SnackbarContext, { SnackbarContextType } from "../../context/SnackbarContext"
 
 export const useLogout = () => {
 
@@ -14,6 +15,8 @@ export const useLogout = () => {
 
     const {disconnect} = useContext(SocketContext) as SocketContextType
 
+    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
+
     const logout = async() => {
 
         setFeedback([])
@@ -21,7 +24,9 @@ export const useLogout = () => {
         const result = await AuthService.logout()
         setLoading(false)
 
-        if (!result.success && result.details) return setFeedback(result.details)
+        if (!result.success && result.details) {
+            return handleSnackbar({open: true, message: result.details[0], severity: 'error'})
+        }
         
         // Terminate ws connection
         disconnect()
@@ -30,6 +35,8 @@ export const useLogout = () => {
         dispatch(resetFriendshipState())
         dispatch(resetMessageState())
         dispatch(logoutUser())    
+
+        handleSnackbar({open: true, message: 'User logged out', severity: 'success'})
     }
 
     return {

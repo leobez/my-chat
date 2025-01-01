@@ -14,11 +14,11 @@ import Footer from './components/Footer';
 // PAGES
 import AddFriend from './pages/AddFriend';
 import NotFound from './pages/NotFound';
-import Logout from './pages/auth/Logout';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import SnackBar from './components/Snackbar';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -40,32 +40,41 @@ function App() {
     }
 
     return (
-      <>
-        <Header/>
+      <div className='h-[calc(100vh-12px)] flex flex-col'>
 
-        <BrowserRouter>
+        <header className='h-20'>
+          <Header/>
+        </header>
 
-          <Navbar isLogged={userId ? true : false}/>
-          <SnackBar/>
+        <main className='flex-1 flex flex-col gap-1 max-h-full overflow-hidden'>
+          <BrowserRouter>
 
-          <Routes>
+            <Navbar isLogged={userId ? true : false}/>
 
-            {/* UNPROTECTED ROUTES */}
-            <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
-            <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
+            <SnackBar/>
 
-            {/* PROTECTED ROUTES */}
-            <Route path="/logout" element={userId ? <Logout/> : <Navigate to="/login"/>}/>
-            <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
-            <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
-            <Route path='*' element={<NotFound />} /> 
+            <Routes>
 
-          </Routes>
+              {/* UNPROTECTED ROUTES */}
+              <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
+              <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
 
-        </BrowserRouter>
+              {/* PROTECTED ROUTES */}
+              <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
+              <Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>
+              <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
+              <Route path='*' element={<NotFound />} /> 
 
-        <Footer/>
-      </>
+            </Routes>
+
+          </BrowserRouter>
+        </main>
+
+        <footer className='h-20'>
+          <Footer/>
+        </footer>
+
+      </div>
     )
 }
 

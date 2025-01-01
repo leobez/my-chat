@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { FaUser } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { TiGroup } from "react-icons/ti";
+import { useLogout } from '../hooks/authHooks/useLogout';
 
 type Props = {
     isLogged:boolean
@@ -12,11 +12,10 @@ type Props = {
 
 const Navbar = ({isLogged}: Props) => {
 
-    const userId = useSelector((state:any) => state.auth.userId)
-    const username = useSelector((state:any) => state.auth.username)
+    const {logout} = useLogout()
 
     return (
-        <nav className='border-2 p-2 my-2 border-black flex justify-between rounded-lg'>
+        <nav className='border-2 p-2 mt-1 border-black flex justify-between rounded-lg'>
 
             <ul className='flex gap-2 p-2'>
 
@@ -45,7 +44,7 @@ const Navbar = ({isLogged}: Props) => {
                     </NavLink>
                 </li> }
 
-                { isLogged && <li><NavLink to={`/profile/${userId}`} 
+                { isLogged && <li><NavLink to={`/profile`} 
                     className={({ isActive, isPending }) =>
                         isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center" : "w-fit flex gap-2 items-center justify-center py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200"
                     }>
@@ -72,13 +71,11 @@ const Navbar = ({isLogged}: Props) => {
                     </NavLink>
                 </li> }
 
-                { isLogged && <li><NavLink to="/logout" 
-                    className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center" : "w-fit flex gap-2 items-center justify-center py-2 px-3 rounded-lg hover:bg-red-700  hover:text-white cursor-pointer duration-200"
-                    }>
-                    <MdLogout size={20}/>
-                    Logout
-                    </NavLink>
+                { isLogged && <li>
+                    <button onClick={() => logout()} className='bg-white text-black hover:bg-red-600 hover:text-white duration-300 py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center'>
+                        <MdLogout size={20}/>
+                        Logout
+                    </button>
                 </li> }
 
 

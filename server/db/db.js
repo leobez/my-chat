@@ -158,7 +158,9 @@ db.serialize(() => {
         CREATE TABLE Messages(
             messageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             from_user INTEGER NOT NULL,
+            from_username VARCHAR(255),
             to_user INTEGER NOT NULL,
+            to_username VARCHAR(255),
             content VARCHAR(500) NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(from_user) REFERENCES Users(userId) ON DELETE CASCADE,
@@ -169,6 +171,26 @@ db.serialize(() => {
             console.log('Error while creating "Messages" table', err.message)
         } else {
             console.log('Table Messages created')
+        }
+    }),
+
+    // Trigger to insert usernames of users of a friendship
+    db.run(`
+        CREATE TRIGGER update_messages_usernames_on_insert
+        AFTER INSERT ON Messages
+        FOR EACH ROW
+        BEGIN
+            UPDATE Messages
+        SET 
+            from_username = (SELECT username FROM Users WHERE userId = NEW.from_user),
+            to_username = (SELECT username FROM Users WHERE userId = NEW.to_user)
+            WHERE messageId = NEW.messageId;
+        END;
+    `, (err) => {
+        if (err) {
+            console.log('Error while creating "Message" update trigger', err.message)
+        } else {
+            console.log('Trigger for Messages created')
         }
     }),
 

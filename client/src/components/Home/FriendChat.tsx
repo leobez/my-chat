@@ -12,6 +12,7 @@ import { FaUser } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { removeHasNewMessagesWs } from "../../slices/friendshipSlice" 
 import Loading from "../Loading"
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material"
 
 type Props = {
     userId: number
@@ -71,7 +72,6 @@ const FriendChat = (props: Props) => {
         }
     }, [messages])
 
-
     // Send message function and state
     const {sendMessageTo} = useSendMessage()
     const [message, setMessage] = useState<string>('')
@@ -90,6 +90,13 @@ const FriendChat = (props: Props) => {
 
     // Delete friend
     const {deleteFriendship} = useDeleteFriendship()
+    const [deleteFriendModal, setDeleteFriendModal] = useState<boolean>(false)
+
+    const handleCloseModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        event.preventDefault();
+        setDeleteFriendModal(false)
+    }
 
     const handleDelete = (friendshipId:number) => {
         deleteFriendship(friendshipId)
@@ -165,10 +172,52 @@ const FriendChat = (props: Props) => {
                                 <div className="flex gap-2 items-center">
                                     <button 
                                         className="border-2 border-red-600 p-2 rounded-lg text-red-600 font-bold hover:bg-red-600 hover:text-white duration-300 flex gap-2"
-                                        onClick={() => handleDelete(friend.friendshipId)}
+                                        onClick={() => setDeleteFriendModal(true)}
                                         >
+
+                                        <Dialog
+                                            open={deleteFriendModal}
+                                            onClose={handleCloseModal}
+                                            aria-labelledby="alert-dialog-title"
+                                            aria-describedby="alert-dialog-description"
+                                            >
+                                            <DialogTitle id="alert-dialog-title" className="text-black">
+                                                {"Delete friendship"}
+                                            </DialogTitle>
+
+                                            <IconButton
+                                                aria-label="close"
+                                                onClick={handleCloseModal}
+                                                sx={(theme) => ({
+                                                    position: 'absolute',
+                                                    right: 8,
+                                                    top: 8,
+                                                    color: theme.palette.grey[500],
+                                                })}
+                                                >
+
+                                                <IoMdClose size={25}/>
+
+                                            </IconButton>
+
+                                            <DialogContent className="p-3">
+                                                <DialogContentText id="alert-dialog-description">
+                                                    Do you really want to delete this friendship?
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions className="p-3 grid place-items-center">
+                                                <button 
+                                                    className="border-2 border-black rounded-lg hover:bg-black hover:text-red-500 duration-300 p-2" 
+                                                    onClick={() => handleDelete(friend.friendshipId)}>
+                                                        Delete friend
+                                                </button>
+                                            </DialogActions>
+                                        </Dialog>
+
                                         <p className="font-thin">Delete friend</p>
+
                                         <AiOutlineUserDelete size={25}/>
+
                                     </button>
                                 </div>
                             </div>
@@ -188,7 +237,7 @@ const FriendChat = (props: Props) => {
                                             
                                             <div className="flex gap-2">
                                                 {/* SENT BY */}
-                                                <p className="text-xs text-çeft"># {message.from_user}</p>
+                                                <p className="text-xs text-çeft"># {message.from_username}</p>
 
                                                 {/* SENT DATE */}
                                                 <p className="text-xs text-left">| {message.created_at}</p>
@@ -208,7 +257,7 @@ const FriendChat = (props: Props) => {
 
                                             <div className="flex gap-2">
                                                 {/* SENT BY */}
-                                                <p className="text-xs text-çeft"># {message.from_user}</p>
+                                                <p className="text-xs text-çeft"># {message.from_username}</p>
 
                                                 {/* SENT DATE */}
                                                 <p className="text-xs text-left">| {message.created_at}</p>

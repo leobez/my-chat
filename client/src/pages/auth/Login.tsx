@@ -62,7 +62,7 @@ const Login = () => {
     }
 
     return (
-        <div className='p-4 border-2 border-black grid place-items-center rounded-lg'>
+        <div className='h-full p-4 border-2 border-black flex justify-center rounded-lg'>
 
             <Form
 

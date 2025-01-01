@@ -13,7 +13,7 @@ const AddFriend = () => {
     }
 
     return (
-        <div className='border-2 border-black '>
+        <div className='h-full border-2 border-black rounded-lg'>
             
             {/* FORM TO FIND */}
             <div className='p-2 grid place-items-center'>

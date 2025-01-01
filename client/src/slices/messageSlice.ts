@@ -3,7 +3,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface Message {
     messageId:number,
     from_user:number,
+    from_username:string,
     to_user:number,
+    to_username:string,
     content:string,
     created_at:string
 }

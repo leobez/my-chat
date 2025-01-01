@@ -92,7 +92,7 @@ const SelectionFriends = () => {
 
                 <ul className="flex flex-col gap-1 p-2">
 
-                    {friends.length === 0 && <p>None</p>}
+                    {friends.length === 0 && <p className="text-center">None</p>}
 
                     {friends.map((friend:Friend) => (
                         <li key={friend.userId} className="w-full">
@@ -176,7 +176,7 @@ const SelectionFriends = () => {
 
                 <ul className="flex flex-col gap-1 p-2">
 
-                    {receivedRequests.length === 0 && <p>None</p>}
+                    {receivedRequests.length === 0 && <p className="text-center">None</p>}
 
                     {receivedRequests.map((request:Request) => (
 
@@ -255,7 +255,7 @@ const SelectionFriends = () => {
 
                 <ul className="flex flex-col gap-1 p-2">
 
-                    {sentRequests.length === 0 && <p>None</p>}
+                    {sentRequests.length === 0 && <p className="text-center">None</p>}
 
                     {sentRequests.map((request:Request) => (
                         <li key={request.friendshipId} className="w-full">

@@ -15,7 +15,7 @@ const FormInput = (props: Props) => {
                 <input 
                     type={props.type} 
                     value={props.defaultValue}
-                    className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer hover:bg-black hover:text-white duration-200'
+                    className='w-1/2 p-4 grid place-items-center text-white font-bold bg-blue-900 hover:bg-blue-950 rounded-lg duration-300 hover:cursor-pointer'
                 >
                 </input>
 
@@ -24,7 +24,7 @@ const FormInput = (props: Props) => {
                     type={props.type} 
                     value={props.loading.value} 
                     disabled
-                    className='border-2 border-black px-3 py-2 w-2/6 cursor-pointer bg-black text-white' 
+                    className='w-1/2 p-4 grid place-items-center text-white font-bold bg-blue-950 rounded-lg duration-300 hover:cursor-pointer' 
                 >
                 </input>
                 

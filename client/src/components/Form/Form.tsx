@@ -28,18 +28,13 @@ type Props = {
 const Form = (props: Props) => {
 
     return (
-        <div className='p-4 border-2 border-black grid place-items-center rounded-lg h-fit'>
+        <div className='p-3 grid place-items-center rounded-lg h-full'>
 
-            <form onSubmit={props.onSubmitFunction} className='flex flex-col gap-4 w-80 py-3'>
-
-                {/* FORM TITLE */}
-                <div className='border-b-2 border-black p-2'>
-                    <p>{props.name}</p>
-                </div>
+            <form onSubmit={props.onSubmitFunction} className='flex flex-col gap-4 w-full py-3'>
 
                 {/* FORM FIELDS */}
                 { props.fields.map((field, index) => (
-                    <div className='flex gap-1 flex-col' key={index}>
+                    <div className='flex gap-1 flex-col bg-blue-900 p-5 rounded-lg' key={index}>
                         <label htmlFor={field.name} className='flex justify-start'>{field.name}: </label>
                         <input 
                             type={field.type} 
@@ -47,7 +42,8 @@ const Form = (props: Props) => {
                             id={field.id} 
                             onChange={field.onChangeFunction}
                             value={field.value}
-                            className='border-2 border-black w-full p-2'/>                
+                            placeholder="Digite seu email..."
+                            className='w-full p-2 rounded-lg outline-none bg-gray-200'/>                
                     </div>
                     ))
                 }

@@ -17,7 +17,7 @@ import NotFound from './pages/NotFound';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Home from './pages/Home';
-import SnackBar from './components/Snackbar';
+import SnackBar from './components/SnackBar';
 import Profile from './pages/Profile';
 
 function App() {
@@ -40,39 +40,52 @@ function App() {
     }
 
     return (
-      <div className='h-[calc(100vh-12px)] flex flex-col'>
+      <div className='h-screen w-full'>
 
-        <header className='h-20'>
-          <Header/>
-        </header>
+        <div className='flex flex-col w-full h-full bg-white'>
 
-        <main className='flex-1 flex flex-col gap-1 max-h-full overflow-hidden'>
           <BrowserRouter>
 
-            <Navbar isLogged={userId ? true : false}/>
+            <div className='bg-blue-950 w-full'>
+              <div className='max-w-7xl w-full mx-auto px-3 py-6 flex justify-between'>
+                <header>
+                  <Header/>
+                </header>
+                <div>
+                  <Navbar isLogged={userId ? true : false}/>
+                </div>
+              </div>
+            </div>
 
             <SnackBar/>
 
-            <Routes>
+            <main className='flex-1 bg-blue-600'>
+              <div className='max-w-7xl w-full h-full mx-auto'>
+                <Routes>
+                    {/* UNPROTECTED ROUTES */}
+                    <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
+                    <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
 
-              {/* UNPROTECTED ROUTES */}
-              <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
-              <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
+                    {/* PROTECTED ROUTES */}
+                    <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
+                    <Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>
+                    <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
+                    <Route path='*' element={<NotFound />} /> 
+                </Routes>
+              </div>
+            </main>
 
-              {/* PROTECTED ROUTES */}
-              <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
-              <Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>
-              <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
-              <Route path='*' element={<NotFound />} /> 
-
-            </Routes>
+            <div className='bg-blue-950 w-full'>
+              <div className='max-w-7xl w-full mx-auto px-3 py-6'>
+                <footer className='h-fit'>
+                  <Footer/>
+                </footer>
+              </div>
+            </div>
 
           </BrowserRouter>
-        </main>
 
-        <footer className='h-20'>
-          <Footer/>
-        </footer>
+        </div>
 
       </div>
     )

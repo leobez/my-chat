@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useLogin } from '../../hooks/authHooks/useLogin'
 import Form from '../../components/Form/Form'
 import Loading from '../../components/Loading'
+import { MdLogin } from "react-icons/md";
+import { MdAccountBox } from "react-icons/md";
+import FormInput from '../../components/Form/FormInput'
 
 const Login = () => {
 
@@ -62,51 +65,72 @@ const Login = () => {
     }
 
     return (
-        <div className='h-full p-4 border-2 border-black flex justify-center rounded-lg'>
+        <div className='h-full flex flex-col md:flex-row justify-center p-3 gap-3'>
 
-            <Form
+            <div className='h-full w-1/2 hidden md:flex flex-col items-center justify-center bg-blue-700 px-10 rounded-lg'>
+                <div>
+                    <p className='font-bold text-5xl text-white'>Já tem uma conta? Preencha as informações ao lado!</p>
+                </div>
+            </div>
 
-                name='Login'
+            <div className='h-full w-full md:w-1/2 bg-blue-700 px-10 rounded-lg flex items-center justify-center'>
+                
+                <form onSubmit={handleSubmit} className='h-fit w-full flex flex-col gap-3'>
 
-                fields={[
-                    {
-                        name: 'Email',
-                        type: 'text',
-                        id: 'email',
-                        onChangeFunction: (e) => setEmail(e.target.value),
-                        value: email
-                    },
-                    {
-                        name: 'Password',
-                        type: 'password',
-                        id: 'password',
-                        onChangeFunction: (e) => setPassword(e.target.value),
-                        value: password
-                    }
-                ]}
+                    <div className='w-full flex items-center justify-center bg-blue-800 p-6 rounded-lg font-bold text-white gap-3'>
+                        <MdLogin size={25}/>
+                        <p className='text-white font-bold'>Login</p>
+                    </div>
 
-                submitInput={{
-                    loading: {
-                        state: c_loading,
-                        value: "Entering"
-                    },
-                    defaultValue: 'Enter'
-                }}
+                    <div className='bg-blue-800 text-white p-6 space-y-3 rounded-lg'>
+                        <label htmlFor="email" className='font-bold'>Email: </label>
+                        <input 
+                            type="email" 
+                            name='email'
+                            id='email'
+                            required
+                            onChange={(e) => setEmail(e.target.value)}
+                            value={email}
+                            placeholder='Digite seu email...'
+                            className='w-full p-2 rounded-lg outline-none bg-gray-300 placeholder-slate-600 text-black'
+                        />
+                    </div>
 
-                feedback={{
-                    messages: feedback
-                }}
+                    <div className='bg-blue-800 text-white p-6 space-y-3 rounded-lg shadow-md'>
+                        <label htmlFor="password" className='font-bold'>Senha: </label>
+                        <input 
+                            type="password" 
+                            name='password'
+                            id='password'
+                            required
+                            onChange={(e) => setPassword(e.target.value)}
+                            value={password}
+                            placeholder='Digite sua senha...'
+                            className='w-full p-2 rounded-lg outline-none bg-gray-300 placeholder-slate-600 text-black'
+                        />
+                    </div>
 
-                onSubmitFunction={handleSubmit}
-            >
+                    <div className='flex gap-3'>
+                        <FormInput
+                            type="submit"
+                            loading={{
+                                state: c_loading,
+                                value: "Entrando..."
+                            }}
+                            defaultValue="Entrar"
+                        />
+                        <Link to="/register" className='w-1/2 p-4 grid place-items-center text-white font-bold bg-blue-900 hover:bg-blue-950 rounded-lg duration-300'>
+                            Não tem uma conta?
+                        </Link>
+                    </div>
 
-                <Link 
-                    to="/register" 
-                    className='w-full px-3 py-2 grid place-items-center hover:bg-black border-2 border-black hover:text-white duration-200'>
-                        No account yet?
-                </Link>
 
-            </Form>
+
+
+                </form>
+
+
+            </div>
 
         </div>
     )

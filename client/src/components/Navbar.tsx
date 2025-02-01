@@ -5,6 +5,8 @@ import { FaUserFriends } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { TiGroup } from "react-icons/ti";
 import { useLogout } from '../hooks/authHooks/useLogout';
+import { MdLogin } from "react-icons/md";
+import { MdAccountBox } from "react-icons/md";
 
 type Props = {
     isLogged:boolean
@@ -15,23 +17,26 @@ const Navbar = ({isLogged}: Props) => {
     const {logout} = useLogout()
 
     return (
-        <nav className='border-2 p-2 mt-1 border-black flex justify-between rounded-lg'>
+        <nav className='flex justify-between'>
 
-            <ul className='flex gap-2 p-2'>
+            <ul className='flex gap-5'>
 
-                { !isLogged && <li><NavLink to="/login" 
-                    className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center" : "py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200 w-fit flex gap-2 items-center justify-center"
+                { !isLogged && <li>
+                    <NavLink to="/login" 
+                    className={({ isActive }) =>
+                        isActive ? "font-bold text-white px-4 py-2 w-fit flex gap-2 border-b-2 border-white" : "font-bold text-white px-4 py-2 w-fit flex gap-2 border-b-2 border-transparent hover:border-white duration-300"
                     }>
-                    Login
+                        <MdLogin size={25}/>
+                        Entrar
                     </NavLink>
                 </li> }
 
                 { !isLogged && <li><NavLink to="/register" 
-                    className={({ isActive, isPending }) =>
-                        isPending ? "" : isActive ? "bg-black text-white py-2 px-3 rounded-lg w-fit flex gap-2 items-center justify-center" : "py-2 px-3 rounded-lg hover:bg-black hover:text-white cursor-pointer duration-200 w-fit flex gap-2 items-center justify-center"
+                    className={({ isActive }) =>
+                        isActive ? "font-bold text-white px-4 py-2 w-fit flex gap-2 border-b-2 border-white" : "font-bold text-white px-4 py-2 w-fit flex gap-2 border-b-2 border-transparent hover:border-white duration-300"
                     }>
-                    Register
+                        <MdAccountBox size={25}/>
+                        Cadastrar
                     </NavLink>
                 </li> }
 

@@ -1,18 +1,17 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useLogin } from '../../hooks/authHooks/useLogin'
-import Form from '../../components/Form/Form'
-import Loading from '../../components/Loading'
 import { MdLogin } from "react-icons/md";
-import { MdAccountBox } from "react-icons/md";
 import FormInput from '../../components/Form/FormInput'
+import SnackbarContext, { SnackbarContextType } from '../../context/SnackbarContext';
 
 const Login = () => {
 
     // FORM STATES
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    const [feedback, setFeedback] = useState<string[]>([])
+    const [feedback, setFeedback] = useState<string>("")
+    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
 
     // HOOKS
     const {login, feedback:serverSideFeedback, loading:c_loading} = useLogin()
@@ -21,21 +20,19 @@ const Login = () => {
     const handleSubmit = async(e:any) => {
 
         e.preventDefault()        
-        setFeedback([])
-        let feedbackCount=0
-
+        setFeedback("")
 
         if (!email || email.length === 0) {
-            setFeedback((prev) => [...prev, 'Email empty'])
-            feedbackCount++
+            return setFeedback('Preencha o campo de "email"')
         }
 
         if (!password) {
-            setFeedback((prev) => [...prev, 'Password empty'])
-            feedbackCount++
+            return setFeedback('Preencha o campo de "senha"')
         }
 
-        if (feedbackCount > 0) return;
+        if (password.length < 3) {
+            return setFeedback('Sua senha deve ter pelo menos 3 caracteres')
+        }
 
         login({
             email: email,
@@ -44,7 +41,7 @@ const Login = () => {
     }
 
     useEffect(() => {
-        setFeedback(serverSideFeedback)
+        if (serverSideFeedback) setFeedback(serverSideFeedback[0])
     }, [serverSideFeedback])
 
     // Just to make login easier (REMOVE)
@@ -53,16 +50,16 @@ const Login = () => {
         setPassword('123')
     }, [])
 
-    const [isMounted, setIsMounted] = useState<boolean>(false)
+    // Snackbar stuff
     useEffect(() => {
-        setIsMounted(true)
-    }, [])
-
-    if (!isMounted) {
-        return (
-            <Loading/>
-        )
-    }
+        if (feedback) {
+            handleSnackbar({
+                message: feedback,
+                open: true,
+                severity: 'warning'
+            })
+        } 
+    }, [feedback])
 
     return (
         <div className='h-full flex flex-col md:flex-row justify-center p-3 gap-3'>

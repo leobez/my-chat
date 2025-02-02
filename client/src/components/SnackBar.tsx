@@ -24,13 +24,13 @@ const SnackBar = () => {
             open={open}
             autoHideDuration={4000}
             onClose={handleClose}
-            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
         >
             <Alert
             onClose={handleClose}
             severity={severity}
-            variant='standard'
-            sx={{ width: '100%' }}
+            variant='filled'
+            sx={{ width: '100%', fontWeight: 'bold' }}
             >
                 {message}
             </Alert>

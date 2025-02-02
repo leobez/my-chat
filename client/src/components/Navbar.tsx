@@ -18,7 +18,6 @@ const Navbar = ({isLogged}: Props) => {
 
     return (
         <nav className='flex justify-between'>
-
             <ul className='flex gap-5'>
 
                 { !isLogged && <li>
@@ -86,7 +85,6 @@ const Navbar = ({isLogged}: Props) => {
 
 
             </ul>
-
         </nav>
     )
 }

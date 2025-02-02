@@ -27,7 +27,7 @@ class UserController {
             })
 
         } catch (error) {
-
+            console.log(error)
             //console.error('CONTROLLER ERROR: ', error)
             return res.status(error.status).json({
                 message: error.message,

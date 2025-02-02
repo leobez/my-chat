@@ -50,15 +50,6 @@ const httpServer = http.createServer(app) // implement HTTP server to support we
 const { initSocket } = require('./socketHandler')
 initSocket(httpServer)
 
-process.on('uncaughtException', (err) => {
-    console.error('Erro não tratado capturado pelo uncaughtException:', err.stack || err);
-    // Opção: Logar o erro e reiniciar o processo de forma controlada
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Promise rejeitada sem tratamento:', reason);
-    // Opção: Logar o erro e reiniciar o processo de forma controlada
-});
 
 httpServer.listen(PORT, () => {
     console.log(`SERVER ON ${PORT}`)

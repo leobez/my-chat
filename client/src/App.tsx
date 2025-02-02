@@ -2,7 +2,7 @@ import './App.css'
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useGetMe } from './hooks/authHooks/useGetMe';
 
 // COMPONENTS
@@ -19,23 +19,36 @@ import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import SnackBar from './components/SnackBar';
 import Profile from './pages/Profile';
+import SnackbarContext, { SnackbarContextType } from './context/SnackbarContext';
+import NavbarMain from './components/NavbarMain';
 
 function App() {
 
-    const {me, loading} = useGetMe()
+    const {me, feedback, loading} = useGetMe()
 
     const userId = useSelector((state:any) => state.auth.userId)
+    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
 
     // Verify if user is logged in
     useEffect(() => {
       me()
     }, [])
+    // Handle feedback snackbar
+    useEffect(() => {
+      if (feedback) {
+        handleSnackbar({
+          message: feedback[0],
+          open: true,
+          severity: "warning"
+        })
+      }
+    }, [feedback])
 
     if (loading) {
       return (
-        <>
-          <Loading/>
-        </>
+        <div className='h-screen w-full'>
+          <Loading message="Verificando status online..."/>
+        </div>
       )
     }
 
@@ -52,7 +65,7 @@ function App() {
                   <Header/>
                 </header>
                 <div>
-                  <Navbar isLogged={userId ? true : false}/>
+                  { !userId && <Navbar isLogged={userId ? true : false}/> }
                 </div>
               </div>
             </div>
@@ -60,18 +73,28 @@ function App() {
             <SnackBar/>
 
             <main className='flex-1 bg-blue-600'>
-              <div className='max-w-7xl w-full h-full mx-auto'>
-                <Routes>
-                    {/* UNPROTECTED ROUTES */}
-                    <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
-                    <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
+              <div className='max-w-7xl w-full h-full mx-auto flex p-3 gap-3'>
 
-                    {/* PROTECTED ROUTES */}
-                    <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
-                    <Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>
-                    <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
-                    <Route path='*' element={<NotFound />} /> 
-                </Routes>
+                {/* NAVBAR */}
+                <div className='w-1/5 bg-blue-800 rounded-lg shadow-lg p-3'>
+                  { userId && <NavbarMain isLogged={userId ? true : false}/> }
+                </div>
+
+                {/* ROUTES */}
+                <div className='w-4/5 bg-black'>
+                  <Routes>
+                      {/* UNPROTECTED ROUTES */}
+                      <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>
+                      <Route path="/register" element={userId ? <Navigate to="/"/> : <Register/>}/>
+
+                      {/* PROTECTED ROUTES */}
+                      <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
+                      <Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>
+                      <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
+                      <Route path='*' element={<NotFound />} /> 
+                  </Routes>
+                </div>
+
               </div>
             </main>
 

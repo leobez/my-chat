@@ -29,7 +29,7 @@ export const useLogin = () => {
             }
         ))   
         
-        handleSnackbar({open: true, message: 'User logged in', severity: 'success'})
+        handleSnackbar({open: true, message: `Seja bem vindo, ${result.data.username}`, severity: 'success'})
     }
 
     return {

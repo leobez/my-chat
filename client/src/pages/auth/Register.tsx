@@ -1,15 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useRegister } from '../../hooks/authHooks/useRegister'
 import { MdAccountBox } from "react-icons/md";
 import FormInput from '../../components/Form/FormInput';
-import { Alert, Snackbar } from '@mui/material';
-
-
-export interface Snackbar {
-    severity: "success" | "info" | "warning" | "error"
-    message: string 
-}
+import SnackbarContext, { SnackbarContextType } from '../../context/SnackbarContext';
 
 const Register = () => {
 
@@ -17,7 +11,8 @@ const Register = () => {
     const [email, setEmail] = useState<string>("")
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    const [feedback, setFeedback] = useState<string>("teste")
+    const [feedback, setFeedback] = useState<string>("")
+    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
 
     // HOOKS
     const {register, feedback:serverSideFeedback, loading:c_loading} = useRegister()
@@ -26,22 +21,22 @@ const Register = () => {
     const handleSubmit = async(e:any) => {
 
         e.preventDefault()
-        setFeedback([])
+        setFeedback("")
 
         if (!email || email.length === 0) {
-            return setFeedback('Email empty')
+            return setFeedback('Preencha o campo de "email"')
         }
 
         if (!username || username.length === 0) {
-            return setFeedback('Username empty')
+            return setFeedback('Preencha o campo de "nome de usuário"')
         }
 
         if (!password) {
-            return setFeedback('Password empty')
+            return setFeedback('Preencha o campo de "senha"')
         }
 
         if (password.length < 3) {
-            return setFeedback('Password minimum length: 3')
+            return setFeedback('Sua senha deve ter pelo menos 3 caracteres')
         }
 
         register({
@@ -52,43 +47,23 @@ const Register = () => {
     }
 
     useEffect(() => {
-        setFeedback(serverSideFeedback[0])
+        if (serverSideFeedback) setFeedback(serverSideFeedback[0])
     }, [serverSideFeedback])
 
     // Snackbar stuff
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false)
-    const [snackbar, setSnackbar] = useState<Snackbar|null>(null)
     useEffect(() => {
         if (feedback) {
-            setSnackbar({
-                severity: 'info',
-                message: feedback
+            handleSnackbar({
+                message: feedback,
+                open: true,
+                severity: 'warning'
             })
         } 
     }, [feedback])
-    useEffect(() => {
-        setOpenSnackbar(true)
-    }, [snackbar])
 
     return (
         <div className='h-full flex flex-col md:flex-row justify-center p-3 gap-3'>
             
-            <Snackbar 
-                open={openSnackbar} 
-                //autoHideDuration={5000} 
-                onClose={() => setOpenSnackbar(false)} 
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                >
-                <Alert
-                    onClose={() => setOpenSnackbar(false)}
-                    severity={snackbar?.severity}
-                    variant="filled"
-                    sx={{ width: '100%' }}
-                >
-                    {snackbar?.message}
-                </Alert>
-            </Snackbar>
-
             <div className='h-full w-1/2 hidden md:flex flex-col items-center justify-center bg-blue-700 px-10 rounded-lg'>
                 <div>
                     <p className='font-bold text-5xl text-white'>Ainda não tem uma conta? Preencha as informações ao lado e crie uma!</p>
@@ -110,7 +85,7 @@ const Register = () => {
                             type="email" 
                             name='email'
                             id='email'
-                            required
+                            //required
                             onChange={(e) => setEmail(e.target.value)}
                             value={email}
                             placeholder='Digite seu email...'
@@ -124,7 +99,7 @@ const Register = () => {
                             type="username" 
                             name='username'
                             id='username'
-                            required
+                            //required
                             onChange={(e) => setUsername(e.target.value)}
                             value={username}
                             placeholder='Digite seu nome de usuário...'
@@ -138,7 +113,7 @@ const Register = () => {
                             type="password" 
                             name='password'
                             id='password'
-                            required
+                            //required
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}
                             placeholder='Digite sua senha...'

@@ -36,7 +36,7 @@ export const useLogout = () => {
         dispatch(resetMessageState())
         dispatch(logoutUser())    
 
-        handleSnackbar({open: true, message: 'User logged out', severity: 'success'})
+        handleSnackbar({open: true, message: 'Desconectado', severity: 'success'})
     }
 
     return {

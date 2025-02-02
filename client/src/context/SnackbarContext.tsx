@@ -4,7 +4,7 @@ import { createContext, ReactNode, useState } from "react";
 export interface SnackbarContextType {
     open:boolean
     message:string 
-    severity:any // success, warning, info, error
+    severity: "success" | "info" | "warning" | "error"
     handleSnackbar:({open, message, severity}:{open:boolean, message:string, severity:any})=>void
 }
 

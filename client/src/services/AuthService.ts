@@ -66,7 +66,7 @@ class AuthService {
 
             return {
                 success: false,
-                details: ['Client error. Try again later.']
+                details: ['Servidor inativo no momento.']
             }
 
         }
@@ -108,7 +108,7 @@ class AuthService {
 
             return {
                 success: false,
-                details: ['Client error. Try again later.']
+                details: ['Servidor inativo no momento.']
             }
 
         }
@@ -146,7 +146,7 @@ class AuthService {
 
             return {
                 success: false,
-                details: ['Client error. Try again later.']
+                details: ['Servidor inativo no momento.']
             }
         }
     }
@@ -183,7 +183,7 @@ class AuthService {
 
             return {
                 success: false,
-                details: ['Client error. Try again later.']
+                details: ['Servidor inativo no momento.']
             }
         }  
     }

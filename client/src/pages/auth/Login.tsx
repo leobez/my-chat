@@ -62,15 +62,15 @@ const Login = () => {
     }, [feedback])
 
     return (
-        <div className='h-full flex flex-col md:flex-row justify-center p-3 gap-3'>
+        <div className='h-full flex flex-col md:flex-row justify-center gap-3'>
 
-            <div className='h-full w-1/2 hidden md:flex flex-col items-center justify-center bg-blue-700 px-10 rounded-lg'>
+            <div className='h-full w-1/2 hidden md:flex flex-col items-center justify-center bg-blue-700 p-6 rounded-lg'>
                 <div>
                     <p className='font-bold text-5xl text-white'>Já tem uma conta? Preencha as informações ao lado!</p>
                 </div>
             </div>
 
-            <div className='h-full w-full md:w-1/2 bg-blue-700 px-10 rounded-lg flex items-center justify-center'>
+            <div className='h-full w-full md:w-1/2 bg-blue-700 p-6 rounded-lg flex items-center justify-center'>
                 
                 <form onSubmit={handleSubmit} className='h-fit w-full flex flex-col gap-3'>
 

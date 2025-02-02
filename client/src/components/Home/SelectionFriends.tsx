@@ -79,69 +79,40 @@ const SelectionFriends = () => {
     }
 
     return (
-        <div className='h-full scrollbar-thin relative z-0 pr-2 overflow-x-hidden overflow-y-scroll'>
+        <div className='h-full scrollbar-thin relative z-0 pr-3 overflow-x-hidden overflow-y-scroll'>
 
-            <Accordion defaultExpanded disableGutters className="border-2 my-1 border-black shadow-none">
+            <Accordion defaultExpanded disableGutters className="my-1 shadow-none" sx={{backgroundColor: '#1e40af', color: 'white', padding: '0.75rem'}}>
+
                 <AccordionSummary
-                expandIcon={<MdExpandMore size={20}/>}
+                expandIcon={<MdExpandMore size={20} color="white"/>}
                 aria-controls="friends-content"
                 id="friends-header"
                 >
-                <Typography component="span">Friends</Typography>
+                <Typography component="span" sx={{fontWeight: 'bold'}}>Lista de amigos</Typography>
                 </AccordionSummary>
 
-                <ul className="flex flex-col gap-1 p-2">
+                <ul className="flex flex-col gap-1 p-3 bg-blue-600 rounded-lg">
 
-                    {friends.length === 0 && <p className="text-center">None</p>}
+                    {friends.length === 0 && <p className="font-bold pl-1">Nenhum</p>}
 
                     {friends.map((friend:Friend) => (
                         <li key={friend.userId} className="w-full">
 
-                            {friend.userId === chatting?.id ? (
-                                <button 
-                                    className="p-3 w-full border-2 text-left bg-black text-white duration-300 flex gap-2 items-center rounded-lg justify-between" 
-                                    onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
-                                    <div className="flex gap-3 items-center">
-                                        <div className="h-full grid place-items-center">
-                                            <FaUser size={25}/>
-                                        </div>
-                                        <div>
-                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px] text-sm">{friend.username}</p>
-                                            <p className="text-xs"># {friend.userId}</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {
-                                            friend.online ? (
-                                                <div className="h-4 w-4 rounded-full border-2 border-green-600 p-[2px]">
-                                                    <div className="h-full w-full rounded-full bg-green-600"/>
-                                                </div>
-                                            ) : (
-                                                <div className="h-4 w-4 rounded-full border-2 border-red-600 p-[2px]">
-                                                    <div className="h-full w-full rounded-full bg-red-600"/>
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                </button>
-                            ) : (
-                                <button 
-                                className="p-3 w-full border text-left hover:bg-black hover:text-white duration-300 flex gap-2 items-center rounded-lg justify-between" 
-                                onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
+                            <button 
+                            className={`p-3 w-full text-left text-white ${friend.userId === chatting?.id ? "bg-blue-950" : "bg-blue-800 hover:bg-blue-950"} duration-300 flex gap-2 items-center rounded-lg justify-between`}
+                            onClick={() => updateChatting({type: 'friend', id: friend.userId})}>
 
-                                    <div className="flex gap-3 items-center">
-                                        <div className="h-full grid place-items-center">
-                                            <FaUser size={25}/>
-                                        </div>
-                                        <div>
-                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px] text-sm">{friend.username}</p>
-                                            <p className="text-xs"># {friend.userId}</p>
-                                        </div>
+                                <div className="flex gap-3 items-center">
+
+                                    <div className="h-full grid place-items-center">
+                                        <FaUser size={25}/>
                                     </div>
 
                                     <div>
-                                        {friend.has_new_messages_ws && <p className="text-xs text-green-600 text-center">New message!</p>}
+                                        <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[120px] text-sm font-bold">{friend.username}</p>
+                                        <p className="text-xs font-bold"># {friend.userId}</p>
                                     </div>
+                                </div>
 
                                     <div>
                                         {
@@ -156,59 +127,57 @@ const SelectionFriends = () => {
                                             )
                                         }
                                     </div>
-                                </button>
-                            )}
-
+                            </button>
                         </li>
                     ))}
                 </ul>
+
             </Accordion>
 
-            <Accordion disableGutters className="border-2 my-1 border-black shadow-none">
+            <Accordion defaultExpanded disableGutters className="my-1 shadow-none" sx={{backgroundColor: '#1e40af', color: 'white', padding: '0.75rem'}}>
 
                 <AccordionSummary
-                expandIcon={<MdExpandMore size={20}/>}
-                aria-controls="received-requests-content"
-                id="received-requests-header"
+                expandIcon={<MdExpandMore size={20} color="white"/>}
+                aria-controls="friends-content"
+                id="friends-header"
                 >
-                <Typography component="span">Received friend requests</Typography>
+                <Typography component="span" sx={{fontWeight: 'bold'}}>Pedidos de amizade recebidos</Typography>
                 </AccordionSummary>
 
-                <ul className="flex flex-col gap-1 p-2">
+                <ul className="flex flex-col gap-1 p-3 bg-blue-600 rounded-lg">
 
-                    {receivedRequests.length === 0 && <p className="text-center">None</p>}
+                    {receivedRequests.length === 0 && <p className="font-bold pl-1">Nenhum</p>}
 
                     {receivedRequests.map((request:Request) => (
-
                         <li key={request.friendshipId} className="w-full">
 
-                            <div className="p-3 w-full border-2 text-left flex gap-2 items-center rounded-lg justify-between">
+                            <div className="p-3 w-full bg-blue-800 flex gap-2 items-center rounded-lg justify-between">
 
                                 {/* FRIEND INFO */}
-                                <div className="flex gap-2">
-                                    <div className="flex gap-3 items-center">
-                                        <div className="h-full grid place-items-center">
+                                <div className="flex gap-2 w-3/5">
+                                    <div className="flex gap-3 items-center w-full">
+                                        <div className="h-full grid place-items-center w-1/5">
                                             <FaUser size={25}/>
                                         </div>
-                                        <div>
-                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[100px] text-sm">{request.from_username}</p>
-                                            <p className="text-xs"># {request.from_user}</p>
+                                        <div className="w-4/5">
+                                            <p className="overflow-ellipsis overflow-hidden whitespace-nowrap w-full text-sm">{request.from_username}</p>
+                                            <p className="text-xs w-full"># {request.from_user}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* BUTTONS */}
-                                <div className="flex gap-2 relative overflow-visible">
+                                <div className="flex gap-2 relative overflow-visible w-2/5">
                                     <ThemeProvider theme={greenTooltipTheme}>
                                         <Tooltip 
-                                            title="Accept request" 
+                                            title="Aceitar pedido" 
                                             placement="top" 
                                             arrow 
                                             slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
                                             >
 
                                             <button 
-                                            className="grid place-items-center px-2 py-1 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip border-2" 
+                                            className="grid place-items-center p-2 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip bg-blue-900" 
                                             onClick={() => handleAccept(request.friendshipId)}>
                                                 <IoPersonAddOutline size={20}/>
                                             </button>
@@ -218,14 +187,14 @@ const SelectionFriends = () => {
 
                                     <ThemeProvider theme={redTooltipTheme}>
                                         <Tooltip 
-                                            title="Deny request" 
+                                            title="Recusar pedido" 
                                             placement="top" 
                                             arrow 
                                             slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
                                             >
 
                                             <button 
-                                            className="grid place-items-center px-2 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
+                                            className="grid place-items-center p-2 hover:bg-red-600 hover:text-white duration-300 rounded-lg bg-blue-900" 
                                             onClick={() => handleDenial(request.friendshipId)}>
                                                 <TiDeleteOutline size={20}/>
                                             </button>
@@ -242,24 +211,24 @@ const SelectionFriends = () => {
                 </ul>
             </Accordion>
 
-            <Accordion disableGutters className="border-2 my-1 border-black shadow-none">
+            <Accordion defaultExpanded disableGutters className="my-1 shadow-none" sx={{backgroundColor: '#1e40af', color: 'white', padding: '0.75rem'}}>
 
                 <AccordionSummary
                     expandIcon={<MdExpandMore size={20}/>}
                     aria-controls="sent-requests-content"
                     id="sent-requests-header"
                 >
-                <Typography component="span">Sent friend requests</Typography>
+                <Typography component="span" sx={{fontWeight: 'bold'}}>Pedidos de amizade enviados</Typography>
 
                 </AccordionSummary>
 
-                <ul className="flex flex-col gap-1 p-2">
+                <ul className="flex flex-col gap-1 p-3 bg-blue-600 rounded-lg">
 
-                    {sentRequests.length === 0 && <p className="text-center">None</p>}
+                    {sentRequests.length === 0 && <p className="font-bold pl-1">Nenhum</p>}
 
                     {sentRequests.map((request:Request) => (
                         <li key={request.friendshipId} className="w-full">
-                            <div className="p-3 w-full border-2 text-left flex gap-2 items-center rounded-lg justify-between">
+                            <div className="p-3 w-full bg-blue-600 text-left flex gap-2 items-center rounded-lg justify-between">
 
                                 <div className=" flex gap-2">
                                     <div className="flex gap-3 items-center">
@@ -275,13 +244,13 @@ const SelectionFriends = () => {
 
                                 <ThemeProvider theme={redTooltipTheme}>
                                     <Tooltip 
-                                        title="Delete request" 
+                                        title="Deletar pedido" 
                                         placement="top" 
                                         arrow 
                                         slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
                                         >
                                         <button 
-                                            className="grid place-items-center px-2 py-1 hover:bg-red-600 hover:text-white duration-300 rounded-lg border-2" 
+                                            className="grid place-items-center px-3 py-2 hover:bg-red-600 hover:text-white duration-300 rounded-lg bg-blue-800" 
                                             onClick={() => handleRemoval(request.friendshipId)}>
                                             <RiChatDeleteFill size={20}/>
                                         </button>

@@ -25,7 +25,7 @@ const Home = () => {
 
     return (
       
-      <div className="flex-grow flex gap-1 items-center">
+      <div className="flex-grow flex gap-3 items-center h-full">
         <Selection/>
         <Chat/>          
       </div>

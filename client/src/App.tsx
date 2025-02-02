@@ -60,7 +60,7 @@ function App() {
           <BrowserRouter>
 
             <div className='bg-blue-950 w-full'>
-              <div className='max-w-7xl w-full mx-auto px-3 py-6 flex justify-between'>
+              <div className='max-w-7xl w-full mx-auto p-3 flex justify-between'>
                 <header>
                   <Header/>
                 </header>
@@ -73,15 +73,17 @@ function App() {
             <SnackBar/>
 
             <main className='flex-1 bg-blue-600'>
-              <div className='max-w-7xl w-full h-full mx-auto flex p-3 gap-3'>
+              <div className='max-w-7xl w-full h-full mx-auto flex p-3 gap-3 justify-center'>
 
                 {/* NAVBAR */}
-                <div className='w-1/5 bg-blue-800 rounded-lg shadow-lg p-3'>
-                  { userId && <NavbarMain isLogged={userId ? true : false}/> }
-                </div>
-
+                { userId &&
+                  <div className='w-1/5 bg-blue-800 rounded-lg shadow-lg p-3'>
+                    <NavbarMain isLogged={userId ? true : false}/> 
+                  </div>
+                }
+                
                 {/* ROUTES */}
-                <div className='w-4/5 bg-black'>
+                <div className='w-4/5 bg-blue-800 rounded-lg shadow-lg p-3'>
                   <Routes>
                       {/* UNPROTECTED ROUTES */}
                       <Route path="/login" element={userId ? <Navigate to="/"/> : <Login/>}/>

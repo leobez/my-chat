@@ -125,12 +125,12 @@ const FriendChat = (props: Props) => {
         <>
             {friend && chatting && 
 
-                <div className="w-full h-full">
+                <div className="w-full h-full border-blue-900 rounded-lg">
 
                     <div className="flex flex-col h-full">
 
                         {/* CHAT HEADER */}
-                        <div className="h-16 bg-black text-white font-bold flex justify-between items-center px-3">
+                        <div className="h-fit p-3 bg-blue-950 text-white font-bold flex justify-between items-center px-3">
     
                             <div className="flex items-center justify-start gap-5">
 
@@ -150,14 +150,14 @@ const FriendChat = (props: Props) => {
                                                 <div className="h-4 w-4 rounded-full border-2 border-green-600 p-[2px]">
                                                     <div className="h-full w-full rounded-full bg-green-600"/>
                                                 </div>
-                                                <p className="text-xs font-thin text-green-600">Online</p>
+                                                <p className="text-xs font-bold text-green-600">Online</p>
                                             </div>
                                         ) : (
                                             <div className="flex gap-2 items-center justify-center">
                                                 <div className="h-4 w-4 rounded-full border-2 border-red-600 p-[2px]">
                                                     <div className="h-full w-full rounded-full bg-red-600"/>
                                                 </div>
-                                                <p className="text-xs font-thin text-red-600">Offline</p>
+                                                <p className="text-xs font-bold text-red-600">Offline</p>
                                             </div>
                                             
                                         )
@@ -166,10 +166,12 @@ const FriendChat = (props: Props) => {
                             </div> 
                             
                             <div className="flex gap-3">
-                                <button onClick={handleClose} className="border-2 border-white rounded-lg px-2">
+
+                                <button onClick={handleClose} className="bg-blue-700 rounded-lg p-2 hover:bg-blue-800 duration-300">
                                     <IoMdClose size={30}/>
                                 </button>
-                                <div className="flex gap-2 items-center">
+
+                                {/* <div className="flex gap-2 items-center">
                                     <button 
                                         className="border-2 border-red-600 p-2 rounded-lg text-red-600 font-bold hover:bg-red-600 hover:text-white duration-300 flex gap-2"
                                         onClick={() => setDeleteFriendModal(true)}
@@ -219,13 +221,13 @@ const FriendChat = (props: Props) => {
                                         <AiOutlineUserDelete size={25}/>
 
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
 
                         </div>
                         
                         {/* CHAT BOX */}
-                        <div className='w-full flex-1 flex flex-col gap-4 overflow-y-auto p-2 scrollbar-thin'>
+                        <div className='w-full flex-1 flex flex-col gap-3 overflow-y-auto p-3 scrollbar-thin bg-blue-700'>
     
                             {messages && messages.map((message:Message) => (
     
@@ -233,11 +235,11 @@ const FriendChat = (props: Props) => {
     
                                     {/* MY MESSAGE */}
                                     {Number(message.from_user) === Number(me_id) && 
-                                        <div className='rounded-xl border-2 bg-slate-200 text-black w-1/2 self-start h-fit p-3 break-words flex flex-col gap-2'>
+                                        <div className='rounded-lg bg-white text-blue-950 w-1/2 self-start h-fit p-3 break-words flex flex-col gap-2'>
                                             
                                             <div className="flex gap-2">
                                                 {/* SENT BY */}
-                                                <p className="text-xs text-çeft"># {message.from_username}</p>
+                                                <p className="text-xs text-çeft">Você</p>
 
                                                 {/* SENT DATE */}
                                                 <p className="text-xs text-left">| {message.created_at}</p>
@@ -253,7 +255,7 @@ const FriendChat = (props: Props) => {
     
                                     {/* OTHER PERSON MESSAGE */}
                                     {Number(message.from_user) === Number(friend_id) && 
-                                        <div className='rounded-xl border-2 bg-slate-900 text-white w-1/2 self-end h-fit p-3 break-words flex flex-col gap-2'>
+                                        <div className='rounded-lg bg-blue-950 text-white w-1/2 self-end h-fit p-3 break-words flex flex-col gap-2'>
 
                                             <div className="flex gap-2">
                                                 {/* SENT BY */}
@@ -284,14 +286,15 @@ const FriendChat = (props: Props) => {
                             <textarea 
                                 name="message" 
                                 id="message" 
-                                className='border-t-2 border-black w-10/12 resize-none outline-none px-2 py-2 rounded-b-lg scrollbar-thin' 
+                                placeholder="Sua mensagem..."
+                                className='w-10/12 resize-none outline-none px-2 py-2 text-sm scrollbar-thin' 
                                 value={message} 
                                 onChange={(e) => setMessage(e.target.value)}>
                             </textarea>
     
                             <button 
                             onClick={handleSubmit} 
-                            className='border-t-2 border-l-2 border-black hover:bg-black hover:text-white duration-300 px-2 cursor-pointer w-2/12 grid place-items-center'>
+                            className='bg-blue-900 text-white hover:bg-blue-950 hover:text-white duration-300 px-2 cursor-pointer w-2/12 grid place-items-center'>
                                 <IoMdSend size={25}/>
                             </button>
     

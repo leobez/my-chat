@@ -54,7 +54,7 @@ const NavbarMain = ({isLogged}: Props) => {
                     </NavLink>
                 </li> }
                 
-                { isLogged && <li><NavLink to="/join" 
+                {/* { isLogged && <li><NavLink to="/join" 
                     className={({ isActive }) =>
                         isActive ? "font-bold p-4 w-full flex gap-2 bg-white text-blue-800 rounded-lg items-center" 
                         : 
@@ -63,7 +63,7 @@ const NavbarMain = ({isLogged}: Props) => {
                     <TiGroup size={20}/>
                     Entre em um grupo
                     </NavLink>
-                </li> }
+                </li> } */}
 
                 { isLogged && <li>
                     <button onClick={() => logout()} className='font-bold p-4 w-full flex gap-2 text-blue-800 bg-white hover:bg-red-900 hover:text-white rounded-lg duration-300 items-center'>

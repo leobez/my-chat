@@ -62,7 +62,7 @@ const Register = () => {
     }, [feedback])
 
     return (
-        <div className='h-full flex flex-col md:flex-row justify-center p-3 gap-3'>
+        <div className='h-full flex flex-col md:flex-row justify-center gap-3'>
             
             <div className='h-full w-1/2 hidden md:flex flex-col items-center justify-center bg-blue-700 px-10 rounded-lg'>
                 <div>

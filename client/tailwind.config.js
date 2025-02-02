@@ -12,4 +12,9 @@ export default {
   plugins: [
     tailwindScrollbar()
   ],
+  safelist: [
+    {pattern: /bg-./},
+    {pattern: /text-./},
+    {pattern: /border-./},
+  ]
 }

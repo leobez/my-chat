@@ -7,50 +7,50 @@ const Selection = () => {
     const [selection, setSelection] = useState<'friends'|'groups'>("friends")
 
     return (
-        <div className="border-2 border-black p-2 h-full w-[320px] gap-2 flex flex-col rounded-lg relative self-start">
+        <div className="bg-blue-600 shadow-lg p-3 h-full w-1/3 gap-3 flex flex-col rounded-lg relative self-start">
 
-            <div className="flex">
+            <div className="flex gap-3">
 
                 {selection === 'friends' &&
                     <>
                         <button 
-                            className="w-1/2 p-2 bg-black text-white rounded-l-lg" 
+                            className="w-full p-3 bg-blue-800 font-bold text-white rounded-lg" 
                             onClick={() => setSelection('friends')}
                         >
-                            Friends
+                            Amigos
                         </button>
 
-                        <button 
-                            className="w-1/2 p-2 hover:bg-black hover:text-white duration-300 border-b-2 border-black" 
+                        {/* <button 
+                            className="w-1/2 p-3 bg-blue-700 text-white hover:bg-blue-800 hover:font-bold duration-300 rounded-lg" 
                             onClick={() => setSelection('groups')}
                         >
-                            Groups
-                        </button>
+                            Grupos
+                        </button> */}
                     </>
                 }
                 
-                {selection === 'groups' &&
+                {/* {selection === 'groups' &&
                     <>
                         <button 
-                            className="w-1/2 p-2 hover:bg-black hover:text-white duration-300 border-b-2 border-black" 
+                            className="w-1/2 p-3 bg-blue-700 text-white hover:bg-blue-800 hover:font-bold duration-300 rounded-lg"
                             onClick={() => setSelection('friends')}
                         >
-                            Friends
+                            Amigos
                         </button>
 
                         <button 
-                            className="w-1/2 p-2 bg-black text-white rounded-r-lg" 
+                            className="w-1/2 p-3 bg-blue-800 font-bold text-white rounded-lg" 
                             onClick={() => setSelection('groups')}
                         >
-                            Groups
+                            Grupos
                         </button>
                     </>
                 }
-
+ */}
             </div>
             
             { selection === 'friends' && <SelectionFriends/>}
-            { selection === 'groups' && <SelectionGroups/>}
+           {/*  { selection === 'groups' && <SelectionGroups/>} */}
 
         </div>
     )

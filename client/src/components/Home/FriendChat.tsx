@@ -12,7 +12,8 @@ import { FaUser } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { removeHasNewMessagesWs } from "../../slices/friendshipSlice" 
 import Loading from "../Loading"
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material"
+import { Button, ButtonBase, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Stack } from "@mui/material"
+import { CiMenuKebab } from "react-icons/ci";
 
 type Props = {
     userId: number
@@ -109,6 +110,35 @@ const FriendChat = (props: Props) => {
         updateChatting(null)
     }
 
+    // Header menu
+    const [openMenu, setOpenMenu] = useState<boolean>(false);
+    const anchorRef = useRef<HTMLButtonElement>(null);
+
+    const handleToggleMenu = () => {
+        setOpenMenu((prevOpen) => !prevOpen);
+    };
+
+    function handleListKeyDown(event: React.KeyboardEvent) {
+        if (event.key === 'Tab') {
+          event.preventDefault();
+          setOpenMenu(false);
+        } else if (event.key === 'Escape') {
+          setOpenMenu(false);
+        }
+    }
+
+    const handleCloseMenu = (event: Event | React.SyntheticEvent) => {
+        if (
+            anchorRef.current &&
+            anchorRef.current.contains(event.target as HTMLElement)
+        ) {
+            return;
+        }
+
+        setOpenMenu(false);
+    };
+
+
     // Mount
     const [isMounted, setIsMounted] = useState<boolean>(false)
     useEffect(() => {
@@ -171,57 +201,109 @@ const FriendChat = (props: Props) => {
                                     <IoMdClose size={30}/>
                                 </button>
 
-                                {/* <div className="flex gap-2 items-center">
-                                    <button 
-                                        className="border-2 border-red-600 p-2 rounded-lg text-red-600 font-bold hover:bg-red-600 hover:text-white duration-300 flex gap-2"
-                                        onClick={() => setDeleteFriendModal(true)}
+                                {/* MENU */}
+                                <Stack direction="row" spacing={2}>
+
+                                    <div className="grid place-items-center">
+
+                                        <button
+                                            ref={anchorRef}
+                                            className="grid place-items-center"
+                                            onClick={handleToggleMenu}
                                         >
+                                            <CiMenuKebab size={30}/>
+                                        </button>
 
-                                        <Dialog
-                                            open={deleteFriendModal}
-                                            onClose={handleCloseModal}
-                                            aria-labelledby="alert-dialog-title"
-                                            aria-describedby="alert-dialog-description"
+                                        <Popper
+                                            open={openMenu}
+                                            anchorEl={anchorRef.current}
+                                            role={undefined}
+                                            placement="left-start"
+                                            transition
+                                            disablePortal
                                             >
-                                            <DialogTitle id="alert-dialog-title" className="text-black">
-                                                {"Delete friendship"}
-                                            </DialogTitle>
+                                            {({ TransitionProps, placement }) => (
+                                                <Grow
+                                                {...TransitionProps}
+                                                style={{
+                                                    transformOrigin:
+                                                    placement === 'bottom-start' ? 'left top' : 'left bottom',
+                                                }}
+                                                >
+                                                <Paper>
+                                                    <ClickAwayListener onClickAway={handleCloseMenu}>
+                                                    <MenuList
+                                                        autoFocusItem={openMenu}
+                                                        id="composition-menu"
+                                                        aria-labelledby="composition-button"
+                                                        onKeyDown={handleListKeyDown}
+                                                        sx={{padding: '0.75rem'}}
+                                                    >
+                                                        <MenuItem onClick={() => setDeleteFriendModal(true)} sx={{padding: '0.75rem', color: 'red', animationDuration: 300}}>
+                                                            <AiOutlineUserDelete size={25}/>
+                                                            Deletar amigo
+                                                        </MenuItem>
+                                                    </MenuList>
+                                                    </ClickAwayListener>
+                                                </Paper>
+                                                </Grow>
+                                            )}
+                                        </Popper>
+                                    </div>
 
-                                            <IconButton
+                                </Stack>
+
+                                {/* DELETE FRIEND MODAL */}
+                                <Dialog
+                                    open={deleteFriendModal}
+                                    onClose={handleCloseModal}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                    >
+
+                                    <div className="h-full w-full bg-red-600 p-3 relative">
+
+                                        <div className="p-3 flex justify-between items-center">
+                                            <p className="text-white font-bold">Deletar amizade</p>
+                                                <IconButton
                                                 aria-label="close"
                                                 onClick={handleCloseModal}
-                                                sx={(theme) => ({
-                                                    position: 'absolute',
-                                                    right: 8,
-                                                    top: 8,
-                                                    color: theme.palette.grey[500],
-                                                })}
-                                                >
-
-                                                <IoMdClose size={25}/>
-
+                                            >
+                                                <IoMdClose size={30} color="white"/>
                                             </IconButton>
+                                        </div>
 
-                                            <DialogContent className="p-3">
-                                                <DialogContentText id="alert-dialog-description">
-                                                    Do you really want to delete this friendship?
-                                                </DialogContentText>
-                                            </DialogContent>
-                                            <DialogActions className="p-3 grid place-items-center">
-                                                <button 
-                                                    className="border-2 border-black rounded-lg hover:bg-black hover:text-red-500 duration-300 p-2" 
-                                                    onClick={() => handleDelete(friend.friendshipId)}>
-                                                        Delete friend
-                                                </button>
-                                            </DialogActions>
-                                        </Dialog>
+                                        
 
-                                        <p className="font-thin">Delete friend</p>
+                                        <div className="p-3">
+                                            <div id="alert-dialog-description">
+                                                <p className="text-white font-bold">Essa ação é irreversível.</p>
+                                                <ul className="p-3 text-white">
+                                                    <li className="list-disc">Todas as mensagens entre você e essa pessoa serão perdidas e não poderão ser recuperadas;</li>
+                                                    <li className="list-disc">Você não poderá mais trocar mensagens com essa pessoa;</li>
+                                                    <li className="list-disc">Caso queira, ainda será possível adicionar essa pessoa no futuro.</li>
+                                                </ul>
 
-                                        <AiOutlineUserDelete size={25}/>
+                                            </div>
+                                        </div>
 
-                                    </button>
-                                </div> */}
+                                        <DialogActions className="p-3 flex flex-col gap-3 items-center justify-center">
+                                            <button 
+                                                className="w-full text-white font-bold bg-red-800 rounded-lg hover:bg-red-950 duration-300 p-3" 
+                                                onClick={() => handleDelete(friend.friendshipId)}>
+                                                    Sim, quero deletar essa amizade.
+                                            </button>
+                                            <button 
+                                                className="w-full text-white font-bold bg-red-800 rounded-lg hover:bg-red-950 duration-300 p-3" 
+                                                onClick={handleCloseModal}>
+                                                    Não quero deletar essa amizade.
+                                            </button>
+                                        </DialogActions>
+
+                                    </div>
+
+                                </Dialog>
+
                             </div>
 
                         </div>

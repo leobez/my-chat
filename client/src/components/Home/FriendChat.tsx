@@ -12,7 +12,7 @@ import { FaUser } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { removeHasNewMessagesWs } from "../../slices/friendshipSlice" 
 import Loading from "../Loading"
-import { Button, ButtonBase, ClickAwayListener, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Stack } from "@mui/material"
+import { ClickAwayListener, Dialog, DialogActions, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Stack } from "@mui/material"
 import { CiMenuKebab } from "react-icons/ci";
 
 type Props = {
@@ -32,6 +32,9 @@ const FriendChat = (props: Props) => {
     // Friend data
     const friends = useSelector((state:any) => state.friendship.friends)
     const [friend, setFriend] = useState<Friend|null>(null)
+    useEffect(() => {
+        console.log('teste: ', friend)
+    }, [friend])
 
     // Hooks
     const {getHistoryWithUser} = useGetHistory()
@@ -43,13 +46,14 @@ const FriendChat = (props: Props) => {
 
         friends.forEach((friend:Friend) => {
             if (friend.userId === friend_id) {
+                console.log('achou')
                 setFriend(friend)
             }
         })
 
         getHistoryWithUser(friend_id);
 
-    }, [friends, friend_id])
+    }, [friends])
 
     const allHistories = useSelector((state:any) => state.message.completeHistory)
     const [messages, setMessages] = useState<Message[]>([])
@@ -100,6 +104,7 @@ const FriendChat = (props: Props) => {
     }
 
     const handleDelete = (friendshipId:number) => {
+        console.log('handleDelete: ', friendshipId)
         deleteFriendship(friendshipId)
         setFriend(null)
         updateChatting(null)
@@ -137,7 +142,6 @@ const FriendChat = (props: Props) => {
 
         setOpenMenu(false);
     };
-
 
     // Mount
     const [isMounted, setIsMounted] = useState<boolean>(false)

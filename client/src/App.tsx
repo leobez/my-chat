@@ -35,7 +35,7 @@ function App() {
     }, [])
     // Handle feedback snackbar
     useEffect(() => {
-      if (feedback) {
+      if (feedback.length) {
         handleSnackbar({
           message: feedback[0],
           open: true,
@@ -72,7 +72,7 @@ function App() {
 
             <SnackBar/>
 
-            <main className='flex-1 bg-blue-600'>
+            <main className={`flex-1 bg-blue-600`}>
               <div className='max-w-7xl w-full h-full mx-auto flex p-3 gap-3 justify-center'>
 
                 {/* NAVBAR */}

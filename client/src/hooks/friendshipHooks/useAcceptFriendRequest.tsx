@@ -32,7 +32,12 @@ export const useAcceptFriendRequest = () => {
         const user = await getUserById(result.data.from_user)
 
         // Add that person to redux and remove the request
-        dispatch(addFriend(user))
+        dispatch(addFriend({
+            userId: user.userId,
+            username: user.username,
+            online: user.online,
+            friendshipId: result.data.friendshipId
+        }))
         dispatch(removeReceivedRequest(result.data.friendshipId))
 
         handleSnackbar({open: true, message: 'Added new friend', severity: 'success'})

@@ -16,6 +16,8 @@ export const useDeleteFriendship = () => {
 
     const deleteFriendship = async(friendshipId:number) => {
         
+        console.log('deleting: ', friendshipId)
+
         setFeedback([])
         setLoading(true)
         const result = await FriendshipService.deleteFriendship(friendshipId)

@@ -214,7 +214,7 @@ const SelectionFriends = () => {
             <Accordion defaultExpanded disableGutters className="my-1 shadow-none" sx={{backgroundColor: '#1e40af', color: 'white', padding: '0.75rem'}}>
 
                 <AccordionSummary
-                    expandIcon={<MdExpandMore size={20}/>}
+                    expandIcon={<MdExpandMore size={20} color="white"/>}
                     aria-controls="sent-requests-content"
                     id="sent-requests-header"
                 >

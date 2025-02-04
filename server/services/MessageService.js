@@ -1,4 +1,5 @@
 // Models
+const FriendshipModel = require('../models/FriendshipModel')
 const MessageModel = require('../models/MessageModel')
 const UserModel = require('../models/UserModel')
 
@@ -20,6 +21,18 @@ class MessageService {
             // Validate if 'to' user actually exists
             const doesUserExist = await UserModel.read({by: 'id', data: messageData.to})
             if (!doesUserExist) throw new CustomError(400, 'Bad request', ['user thats receiving the message does not exist'])
+            
+            // Verify if from and to users are friends
+            const fromFriendships = await FriendshipModel.read({by: 'userId', all: true, data: messageData.from})
+            let found = false
+            fromFriendships.forEach((friendship) => {
+                if (Number(messageData.to) === friendship.to_user) {
+                    found = true
+                }
+            })
+            if (!found) {
+                throw new CustomError(403, 'Forbidden', ['Can only send message to friends'])
+            }
 
             const message = await MessageModel.create(messageData)
             

@@ -21,6 +21,7 @@ import SnackBar from './components/SnackBar';
 import Profile from './pages/Profile';
 import SnackbarContext, { SnackbarContextType } from './context/SnackbarContext';
 import NavbarMain from './components/NavbarMain';
+import CookieConsent from './components/CookieConsent';
 
 function App() {
 
@@ -33,7 +34,7 @@ function App() {
     useEffect(() => {
       me()
     }, [])
-    // Handle feedback snackbar
+    /* // Handle feedback snackbar
     useEffect(() => {
       if (feedback.length) {
         handleSnackbar({
@@ -42,7 +43,7 @@ function App() {
           severity: "warning"
         })
       }
-    }, [feedback])
+    }, [feedback]) */
 
     if (loading) {
       return (
@@ -109,6 +110,8 @@ function App() {
             </div>
 
           </BrowserRouter>
+              
+          {/* <CookieConsent/> */}
 
         </div>
 

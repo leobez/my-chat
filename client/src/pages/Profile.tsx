@@ -1,19 +1,21 @@
-import { TextField } from "@mui/material"
 import { useSelector } from "react-redux"
+import { CiUser } from "react-icons/ci";
 
 const Profile = () => {
 
     const user = useSelector((state:any) => state.auth) 
 
     return (
-        <div className="h-full w-full border-2 border-black rounded-lg flex p-4">
+        <div className="h-full w-full bg-blue-600 rounded-lg flex p-4">
 
             <div className="flex flex-col gap-5 h-fit">
 
                 {/* IMAGE */}
                 <div className="flex gap-5 justify-center items-center">
 
-                    <div className="h-32 w-32 rounded-full bg-black"/>
+                    <div className="p-5 grid place-items-center text-white bg-blue-800 rounded-full">
+                        <CiUser size={100}/>
+                    </div>
 
                     <div className="flex flex-col">
                         <p className="text-left font-bold">{user.username} <span className="text-xs">#{user.userId}</span></p>
@@ -24,28 +26,24 @@ const Profile = () => {
                 
 
                 {/* INFO */}
-                <div className="flex flex-col gap-5">
+                <form className="flex flex-col gap-5 text-white">
 
-                    <div className="flex flex-col gap-3">
-
-                        <div className="flex flex-col border-2 rounded-lg p-2">
-                            <p className="text-left text-xs">Wanna update your username?</p>
-                            <TextField id="standard-basic" variant="standard" size="small" />
-                        </div>
-
-                        <div className="flex flex-col border-2 rounded-lg p-2">
-                            <p className="text-left text-xs">Wanna update your email?</p>
-                            <TextField id="standard-basic" variant="standard" size="small" />
-                        </div>
-
-                        <div className="flex flex-col border-2 rounded-lg p-2">
-                            <p className="text-left text-xs">Wanna update your password?</p>
-                            <TextField id="standard-basic" variant="standard" size="small" />
-                        </div>
-
+                    <div className="flex flex-col border-2 rounded-lg p-2">
+                        <p className="text-left text-sm font-bold">Novo nome de usuário:</p>
+                        
                     </div>
 
-                </div>
+                    <div className="flex flex-col border-2 rounded-lg p-2">
+                        <p className="text-left text-sm font-bold">Novo e-mail:</p>
+                        
+                    </div>
+
+                    <div className="flex flex-col border-2 rounded-lg p-2">
+                        <p className="text-left text-sm font-bold">Nova senha:</p>
+                        
+                    </div>
+
+                </form>
                 
             </div>
 

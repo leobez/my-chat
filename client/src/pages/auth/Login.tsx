@@ -8,7 +8,7 @@ import SnackbarContext, { SnackbarContextType } from '../../context/SnackbarCont
 const Login = () => {
 
     // FORM STATES
-    const [email, setEmail] = useState<string>("")
+    const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [feedback, setFeedback] = useState<string>("")
     const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
@@ -22,12 +22,12 @@ const Login = () => {
         e.preventDefault()        
         setFeedback("")
 
-        if (!email || email.length === 0) {
-            return setFeedback('Preencha o campo de "email"')
+        if (!username || username.length === 0) {
+            return setFeedback('Preencha o campo de "Nome de usuário"')
         }
 
         if (!password) {
-            return setFeedback('Preencha o campo de "senha"')
+            return setFeedback('Preencha o campo de "Senha"')
         }
 
         if (password.length < 3) {
@@ -35,7 +35,7 @@ const Login = () => {
         }
 
         login({
-            email: email,
+            username: username,
             password: password
         })
     }
@@ -46,7 +46,7 @@ const Login = () => {
 
     // Just to make login easier (REMOVE)
     useEffect(() => {
-        setEmail('user1@email.com')
+        setUsername('user1')
         setPassword('123')
     }, [])
 
@@ -80,15 +80,15 @@ const Login = () => {
                     </div>
 
                     <div className='bg-blue-800 text-white p-6 space-y-3 rounded-lg'>
-                        <label htmlFor="email" className='font-bold'>Email: </label>
+                        <label htmlFor="username" className='font-bold'>Nome de usuário: </label>
                         <input 
-                            type="email" 
-                            name='email'
-                            id='email'
+                            type="username" 
+                            name='username'
+                            id='username'
                             required
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email}
-                            placeholder='Digite seu email...'
+                            onChange={(e) => setUsername(e.target.value)}
+                            value={username}
+                            placeholder='Digite seu nome de usuário...'
                             className='w-full p-2 rounded-lg outline-none bg-gray-300 placeholder-slate-600 text-black'
                         />
                     </div>

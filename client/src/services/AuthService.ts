@@ -11,13 +11,12 @@ export class CustomError extends Error {
 }
 
 export interface RegisterData {
-    email: string
-    password: string
     username: string
+    password: string
 }
 
 export interface LoginData {
-    email: string
+    username: string
     password: string
 }
 
@@ -40,7 +39,6 @@ class AuthService {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: data.email,
                     password: data.password,
                     username: data.username,
                 }),
@@ -83,7 +81,7 @@ class AuthService {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: data.email,
+                    username: data.username,
                     password: data.password,
                 }),
                 credentials: 'include'

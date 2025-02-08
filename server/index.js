@@ -5,6 +5,7 @@ const PORT = 3000
 // API
 const express = require('express')
 const app = express()
+
 app.use(express.json({
     verify: (req, res, buf, encoding) => { // Verify is user req has any SyntaxError's
         try {  

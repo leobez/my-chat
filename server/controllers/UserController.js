@@ -13,7 +13,6 @@ class UserController {
 
             const userInfo = {
                 userId: user.userId,
-                email: user.email,
                 username: user.username  
             }
 
@@ -47,7 +46,6 @@ class UserController {
 
             const userInfo = {
                 userId: user.userId,
-                email: user.email,
                 username: user.username
             }
 
@@ -91,7 +89,6 @@ class UserController {
 
         const filteredUserData = {
             userId: userData.userId,
-            email: userData.email,
             username: userData.username,
         }
 

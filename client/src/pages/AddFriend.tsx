@@ -24,7 +24,7 @@ const AddFriend = () => {
                 </div>
 
                 <div className='flex gap-1 flex-col'>
-                    <label htmlFor="email" className='flex justify-start'>Enter user Id:</label>
+                    <label htmlFor="userIdToAdd" className='flex justify-start'>Enter user Id:</label>
                     <input 
                         type="number" 
                         name="userIdToAdd" 

@@ -35,7 +35,6 @@ db.serialize(() => {
         CREATE TABLE Users(
             userId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             socketId VARCHAR(255) UNIQUE, 
-            email VARCHAR(255) UNIQUE NOT NULL,
             username VARCHAR(255) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -295,60 +294,60 @@ db.serialize(() => {
 
     // Insert some data for testing (Users) (TO REMOVE)
     /* 
-        user1@email.com   123     
-        user2@email.com   123
-        user3@email.com   123
-        user4@email.com   123
+        user1   123     
+        user2   123
+        user3   123
+        user4   123
     */
     db.run(`
         
-        INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+        INSERT INTO Users(username, password) VALUES (?, ?)
 
-    `, ['user1@email.com', 'user1', hash], (err) => {
+    `, ['user1', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added to database: user1@email.com, user1, 123')
+            console.log('Test data added to database: user1, 123')
         }
     }),
 
     db.run(`
         
-        INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+        INSERT INTO Users(username, password) VALUES (?, ?)
 
-    `, ['user2@email.com', 'user2', hash], (err) => {
+    `, ['user2', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added to database: user2@email.com, user2, 123')
+            console.log('Test data added to database: user2, 123')
         }
     }),
 
     db.run(`
         
-        INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+        INSERT INTO Users(username, password) VALUES (?, ?)
 
-    `, ['user3@email.com', 'user3', hash], (err) => {
+    `, ['user3', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added to database: user3@email.com, user3, 123')
+            console.log('Test data added to database: user3, 123')
         }
     }),
 
     db.run(`
         
-        INSERT INTO Users(email, username, password) VALUES (?, ?, ?)
+        INSERT INTO Users(username, password) VALUES (?, ?)
 
-    `, ['user4@email.com', 'user4', hash], (err) => {
+    `, ['user4', hash], (err) => {
         
         if (err) {
             console.log('Error while inserting test data: ', err.message)
         } else {
-            console.log('Test data added to database: user4@email.com, user4, 123')
+            console.log('Test data added to database: user4, 123')
         }
     }),
 

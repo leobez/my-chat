@@ -24,7 +24,6 @@ const tokenValidator = async (req, res, next) => {
 
 /*         if (
             userFromDb.userId !== userDecoded.userId ||
-            userFromDb.email !== userDecoded.email ||
             userFromDb.username !== userDecoded.username ||
             userFromDb.updated_at !== userDecoded.updated_at
         ) { 

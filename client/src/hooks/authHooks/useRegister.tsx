@@ -23,7 +23,6 @@ export const useRegister = () => {
         dispatch(loginUser(
             {
                 userId: result.data.userId,
-                email: result.data.email,
                 username: result.data.username
             }
         ))     

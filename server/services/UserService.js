@@ -17,10 +17,6 @@ class UserService {
 
         try {
 
-            // Verify if email is already being used
-            const isEmailAlreadyUsed = await UserModel.read({by: 'email', data: userData.email})
-            if (isEmailAlreadyUsed) throw new CustomError(400, 'Bad request', ['Email already used'])
-
             // Verify if username is already being used
             const isUsernameAlreadyUsed = await UserModel.read({by: 'username', data: userData.username})
             if (isUsernameAlreadyUsed) throw new CustomError(400, 'Bad request', ['Username already used'])
@@ -31,7 +27,6 @@ class UserService {
 
             const newUserData = {
                 username: userData.username,
-                email: userData.email,
                 password: hash
             }
 
@@ -61,9 +56,9 @@ class UserService {
 
         try {
 
-            // Verify if email exists
-            const user = await UserModel.read({by: 'email', data: userData.email})
-            if (!user) throw new CustomError(400, 'Bad request', ['Email does not exist'])
+            // Verify if username exists
+            const user = await UserModel.read({by: 'username', data: userData.username})
+            if (!user) throw new CustomError(400, 'Bad request', ['Username does not exist'])
             
             // validate password
             const isPasswordCorrect = bcrypt.compareSync(userData.password, user.password)
@@ -90,7 +85,7 @@ class UserService {
 
         try {
 
-            // Verify if email exists
+            // Verify if id exists
             const user = await UserModel.read({by: 'id', data: userId})
             if (!user) throw new CustomError(400, 'Bad request', ['userId does not exist'])
             
@@ -141,8 +136,8 @@ class UserService {
             const hash = bcrypt.hashSync(newUserData.password, salt)
 
             const updatedUser = await UserModel.update({
-                fieldsToBeUpdated: ['email', 'username', 'password'],
-                newData: [newUserData.email, newUserData.username, hash],
+                fieldsToBeUpdated: ['username', 'password'],
+                newData: [newUserData.username, hash],
                 whereUserId: user.userId
             })
 
@@ -151,7 +146,6 @@ class UserService {
 
             const userDataToSend = {
                 userId: updatedUser.userId,
-                email: updatedUser.email,
                 username: updatedUser.username,
                 created_at: updatedUser.created_at,
                 updated_at: updatedUser.updated_at
@@ -167,10 +161,7 @@ class UserService {
             if (error.type === 'model') {
 
                 // Error logger
-                if (error.error.includes("UNIQUE constraint failed: Users.email")) {
-                    throw new CustomError(400, 'Bad request', ['Email already used'])
-
-                } else if (error.error.includes("UNIQUE constraint failed: Users.username")) {
+                if (error.error.includes("UNIQUE constraint failed: Users.username")) {
                     throw new CustomError(400, 'Bad request', ['Username already used'])
 
                 } else {

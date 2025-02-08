@@ -8,7 +8,6 @@ import SnackbarContext, { SnackbarContextType } from '../../context/SnackbarCont
 const Register = () => {
 
     // FORM STATES
-    const [email, setEmail] = useState<string>("")
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [feedback, setFeedback] = useState<string>("")
@@ -23,9 +22,6 @@ const Register = () => {
         e.preventDefault()
         setFeedback("")
 
-        if (!email || email.length === 0) {
-            return setFeedback('Preencha o campo de "email"')
-        }
 
         if (!username || username.length === 0) {
             return setFeedback('Preencha o campo de "nome de usuário"')
@@ -40,7 +36,6 @@ const Register = () => {
         }
 
         register({
-            email: email,
             password: password,
             username: username
         })
@@ -79,20 +74,7 @@ const Register = () => {
                         <p className='text-white font-bold'>Cadastro</p>
                     </div>
 
-                    <div className='bg-blue-800 text-white p-6 space-y-3 rounded-lg'>
-                        <label htmlFor="email" className='font-bold'>Email: </label>
-                        <input 
-                            type="email" 
-                            name='email'
-                            id='email'
-                            //required
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email}
-                            placeholder='Digite seu email...'
-                            className='w-full p-2 rounded-lg outline-none bg-gray-300 placeholder-slate-600 text-black'
-                        />
-                    </div>
-
+                    
                     <div className='bg-blue-800 text-white p-6 space-y-3 rounded-lg shadow-md'>
                         <label htmlFor="username" className='font-bold'>Nome de usuário: </label>
                         <input 

@@ -56,7 +56,6 @@ const wsTokenValidator = async(socket, next) => {
 
 /*         if (
             userFromDb.userId !== userData.userId ||
-            userFromDb.email !== userData.email ||
             userFromDb.username !== userData.username ||
             userFromDb.updated_at !== userData.updated_at
         ) {
@@ -67,7 +66,6 @@ const wsTokenValidator = async(socket, next) => {
         const newUserData = {
             userId: userData.userId,
             username: userData.username,
-            email: userData.email
         }
     
         socket.user = newUserData

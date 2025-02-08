@@ -5,7 +5,7 @@ const router = express.Router()
 const dataValidator = require('../middlewares/dataValidator')
 
 // Validates if user has token or not
-const tokenValidator = require('../middlewares/tokenValidator') 
+const tokenValidator = require('../middlewares/TokenValidator') 
 
 // Controller
 const UserController = require('../controllers/UserController')
@@ -23,13 +23,6 @@ router.post(
         .exists().withMessage('Missing username')
         .notEmpty().withMessage('Empty username'),
 
-    body('email')
-        .trim()
-        .escape()
-        .exists().withMessage('Missing email')
-        .notEmpty().withMessage('Empty email')
-        .isEmail().withMessage('Invalid Email'),
-
     body('password')
         .trim()
         .escape()
@@ -43,12 +36,11 @@ router.post(
 router.post(
     '/login',
 
-    body('email')
+    body('username')
         .trim()
         .escape()
-        .exists().withMessage('Missing email')
-        .notEmpty().withMessage('Empty email')
-        .isEmail().withMessage('Invalid Email'),
+        .exists().withMessage('Missing username')
+        .notEmpty().withMessage('Empty username'),
 
     body('password')
         .trim()
@@ -140,19 +132,11 @@ router.put(
         .exists().withMessage('Missing username')
         .notEmpty().withMessage('Empty username'),
 
-    body('email')
-        .trim()
-        .escape()
-        .exists().withMessage('Missing email')
-        .notEmpty().withMessage('Empty email')
-        .isEmail().withMessage('Invalid Email'),
-
     body('password')
         .trim()
         .escape()
         .exists().withMessage('Missing password')
         .notEmpty().withMessage('Empty password'),
-
 
     dataValidator,
     tokenValidator,

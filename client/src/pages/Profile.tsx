@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux"
 import { CiUser } from "react-icons/ci";
 import { FormEvent, useState } from "react";
+import { UpdateUserData, useUpdateUser } from "../hooks/userHooks/useUpdateUser";
 
 const Profile = () => {
 
@@ -8,13 +9,30 @@ const Profile = () => {
 
     const [newUserName, setNewUsername] = useState<string>(user.username)
     const [newPassword, setNewPassword] = useState<string>('')
+    const {feedback, loading, updateUser} = useUpdateUser()
 
-    const handleSubmitNewUsername = (e:FormEvent<HTMLFormElement>) => {
+    const handleSubmitNewUsername = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+
+        const updateData:UpdateUserData = {
+            type: 'username',
+            userId: user.userId,
+            username: newUserName,
+        }
+
+        await updateUser(updateData)
     }
 
-    const handleSubmitNewPassword = (e:FormEvent<HTMLFormElement>) => {
+    const handleSubmitNewPassword = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+
+        const updateData:UpdateUserData = {
+            type: 'password',
+            userId: user.userId,
+            newPassword: newPassword,
+        }
+
+        await updateUser(updateData)
     }
 
     return (

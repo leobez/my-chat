@@ -1,3 +1,4 @@
+import { UpdateUserData } from "../hooks/userHooks/useUpdateUser"
 import validateResponse from "../utils/validateResponse"
 import { CustomError } from "./AuthService"
 
@@ -37,7 +38,49 @@ class UserService {
 
             return {
                 success: false,
-                details: ['Client error. Try again later.']
+                details: ['Try again later.']
+            }
+
+        }
+    }
+
+    static async updateUser(updateUserData:UpdateUserData) {
+
+        try {
+            
+            const url = `${API_URL_GETUSERBYID}/${updateUserData.userId}`
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    updateData: updateUserData
+                }),
+                credentials: 'include'
+            })
+            
+            const parsedResponse = await response.json()
+            validateResponse(response, parsedResponse)
+
+            return {
+                success: true,
+                data: parsedResponse.data
+            }
+
+        } catch (error) {
+
+            if (error instanceof CustomError) {
+                return {
+                    success: false,
+                    details: error.details
+                }
+            }
+
+            return {
+                success: false,
+                details: ['Try again later.']
             }
 
         }

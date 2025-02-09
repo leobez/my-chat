@@ -152,25 +152,21 @@ class UserController {
 
         try {
             
-            const newUserData = req.body
+            const {updateUserData} = req.body
             const user = req.user
             const {id:userToBeUpdated} = req.params
 
-            const {updatedUser, token} = await UserService.updateUser(user, newUserData, userToBeUpdated)
-    
-            // In case we want to logoff user after account update
-            /* return res.status(201).json({
-                message: 'User updated',
-                data: updatedUser
-            }) */
+            console.log(updateUserData)
 
+            //const {updatedUser, token} = await UserService.updateUser(user, newUserData, userToBeUpdated)
+            
             return res.cookie('jwt', token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
             }).status(201).json({
                 message: 'User updated',
-                data: updatedUser
+                //data: updatedUser
             })
 
         } catch (error) {

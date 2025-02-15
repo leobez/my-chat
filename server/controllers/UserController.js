@@ -152,21 +152,26 @@ class UserController {
 
         try {
             
-            const {updateUserData} = req.body
+            console.log('req.body: ', req.body)
+
+            const updateData = req.body.updateData
+            const type = updateData.type
+            const newData = type === 'password' ? updateData.newPassword : updateData.username
             const user = req.user
-            const {id:userToBeUpdated} = req.params
 
-            console.log(updateUserData)
+            console.log('type, newData', type, newData)
 
-            //const {updatedUser, token} = await UserService.updateUser(user, newUserData, userToBeUpdated)
-            
+            const {updatedUser, token} = await UserService.updateUser(user, type, newData)
+
+            console.log('user updated')
+
             return res.cookie('jwt', token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'strict',
             }).status(201).json({
                 message: 'User updated',
-                //data: updatedUser
+                data: updatedUser
             })
 
         } catch (error) {

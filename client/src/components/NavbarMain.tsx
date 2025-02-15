@@ -32,7 +32,7 @@ const NavbarMain = ({isLogged}: Props) => {
                     </NavLink>
                 </li> }
 
-                { isLogged && <li><NavLink to={`/profile`} 
+{/*                 { isLogged && <li><NavLink to={`/profile`} 
                     className={({ isActive }) =>
                         isActive ? "font-bold p-4 w-full flex gap-2 bg-white text-blue-800 rounded-lg items-center" 
                         : 
@@ -41,7 +41,7 @@ const NavbarMain = ({isLogged}: Props) => {
                     <FaUser size={20}/>
                     Meu perfil
                     </NavLink>
-                </li> }
+                </li> } */}
 
                 { isLogged && <li><NavLink to="/add" 
                     className={({ isActive }) =>

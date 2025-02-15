@@ -127,16 +127,14 @@ router.put(
         .notEmpty().withMessage('Empty JWT on cookies'),
 
     body('username')
+        .optional()
         .trim()
-        .escape()
-        .exists().withMessage('Missing username')
-        .notEmpty().withMessage('Empty username'),
+        .escape(),
 
-    body('password')
+    body('newPassword')
+        .optional()
         .trim()
-        .escape()
-        .exists().withMessage('Missing password')
-        .notEmpty().withMessage('Empty password'),
+        .escape(),
 
     dataValidator,
     tokenValidator,

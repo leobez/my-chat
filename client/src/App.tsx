@@ -92,7 +92,7 @@ function App() {
 
                       {/* PROTECTED ROUTES */}
                       <Route path="/add" element={userId ? <AddFriend/> : <Navigate to="/login"/>}/>
-                      <Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>
+                      {/*<Route path="/profile" element={userId ? <Profile/> : <Navigate to="/login"/>}/>*/}
                       <Route path="/" element={userId ? <Home/> : <Navigate to="/login"/>}/>
                       <Route path='*' element={<NotFound />} /> 
                   </Routes>

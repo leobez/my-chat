@@ -117,29 +117,34 @@ class UserService {
         }
     }
     
-    static async updateUser(user, newUserData, userToBeUpdated) {
+    static async updateUser(user, type, newData) {
 
         try {   
 
-            // Validate that this user can actually make this changes
-            if (Number(userToBeUpdated) !== Number(user.userId)) {
-                throw new CustomError(403, 'Forbidden', 
-                    [
-                        'Not allowed to update this user', 
-                        'User can only update himself'
-                    ]
-                )
+            let updatedUser
+
+            if (type === 'username') {
+
+                updatedUser = await UserModel.update({
+                    fieldsToBeUpdated: ['username'],
+                    newData: [newData],
+                    whereUserId: user.userId
+                })
             }
 
-            // Hash && salt password
-            const salt = bcrypt.genSaltSync(saltRounds)
-            const hash = bcrypt.hashSync(newUserData.password, salt)
+            if (type === 'password') {
 
-            const updatedUser = await UserModel.update({
-                fieldsToBeUpdated: ['username', 'password'],
-                newData: [newUserData.username, hash],
-                whereUserId: user.userId
-            })
+                // Hash && salt password
+                const salt = bcrypt.genSaltSync(saltRounds)
+                const hash = bcrypt.hashSync(newData, salt)
+
+                updatedUser = await UserModel.update({
+                    fieldsToBeUpdated: ['password'],
+                    newData: [hash],
+                    whereUserId: user.userId
+                })
+
+            }
 
             // Generate session token
             const token = jwt.sign(updatedUser, SECRET, {expiresIn: '10h'})
@@ -151,12 +156,16 @@ class UserService {
                 updated_at: updatedUser.updated_at
             }
 
+            console.log('userDataToSend: ', userDataToSend)
+
             return {
                 updatedUser: userDataToSend,
                 token: token
-            };
+            }; 
 
         } catch (error) {
+
+            console.log(error)
 
             if (error.type === 'model') {
 

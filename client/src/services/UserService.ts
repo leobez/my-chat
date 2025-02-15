@@ -3,6 +3,7 @@ import validateResponse from "../utils/validateResponse"
 import { CustomError } from "./AuthService"
 
 const API_URL_GETUSERBYID = 'http://localhost:3000/api/user/byid'
+const API_URL_UPDATEUSER = 'http://localhost:3000/api/user/update'
 
 class UserService {
 
@@ -48,10 +49,10 @@ class UserService {
 
         try {
             
-            const url = `${API_URL_GETUSERBYID}/${updateUserData.userId}`
+            const url = `${API_URL_UPDATEUSER}/${updateUserData.userId}`
 
             const response = await fetch(url, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },

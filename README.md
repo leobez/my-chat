@@ -20,7 +20,7 @@ IMG HERE
 ## Tecnologias necessárias
 - [Node.js 22.12.0 (LTS)](https://nodejs.org/pt)
 - npm
-- Git bash
+- Git
 
 ## Instalação
 1. Clone o repositório:
@@ -32,10 +32,10 @@ git clone https://github.com/leobez/my-chat.git
 ``` bash
 cd my-chat/server
 npm install
-npm run nodemon
+npm run start
 ```
 
-3. Entre no diretório /client, instale as dependências e inicie:
+3. Com outro terminal, entre no diretório /client, instale as dependências e inicie:
 ``` bash
 cd my-chat/client
 npm install

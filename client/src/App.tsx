@@ -2,7 +2,7 @@ import './App.css'
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useGetMe } from './hooks/authHooks/useGetMe';
 
 // COMPONENTS
@@ -18,17 +18,13 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import SnackBar from './components/SnackBar';
-import Profile from './pages/Profile';
-import SnackbarContext, { SnackbarContextType } from './context/SnackbarContext';
 import NavbarMain from './components/NavbarMain';
-import CookieConsent from './components/CookieConsent';
 
 function App() {
 
-    const {me, feedback, loading} = useGetMe()
+    const {me, loading} = useGetMe()
 
     const userId = useSelector((state:any) => state.auth.userId)
-    const {handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
 
     // Verify if user is logged in
     useEffect(() => {

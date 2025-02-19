@@ -37,13 +37,16 @@ cd my-chat
 ``` bash
 npm run install:all
 ```
+4. Crie um arquivo .env:
+``` bash
+npm run install:all
+```
 
-4. Inicie o projeto:
+5. Inicie o projeto:
 ``` bash
 npm run start:all
 ```
 
-4. Crie um arquivo .env na raiz do diretório /server e insira as linhas abaixo:
 
 ``` env
 SECRET_KEY=CHAVE

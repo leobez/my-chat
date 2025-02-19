@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import SelectionFriends from './SelectionFriends'
-import SelectionGroups from './SelectionGroups'
 
 const Selection = () => {
 

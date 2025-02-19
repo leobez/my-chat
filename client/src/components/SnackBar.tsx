@@ -9,6 +9,7 @@ const SnackBar = () => {
     const {open, message, severity, handleSnackbar} = useContext(SnackbarContext) as SnackbarContextType
 
     const handleClose = (
+        // @ts-ignore
         event: React.SyntheticEvent | Event,
         reason?: SnackbarCloseReason,
       ) => {

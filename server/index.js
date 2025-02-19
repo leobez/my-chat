@@ -1,6 +1,6 @@
-// ENVIROMENT VARIABLE
-require('dotenv').config()
-const PORT = 3000
+const dotenv = require('dotenv')
+dotenv.config()
+const PORT = process.env.PORT
 
 // API
 const express = require('express')
@@ -22,7 +22,7 @@ app.use(express.json({
 const cors = require('cors')
 
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: process.env.ALLOWED_ORIGIN ?? "http://localhost:3000",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // IMPORTANT -> ALLOWS TO ATTACH JWT TOKEN TO USER COOKIES //

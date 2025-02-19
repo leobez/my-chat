@@ -1,12 +1,8 @@
 import { NavLink } from 'react-router-dom'
-import { FaUser } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
-import { TiGroup } from "react-icons/ti";
 import { useLogout } from '../hooks/authHooks/useLogout';
-import { MdLogin } from "react-icons/md";
-import { MdAccountBox } from "react-icons/md";
 
 type Props = {
     isLogged:boolean

@@ -9,7 +9,7 @@ const Profile = () => {
 
     const [newUserName, setNewUsername] = useState<string>(user.username)
     const [newPassword, setNewPassword] = useState<string>('')
-    const {feedback, loading, updateUser} = useUpdateUser()
+    const {updateUser} = useUpdateUser()
 
     const handleSubmitNewUsername = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault()

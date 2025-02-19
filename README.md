@@ -28,34 +28,29 @@ IMG HERE
 git clone https://github.com/leobez/my-chat.git
 ```
 
-2. Entre no diretório /server, instale as dependências e inicie:
+2. Entre no diretório raiz do projeto
 ``` bash
-cd my-chat/server
-npm install
-npm run start
+cd my-chat
 ```
 
-3. Com outro terminal, entre no diretório /client, instale as dependências e inicie:
+3. Instale as dependências:
 ``` bash
-cd my-chat/client
-npm install
-npm run dev
+npm run install:all
+```
+
+4. Inicie o projeto:
+``` bash
+npm run start:all
 ```
 
 4. Crie um arquivo .env na raiz do diretório /server e insira as linhas abaixo:
 
 ``` env
 SECRET_KEY=CHAVE
-PORT=3000
 ```
 
 OBS: O valor de PORT= pode ser qualquer porta que estiver disponível para você.
 
-5. Rode o app:
-``` env
-npm run nodemon
-```
- 
 A API estará disponível em http://localhost:3000
 
 ### Observações  

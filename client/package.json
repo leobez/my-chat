@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "vite preview VITE_PORT=4174 vite preview --port %VITE_PORT%",
     "start": "npm run build && npm run preview"
   },
   "dependencies": {
@@ -16,6 +16,8 @@
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.3.0",
     "@reduxjs/toolkit": "^2.3.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "my-chat": "file:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

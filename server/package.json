@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "nodemonbuild": "cd.. && cd client && npm run build && cd .. && cd server && nodemon server/index.js localhost 3000",
-    "nodemon": "nodemon server/index.js localhost 3000",
+    "nodemonbuild": "cd.. && cd client && npm run build && cd .. && cd server && nodemon server/index.js localhost 3001",
+    "nodemon": "nodemon index.js localhost 3001",
     "start": "node index.js"
   },
   "author": "Leo B",

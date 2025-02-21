@@ -44,12 +44,6 @@ const Login = () => {
         if (serverSideFeedback) setFeedback(serverSideFeedback[0])
     }, [serverSideFeedback])
 
-    // Just to make login easier (REMOVE)
-    useEffect(() => {
-        setUsername('user1')
-        setPassword('123')
-    }, [])
-
     // Snackbar stuff
     useEffect(() => {
         if (feedback) {

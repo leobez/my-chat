@@ -28,32 +28,30 @@ IMG HERE
 git clone https://github.com/leobez/my-chat.git
 ```
 
-2. Crie um arquivo .env em /my-chat/client e coloque as seguintes variáveis
+2. Entre na raiz do repositório e instale as dependências
 ``` bash
-PORT=3000
-
-
-```
-
-3. Crie um arquivo .env em /my-chat/server e coloque as seguintes variáveis
-``` bash
-SECRET_KEY=SECRET
-PORT=3001
-```
-
-OBS: O valor de PORT= pode ser qualquer porta que estiver disponível para você.
-
-
-4. Entre no diretório raiz do projeto e use o comando
-``` bash
+cd my-chat
 npm run install:all
 ```
 
-6. Entre no diretório raiz do projeto e use o comando
+3. Crie um arquivo .env em /my-chat/client, coloque as seguintes variáveis
 ``` bash
+PORT=3000
+VITE_BASE_API_URL=http://localhost:3001/api
+```
+
+4. Crie um arquivo .env em /my-chat/server e coloque as seguintes variáveis e inicialize
+``` bash
+SECRET_KEY=SECRET
+PORT=3001
+ALLOWED_ORIGIN=http://localhost:3000
+```
+
+6. Volte para o dietório raiz do projeto e use o comando
+``` bash
+cd my-chat
 npm run start:all
 ```
 
 O frontend estará disponível em http://localhost:3000
-
 A API estará disponível em http://localhost:3001

@@ -4,7 +4,7 @@ class  UserModel {
 
     static create(user) {
         return new Promise((resolve, reject) => {
-            return db.run('INSERT INTO Users (username, password) VALUES (?, ?, ?)', [user.username, user.password], function(err) {
+            return db.run('INSERT INTO Users (username, password) VALUES (?, ?)', [user.username, user.password], function(err) {
                 if (err) {
                     return reject({type: 'model', error: err.message})
                 }

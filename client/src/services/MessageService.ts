@@ -1,8 +1,9 @@
 import validateResponse from "../utils/validateResponse"
 import { CustomError } from "./AuthService"
 
-const API_URL_HISTORY = 'http://localhost:3000/api/message/history'
-const API_URL_SENDMESSAGE = 'http://localhost:3000/api/message'
+const BASE_URL = import.meta.env.VITE_BASE_API_URL
+const API_URL_HISTORY = `${BASE_URL}/message/history`
+const API_URL_SENDMESSAGE = `${BASE_URL}/message`
 
 class MessageService {
 

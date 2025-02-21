@@ -22,7 +22,7 @@ app.use(express.json({
 const cors = require('cors')
 
 const corsOptions = {
-    origin: "*",
+    origin: process.env.ALLOWED_ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // IMPORTANT -> ALLOWS TO ATTACH JWT TOKEN TO USER COOKIES //
@@ -50,7 +50,6 @@ const httpServer = http.createServer(app) // implement HTTP server to support we
 
 const { initSocket } = require('./socketHandler')
 initSocket(httpServer)
-
 
 httpServer.listen(PORT, () => {
     console.log(`SERVER ON ${PORT}`)

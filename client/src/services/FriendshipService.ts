@@ -1,13 +1,14 @@
 import validateResponse from "../utils/validateResponse"
 import { CustomError } from "./AuthService"
 
-const API_URL_LISTFRIENDS = 'http://localhost:3000/api/friendship/'
-const API_URL_LISTRECEIVED = 'http://localhost:3000/api/friendship/received'
-const API_URL_LISTSENT = 'http://localhost:3000/api/friendship/sent'
-const API_URL_SENDREQUEST = 'http://localhost:3000/api/friendship/send'
-const API_URL_ACCEPTREQUEST = 'http://localhost:3000/api/friendship/accept'
-const API_URL_DENYREQUEST = 'http://localhost:3000/api/friendship/deny'
-const API_URL_DELETEFRIENDSHIP = 'http://localhost:3000/api/friendship/delete'
+const BASE_URL = import.meta.env.VITE_BASE_API_URL
+const API_URL_LISTFRIENDS = `${BASE_URL}/friendship` 
+const API_URL_LISTRECEIVED = `${BASE_URL}/friendship/received` 
+const API_URL_LISTSENT = `${BASE_URL}/friendship/sent` 
+const API_URL_SENDREQUEST = `${BASE_URL}/friendship/send` 
+const API_URL_ACCEPTREQUEST = `${BASE_URL}/friendship/accept` 
+const API_URL_DENYREQUEST = `${BASE_URL}/friendship/deny` 
+const API_URL_DELETEFRIENDSHIP = `${BASE_URL}/friendship/delete` 
 
 class FriendshipService {
 

@@ -1,9 +1,7 @@
 import validateResponse from "../utils/validateResponse"
 
 export class CustomError extends Error {
-
     details: string[]
-
     constructor(message:string, details:string[]=[]) {
         super(message)
         this.details = details
@@ -20,10 +18,11 @@ export interface LoginData {
     password: string
 }
 
-const API_URL_REGISTER = 'http://localhost:3000/api/user/register'
-const API_URL_LOGIN = 'http://localhost:3000/api/user/login'
-const API_URL_LOGOUT = 'http://localhost:3000/api/user/logout'
-const API_URL_PROFILE = 'http://localhost:3000/api/user/me'
+const BASE_URL = import.meta.env.VITE_BASE_API_URL
+const API_URL_REGISTER = `${BASE_URL}/user/register`
+const API_URL_LOGIN = `${BASE_URL}/user/login`
+const API_URL_LOGOUT = `${BASE_URL}/user/logout`
+const API_URL_PROFILE = `${BASE_URL}/user/me`
 
 class AuthService {
 

@@ -177,7 +177,7 @@ const SelectionFriends = () => {
                                             >
 
                                             <button 
-                                            className="grid place-items-center p-2 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip bg-blue-900" 
+                                            className="grid place-items-center p-2 hover:bg-green-600 hover:text-white duration-300 rounded-lg tooltip bg-blue-950" 
                                             onClick={() => handleAccept(request.friendshipId)}>
                                                 <IoPersonAddOutline size={20}/>
                                             </button>
@@ -194,7 +194,7 @@ const SelectionFriends = () => {
                                             >
 
                                             <button 
-                                            className="grid place-items-center p-2 hover:bg-red-600 hover:text-white duration-300 rounded-lg bg-blue-900" 
+                                            className="grid place-items-center p-2 hover:bg-red-600 hover:text-white duration-300 rounded-lg bg-blue-950" 
                                             onClick={() => handleDenial(request.friendshipId)}>
                                                 <TiDeleteOutline size={20}/>
                                             </button>
@@ -228,7 +228,7 @@ const SelectionFriends = () => {
 
                     {sentRequests.map((request:Request) => (
                         <li key={request.friendshipId} className="w-full">
-                            <div className="p-3 w-full bg-blue-600 text-left flex gap-2 items-center rounded-lg justify-between">
+                            <div className="p-3 w-full bg-blue-800 text-left flex gap-2 items-center rounded-lg justify-between">
 
                                 <div className=" flex gap-2">
                                     <div className="flex gap-3 items-center">
@@ -250,7 +250,7 @@ const SelectionFriends = () => {
                                         slotProps={{popper: {modifiers: [{name: 'offset', options: {offset: [0, -6]}}]}}}
                                         >
                                         <button 
-                                            className="grid place-items-center px-3 py-2 hover:bg-red-600 hover:text-white duration-300 rounded-lg bg-blue-800" 
+                                            className="grid place-items-center px-3 py-2 hover:bg-red-600 hover:text-white duration-300 rounded-lg bg-blue-950" 
                                             onClick={() => handleRemoval(request.friendshipId)}>
                                             <RiChatDeleteFill size={20}/>
                                         </button>

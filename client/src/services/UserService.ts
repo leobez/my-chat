@@ -2,8 +2,9 @@ import { UpdateUserData } from "../hooks/userHooks/useUpdateUser"
 import validateResponse from "../utils/validateResponse"
 import { CustomError } from "./AuthService"
 
-const API_URL_GETUSERBYID = 'http://localhost:3000/api/user/byid'
-const API_URL_UPDATEUSER = 'http://localhost:3000/api/user/update'
+const BASE_URL = import.meta.env.VITE_BASE_API_URL
+const API_URL_GETUSERBYID = `${BASE_URL}/user/byid`
+const API_URL_UPDATEUSER = `${BASE_URL}/user/update` 
 
 class UserService {
 

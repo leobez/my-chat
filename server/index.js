@@ -22,7 +22,7 @@ app.use(express.json({
 const cors = require('cors')
 
 const corsOptions = {
-    origin: process.env.ALLOWED_ORIGIN ?? "http://localhost:3000",
+    origin: "*",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // IMPORTANT -> ALLOWS TO ATTACH JWT TOKEN TO USER COOKIES //

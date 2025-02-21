@@ -28,43 +28,43 @@ IMG HERE
 git clone https://github.com/leobez/my-chat.git
 ```
 
-2. Entre no diretório raiz do projeto
+2. Entre no diretório /my-chat/client do projeto
 ``` bash
-cd my-chat
+cd /my-chat/client
 ```
 
-3. Instale as dependências:
+3. Crie um arquivo .env em /my-chat/client e coloque as seguintes variáveis
 ``` bash
-npm run install:all
-```
-4. Crie um arquivo .env:
-``` bash
-npm run install:all
+PORT=3000
 ```
 
-5. Inicie o projeto:
+4. Crie um arquivo .env em /my-chat/server e coloque as seguintes variáveis
 ``` bash
-npm run start:all
-```
-
-
-``` env
-SECRET_KEY=CHAVE
+SECRET_KEY=SECRET
+PORT=3001
 ```
 
 OBS: O valor de PORT= pode ser qualquer porta que estiver disponível para você.
 
-A API estará disponível em http://localhost:3000
+
+5. Entre no diretório raiz do projeto e use o comando
+``` bash
+npm run install:all
+```
+
+6. Entre no diretório raiz do projeto e use o comando
+``` bash
+npm run start:all
+```
+
+O frontend estará disponível em http://localhost:3000
+
+A API estará disponível em http://localhost:3001
 
 ### Observações  
-- Certifique-se de configurar as variáveis de ambiente corretamente para rodar a API.
-  
+- Certifique-se de configurar as variáveis de ambiente corretamente para rodar a aplicação.
 - Algumas rotas são protegidas para permitir apenas usuários autenticados.
-
 - Algumas rotas possuem um limitador de requisições: 10 para usuários autenticados e 3 para não autenticados.
-  
 - Use ferramentas como Postman para testar as rotas.
-  
 - Caso use o Postman, é possível importar o arquivo /rest-api/postman/api-rest.postman_collection.json.
-  
 - A autenticação é feita através de tokens JWT salvos nos cookies da requisição. Não é necessário configurar nenhuma forma de autenticação no Postman.

@@ -12,6 +12,7 @@ const CustomError = require('../utils/CustomError')
 class MessageService {
 
     static async createMessage(messageData) {
+        console.log(messageData)
 
         try {
 
@@ -24,9 +25,13 @@ class MessageService {
             
             // Verify if from and to users are friends
             const fromFriendships = await FriendshipModel.read({by: 'userId', all: true, data: messageData.from})
+            console.log('teset: ', fromFriendships)
             let found = false
             fromFriendships.forEach((friendship) => {
-                if (Number(messageData.to) === friendship.to_user) {
+                console.log(messageData.to, friendship.to_user)
+                if (Number(messageData.to) === friendship.to_user || 
+                    Number(messageData.to) === friendship.from_user
+                ) {
                     found = true
                 }
             })

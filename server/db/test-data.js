@@ -15,7 +15,7 @@ db.run(`
     
     INSERT INTO Users(username, password) VALUES (?, ?)
 
-`, ['user2', hash], (err) => {
+`, ['user2', 'hash'], (err) => {
     
     if (err) {
         console.log('Error while inserting test data: ', err.message)
@@ -28,7 +28,7 @@ db.run(`
     
     INSERT INTO Users(username, password) VALUES (?, ?)
 
-`, ['user3', hash], (err) => {
+`, ['user3', 'hash'], (err) => {
     
     if (err) {
         console.log('Error while inserting test data: ', err.message)

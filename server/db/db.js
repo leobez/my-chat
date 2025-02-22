@@ -290,6 +290,32 @@ db.serialize(() => {
         } else {
             console.log('Table GroupMessages created')
         }
+    }),
+
+    db.run(`
+        
+        INSERT INTO Users(username, password) VALUES (?, ?)
+    
+    `, ['user1', hash], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added to database: user1, 123')
+        }
+    }),
+    
+    db.run(`
+        
+        INSERT INTO Users(username, password) VALUES (?, ?)
+    
+    `, ['user2', hash], (err) => {
+        
+        if (err) {
+            console.log('Error while inserting test data: ', err.message)
+        } else {
+            console.log('Test data added to database: user2, 123')
+        }
     })
 
 })

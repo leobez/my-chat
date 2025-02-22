@@ -1,21 +1,30 @@
 # MYCHAT
+## Real time chat app.
 
-Real time chat app.
+Node, Express, Sqlite, React, Redux.
 
-IMG HERE
+<p align="left">
+  <img src="https://github.com/leobez/my-chat/blob/main/github-pictures/img1.png" height="500px"/>
+</p>
 
-Backend: Node/express/sqlite.
-Frontend: React/redux.
+<hr>
 
-Main functionalities:
-Authentication
-IMG HERE
+### Autenticação
+<p align="left">
+  <img src="https://github.com/leobez/my-chat/blob/main/github-pictures/img2.png" height="450px"/>
+</p>
 
-Friendship
-IMG HERE
+### Adicione amigos
+<p align="left">
+  <img src="https://github.com/leobez/my-chat/blob/main/github-pictures/img4.png" height="450px"/>
+</p>
 
-Real time message exchange 
-IMG HERE
+### Troque mensagens em tempo real
+<p align="left">
+  <img src="https://github.com/leobez/my-chat/blob/main/github-pictures/img7.png" height="450px"/>
+</p>
+
+<hr>
 
 ## Tecnologias necessárias
 - [Node.js 22.12.0 (LTS)](https://nodejs.org/pt)

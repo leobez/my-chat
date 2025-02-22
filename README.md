@@ -5,7 +5,7 @@ Real time chat app.
 IMG HERE
 
 Backend: Node/express/sqlite.
-Frontend: React.
+Frontend: React/redux.
 
 Main functionalities:
 Authentication
@@ -55,3 +55,11 @@ npm run start:all
 
 O frontend estará disponível em http://localhost:3000
 A API estará disponível em http://localhost:3001
+
+Entidades
+User
+Message
+Friendship
+Group
+GroupMessage
+Membership

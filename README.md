@@ -54,12 +54,5 @@ npm run start:all
 ```
 
 O frontend estará disponível em http://localhost:3000
-A API estará disponível em http://localhost:3001
 
-Entidades
-User
-Message
-Friendship
-Group
-GroupMessage
-Membership
+A API estará disponível em http://localhost:3001

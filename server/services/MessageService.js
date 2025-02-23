@@ -25,7 +25,6 @@ class MessageService {
             
             // Verify if from and to users are friends
             const fromFriendships = await FriendshipModel.read({by: 'userId', all: true, data: messageData.from})
-            console.log('teset: ', fromFriendships)
             let found = false
             fromFriendships.forEach((friendship) => {
                 console.log(messageData.to, friendship.to_user)

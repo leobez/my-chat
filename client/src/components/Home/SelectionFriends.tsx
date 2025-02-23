@@ -56,10 +56,6 @@ const SelectionFriends = () => {
     const receivedRequests = useSelector((state:any) => state.friendship.receivedRequests)
     const sentRequests = useSelector((state:any) => state.friendship.sentRequests)
 
-    useEffect(() => {
-        console.log('friends: ', friends)
-    }, [friends])
-
     const {chatting, updateChatting} = useContext(ChatContext) as ChatContextType
 
     const {deleteFriendship} = useDeleteFriendship()
